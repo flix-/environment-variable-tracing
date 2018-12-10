@@ -1,0 +1,1 @@
+add_library(EnvironmentVariableTainting MODULE MyIFDSProblem.h MyIFDSProblem.cpp)
