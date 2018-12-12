@@ -26,8 +26,10 @@ file(GLOB_RECURSE LLVM_SOURCES
 file(GLOB_RECURSE PHASAR_SOURCES
   /home/sebastian/documents/programming/phasar-1218/lib/*.cpp
   /home/sebastian/documents/programming/phasar-1218/lib/*.cxx
+  /home/sebastian/documents/programming/phasar-1218/tools/*.cpp
 )
 add_custom_target(LLVM_SOURCES SOURCES ${LLVM_SOURCES})
 add_custom_target(PHASAR_SOURCES SOURCES ${PHASAR_SOURCES})
 
 add_subdirectory(EnvironmentVariableTainting)
+

@@ -1,1 +1,2 @@
-add_library(EnvironmentVariableTainting MODULE MyIFDSProblem.h MyIFDSProblem.cpp)
+add_library(EnvironmentVariableTainting MODULE MonoIntraPluginTest.h MonoIntraPluginTest.cpp)
+
