@@ -1,6 +1,7 @@
 #include "MonoIntraPluginTest.h"
 
 #include <algorithm>
+#include <fstream>
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
@@ -24,30 +25,27 @@ __attribute__((destructor)) void finish() {
   llvm::outs() << "finish - MonoIntraPluginTest" << "\n";
 }
 
+static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
+static const char* TAINT_CALL = "getenv";
+
 static std::set<unsigned int> lineNumbers;
 
 static bool
-isValueInFacts(const MonoSet<const llvm::Value*> facts, const llvm::Value* value)
+isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value)
 {
-  for (const auto fact : facts) {
-    if (fact == value) {
-      llvm::outs() << "Found tainted value: " << value->getName() << "\n";
-      return true;
-    }
-  }
-  return false;
+  return facts.count(value);
 }
 
 MonoSet<const llvm::Value*>
-MonoIntraPluginTest::join(const MonoSet<const llvm::Value*> &oldFacts,
-                          const MonoSet<const llvm::Value*> &newFacts) {
+MonoIntraPluginTest::join(const MonoSet<const llvm::Value*>& oldFacts,
+                          const MonoSet<const llvm::Value*>& newFacts) {
   llvm::outs() << "join()" << "\n";
 
   MonoSet<const llvm::Value*> res;
   std::set_union(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end(),
     std::inserter(res, res.begin()));
 
-  for (auto v : res) {
+  for (const auto v : res) {
     if (const auto instruction = llvm::dyn_cast<llvm::Instruction>(v)) {
       const llvm::DebugLoc loc = instruction->getDebugLoc();
       if (loc) {
@@ -57,23 +55,25 @@ MonoIntraPluginTest::join(const MonoSet<const llvm::Value*> &oldFacts,
       }
     }
   }
+
   return res;
 }
 
 bool
-MonoIntraPluginTest::sqSubSetEqual(const MonoSet<const llvm::Value*> &newFacts,
-                                   const MonoSet<const llvm::Value*> &oldFacts) {
+MonoIntraPluginTest::sqSubSetEqual(const MonoSet<const llvm::Value*>& newFacts,
+                                   const MonoSet<const llvm::Value*>& oldFacts) {
   llvm::outs() << "sqSubSetEqual()" << "\n";
 
   llvm::outs() << "Old Facts: " << oldFacts.size() << "\n";
   llvm::outs() << "New Facts: " << newFacts.size() << "\n";
 
-  //return std::includes(Rhs.begin(), Rhs.end(), Lhs.begin(), Lhs.end());
   /*
-   * return false := join() + Add successors of dst
-   * return true := next
+   * join() + add successors of dst if we got additional new facts from predecessor
    */
-  return false;
+  bool isNewFactsSubsetOfOldFacts = std::includes(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end());
+  llvm::outs() << "isNewFactsSubsetOfOldFacts: " << isNewFactsSubsetOfOldFacts << "\n";
+
+  return isNewFactsSubsetOfOldFacts;
 }
 
 MonoSet<const llvm::Value*>
@@ -87,26 +87,27 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   MonoSet<const llvm::Value*> res = currentFacts;   // clone
 
   // Call Instruction
-  if (const auto callInstruction = llvm::dyn_cast<llvm::CallInst>(instruction)) {
+  if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
-    for (const auto &operand : callInstruction->operands()) {
+
+    for (const auto &operand : callInst->operands()) {
       auto functionName = operand->getName();
-      if (functionName.compare_lower("poison_pill") == 0) {
+      if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         res.insert(instruction);
       }
     }
   }
   // Binary Operator Instruction
-  else if (const auto binaryOperator = llvm::dyn_cast<llvm::BinaryOperator>(instruction)) {
+  else if (const auto binaryOpInst = llvm::dyn_cast<llvm::BinaryOperator>(instruction)) {
     llvm::outs() << "Got binary operator instruction" << "\n";
 
     // check if one of the operands contains a tainted value, if so push fact
-    for (const auto &operand : binaryOperator->operands()) {
+    for (const auto &operand : binaryOpInst->operands()) {
       bool isTainted = isValueInFacts(currentFacts, operand);
       if (isTainted) {
         llvm::outs() << "Adding binary operator instruction fact" << "\n";
-        res.insert(binaryOperator);
+        res.insert(binaryOpInst);
         break;
       }
     }
@@ -115,10 +116,15 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(instruction)) {
     llvm::outs() << "Got load instruction" << "\n";
 
-    // check if memory location is tainted, if so push fact
-    const auto pointerOperand = loadInst->getPointerOperand();
-    bool isTainted = isValueInFacts(currentFacts, pointerOperand);
-    if (isTainted) {
+    const auto memLocation = loadInst->getPointerOperand();
+    bool isMemLocationTainted = isValueInFacts(currentFacts, memLocation);
+
+    /*
+     * memLocationTainted |
+     *        0           | -
+     *        1           | GEN
+     */
+    if (isMemLocationTainted) {
       llvm::outs() << "Adding load instruction fact" << "\n";
       res.insert(loadInst);
     }
@@ -127,19 +133,40 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   else if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(instruction)) {
     llvm::outs() << "Got store instruction" << "\n";
 
-    // check if value is tainted, if so push memory location
+    const auto memLocation = storeInst->getPointerOperand();
     const auto value = storeInst->getValueOperand();
-    bool isTainted = isValueInFacts(currentFacts, value);
-    if (isTainted) {
-      const auto pointerOperand = storeInst->getPointerOperand();
-      llvm::outs() << "Adding memory location: " << pointerOperand->getName() << "\n";
-      res.insert(pointerOperand);
+    bool isMemLocationTainted = isValueInFacts(currentFacts, memLocation);
+    bool isValueTainted = isValueInFacts(currentFacts, value);
+
+    /*
+     * memLocationTainted | valueTainted |
+     *        0           |      0       |  -
+     *        0           |      1       |  GEN
+     *        1           |      0       |  KILL
+     *        1           |      1       |  -
+     */
+    if (!isMemLocationTainted && isValueTainted) {
+      llvm::outs() << "Adding memory location: " << memLocation->getName() << "\n";
+      res.insert(memLocation);
+    }
+    else if (isMemLocationTainted && !isValueTainted) {
+      llvm::outs() << "Removing memory location: " << memLocation->getName() << "\n";
+      res.erase(memLocation);
+    }
+  }
+  // Phi node instruction
+  else if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(instruction)) {
+    llvm::outs() << "Got phi node instruction" << "\n";
+
+    // if phi node contains at least one tainted value push fact
+    for (const auto &value : phiNodeInst->incoming_values()) {
+      if (isValueInFacts(currentFacts, value)) {
+        llvm::outs() << "Adding phi node instruction fact" << "\n";
+        res.insert(phiNodeInst);
+      }
     }
   }
 
-  if (res.empty()) {
-    return currentFacts;
-  }
   return res;
 }
 
@@ -152,8 +179,10 @@ MonoIntraPluginTest::initialSeeds() {
 void
 MonoIntraPluginTest::printReport() {
   llvm::outs() << "printReport()" << "\n";
+
+  std::ofstream writer(LINE_NUMBERS_OUTPUT_FILE);
   for (const auto lineNumber : lineNumbers) {
-    llvm::outs() << lineNumber << "\n";
+    writer << lineNumber << "\n";
   }
 }
 
