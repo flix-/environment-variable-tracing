@@ -8,11 +8,12 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <phasar/Utils/LLVMShorthands.h>
+
 namespace psr {
 
 static std::unique_ptr<IntraMonoProblemPlugin>
-makeIntraMonoProblemPlugin(LLVMBasedCFG& cfg,
-                           const llvm::Function* f) {
+makeIntraMonoProblemPlugin(LLVMBasedCFG& cfg, const llvm::Function* f) {
   return std::unique_ptr<IntraMonoProblemPlugin>(new MonoIntraPluginTest(cfg, f));
 }
 
@@ -30,10 +31,38 @@ static const char* TAINT_CALL = "getenv";
 
 static std::set<unsigned int> lineNumbers;
 
+static const llvm::Value*
+findGEPInstInFacts(const MonoSet<const llvm::Value*>& currentFacts, const llvm::Value* value) {
+  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
+    for (const auto &fact : currentFacts) {
+      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
+        if (gepInst->getNumOperands() != gepFact->getNumOperands()) continue;
+
+        // compare operands
+        bool matchFound = true;
+        for (unsigned int i = 0; i < gepInst->getNumOperands(); i++) {
+          const auto *gepInstOperand = gepInst->getOperand(i);
+          const auto *gepFactOperand = gepFact->getOperand(i);
+
+          if (gepInstOperand != gepFactOperand) {
+            matchFound = false;
+            break;
+          }
+        }
+        if (matchFound) return fact;
+      }
+    }
+  }
+  return nullptr;
+}
+
 static bool
-isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value)
+isValueInFacts(const MonoSet<const llvm::Value*>& currentFacts, const llvm::Value* value)
 {
-  return facts.count(value);
+  const auto &ret = findGEPInstInFacts(currentFacts, value);
+  if (ret) return ret;
+
+  return currentFacts.count(value);
 }
 
 MonoSet<const llvm::Value*>
@@ -151,7 +180,16 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     }
     else if (isMemLocationTainted && !isValueTainted) {
       llvm::outs() << "Removing memory location: " << memLocation->getName() << "\n";
-      res.erase(memLocation);
+      /*
+       * If memory location is a GEP instruction we cannot use erase on the set instance
+       * as this works based on object references. As a new instance is usually created
+       * we need to find the GEP instruction by comparing their operand values.
+       */
+      if (const auto gepMemLocation = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
+        res.erase(findGEPInstInFacts(currentFacts, gepMemLocation));
+      } else {
+        res.erase(memLocation);
+      }
     }
   }
   // Phi node instruction
