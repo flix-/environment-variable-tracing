@@ -31,38 +31,114 @@ static const char* TAINT_CALL = "getenv";
 
 static std::set<unsigned int> lineNumbers;
 
-static const llvm::Value*
-findGEPInstInFacts(const MonoSet<const llvm::Value*>& currentFacts, const llvm::Value* value) {
-  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
-    for (const auto &fact : currentFacts) {
-      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
-        if (gepInst->getNumOperands() != gepFact->getNumOperands()) continue;
-
-        // compare operands
-        bool matchFound = true;
-        for (unsigned int i = 0; i < gepInst->getNumOperands(); i++) {
-          const auto *gepInstOperand = gepInst->getOperand(i);
-          const auto *gepFactOperand = gepFact->getOperand(i);
-
-          if (gepInstOperand != gepFactOperand) {
-            matchFound = false;
-            break;
-          }
-        }
-        if (matchFound) return fact;
-      }
-    }
+static void dumpFacts(const MonoSet<const llvm::Value*>& facts) {
+  llvm::outs() << "Dumping facts" << "\n";
+  llvm::outs() << "=============" << "\n";
+  for (const auto fact : facts) {
+    fact->print(llvm::outs()); llvm::outs() << "\n";
   }
-  return nullptr;
+  llvm::outs() << "=============" << "\n";
 }
 
 static bool
-isValueInFacts(const MonoSet<const llvm::Value*>& currentFacts, const llvm::Value* value)
-{
-  const auto &ret = findGEPInstInFacts(currentFacts, value);
-  if (ret) return ret;
+isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtrInst* gepFact) {
+  if (gepInst->getNumOperands() != gepFact->getNumOperands()) return false;
 
-  return currentFacts.count(value);
+  for (unsigned int i = 0; i < gepInst->getNumOperands(); i++) {
+    const auto *gepInstOperand = gepInst->getOperand(i);
+    const auto *gepFactOperand = gepFact->getOperand(i);
+
+    /*
+     * Compare the first operand (ptr) by type if it is another GEP instruction.
+     * This is necessary for nested structs as another GEP instructions cannot
+     * be compared via object reference.
+     */
+    bool isInstOperandGepPtr = llvm::isa<llvm::GetElementPtrInst>(gepInstOperand);
+    bool isFactOperandGepPtr = llvm::isa<llvm::GetElementPtrInst>(gepFactOperand);
+    if (isInstOperandGepPtr != isFactOperandGepPtr) return false;
+
+    if (isInstOperandGepPtr && isFactOperandGepPtr) {
+      const auto gepInstOperandType = gepInstOperand->getType();
+      const auto gepFactOperandType = gepFactOperand->getType();
+      if (gepInstOperandType != gepFactOperandType) {
+        return false;
+      }
+      continue;
+    }
+
+    /*
+     * Compare everything else via object reference (alloca / indices)
+     */
+    if (gepInstOperand != gepFactOperand) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool
+isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
+  for (const auto &fact : facts) {
+    if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
+      const llvm::GetElementPtrInst* gepInstPtr = gepInst;
+      const llvm::GetElementPtrInst* gepFactPtr = gepFact;
+      do {
+        bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
+        if (!isEqual) break;
+
+        // if operand pointer was alloca instruction we are done
+        bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
+        if (isFinal) return true;
+
+        // continue with inner GEP
+        gepInstPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+        gepFactPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+      } while (true);
+    }
+  }
+  return false;
+}
+
+static bool
+isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
+  /*
+   * We cannot compare a GEP instruction via object reference as for every load a new
+   * instance will be created. Although it possibly holds the same address as a GEP instruction
+   * already part of the set of facts comparison via pointer yields wrong results. Apply own
+   * equality logic supporting nested GEP's.
+   */
+  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
+    return isGEPInstInFacts(facts, gepInst);
+  }
+  /*
+   * Compare via reference
+   */
+  return facts.count(value);
+}
+
+static void
+removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
+  for (auto fact : facts) {
+    if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
+      const llvm::GetElementPtrInst* gepInstPtr = gepInst;
+      const llvm::GetElementPtrInst* gepFactPtr = gepFact;
+      do {
+        bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
+        if (!isEqual) break;
+
+        // if operand pointer was alloca instruction we are done
+        bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
+        if (isFinal) {
+          facts.erase(fact);
+          return;
+        }
+
+        // continue with inner GEP
+        gepInstPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+        gepFactPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+      } while (true);
+    }
+  }
 }
 
 MonoSet<const llvm::Value*>
@@ -84,7 +160,6 @@ MonoIntraPluginTest::join(const MonoSet<const llvm::Value*>& oldFacts,
       }
     }
   }
-
   return res;
 }
 
@@ -113,7 +188,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   llvm::outs() << "Function: " << instruction->getFunction()->getName() << ", Opcode: " << instruction->getOpcodeName() << "\n";
   llvm::outs() << "===========================" << "\n";
 
-  MonoSet<const llvm::Value*> res = currentFacts;   // clone
+  MonoSet<const llvm::Value*> newFacts = currentFacts;   // clone
 
   // Call Instruction
   if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
@@ -123,7 +198,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       auto functionName = operand->getName();
       if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
-        res.insert(instruction);
+        newFacts.insert(instruction);
       }
     }
   }
@@ -133,10 +208,10 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
     // check if one of the operands contains a tainted value, if so push fact
     for (const auto &operand : binaryOpInst->operands()) {
-      bool isTainted = isValueInFacts(currentFacts, operand);
+      bool isTainted = isValueInFacts(newFacts, operand);
       if (isTainted) {
         llvm::outs() << "Adding binary operator instruction fact" << "\n";
-        res.insert(binaryOpInst);
+        newFacts.insert(binaryOpInst);
         break;
       }
     }
@@ -146,7 +221,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     llvm::outs() << "Got load instruction" << "\n";
 
     const auto memLocation = loadInst->getPointerOperand();
-    bool isMemLocationTainted = isValueInFacts(currentFacts, memLocation);
+    bool isMemLocationTainted = isValueInFacts(newFacts, memLocation);
 
     /*
      * memLocationTainted |
@@ -155,7 +230,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
      */
     if (isMemLocationTainted) {
       llvm::outs() << "Adding load instruction fact" << "\n";
-      res.insert(loadInst);
+      newFacts.insert(loadInst);
     }
   }
   // Store Instruction
@@ -164,8 +239,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
     const auto memLocation = storeInst->getPointerOperand();
     const auto value = storeInst->getValueOperand();
-    bool isMemLocationTainted = isValueInFacts(currentFacts, memLocation);
-    bool isValueTainted = isValueInFacts(currentFacts, value);
+    bool isMemLocationTainted = isValueInFacts(newFacts, memLocation);
+    bool isValueTainted = isValueInFacts(newFacts, value);
 
     /*
      * memLocationTainted | valueTainted |
@@ -176,19 +251,22 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
      */
     if (!isMemLocationTainted && isValueTainted) {
       llvm::outs() << "Adding memory location: " << memLocation->getName() << "\n";
-      res.insert(memLocation);
+      newFacts.insert(memLocation);
     }
     else if (isMemLocationTainted && !isValueTainted) {
       llvm::outs() << "Removing memory location: " << memLocation->getName() << "\n";
       /*
        * If memory location is a GEP instruction we cannot use erase on the set instance
-       * as this works based on object references. As a new instance is usually created
-       * we need to find the GEP instruction by comparing their operand values.
+       * as this works based on object references. Instead we have to iterate all facts
+       * and remove the GEP instruction that is pointing to the store instruction's
+       * memory location.
        */
       if (const auto gepMemLocation = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
-        res.erase(findGEPInstInFacts(currentFacts, gepMemLocation));
+        //dumpFacts(newFacts);
+        removeGEPMemoryLocation(newFacts, gepMemLocation);
+        //dumpFacts(newFacts);
       } else {
-        res.erase(memLocation);
+        newFacts.erase(memLocation);
       }
     }
   }
@@ -198,14 +276,13 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
     // if phi node contains at least one tainted value push fact
     for (const auto &value : phiNodeInst->incoming_values()) {
-      if (isValueInFacts(currentFacts, value)) {
+      if (isValueInFacts(newFacts, value)) {
         llvm::outs() << "Adding phi node instruction fact" << "\n";
-        res.insert(phiNodeInst);
+        newFacts.insert(phiNodeInst);
       }
     }
   }
-
-  return res;
+  return newFacts;
 }
 
 MonoMap<const llvm::Instruction*, MonoSet<const llvm::Value*>>
