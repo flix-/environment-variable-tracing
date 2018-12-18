@@ -196,8 +196,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
 
-    for (const auto &operand : callInst->operands()) {
-      auto functionName = operand->getName();
+    for (const auto &use : callInst->operands()) {
+      auto functionName = use->getName();
       if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         newFacts.insert(instruction);
@@ -210,8 +210,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     llvm::outs() << "Got binary operator instruction" << "\n";
 
     // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &operand : binaryOpInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, operand);
+    for (const auto &use : binaryOpInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, use.get());
       if (isTainted) {
         llvm::outs() << "Adding binary operator instruction fact" << "\n";
         newFacts.insert(binaryOpInst);
@@ -224,8 +224,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     llvm::outs() << "Got a compare instruction" << "\n";
 
     // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &operand : compareInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, operand);
+    for (const auto &use : compareInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, use.get());
       if (isTainted) {
         llvm::outs() << "Adding compare instruction fact" << "\n";
         newFacts.insert(compareInst);
@@ -238,8 +238,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     llvm::outs() << "Got a zextInst instruction" << "\n";
 
     // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &operand : zextInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, operand);
+    for (const auto &use : zextInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, use.get());
       if (isTainted) {
         llvm::outs() << "Adding zextInst instruction fact" << "\n";
         newFacts.insert(zextInst);
@@ -325,12 +325,12 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
        * Whenever we encounter true or false in a <v, bb> pair of a phi node we are backtracking
        * to the basic block and check the branch instruction for a tainted value.
        */
-      if (const auto constant = llvm::dyn_cast<llvm::ConstantInt>(incomingValue)) {
+      if (const auto constant = llvm::dyn_cast<llvm::Constant>(incomingValue)) {
         if (constant == trueConstant || constant == falseConstant) {
           const auto &terminatorInst = block->getTerminator();
 
-          for (const auto &operand : terminatorInst->operands()) {
-            bool isTainted = isValueInFacts(newFacts, operand);
+          for (const auto &use : terminatorInst->operands()) {
+            bool isTainted = isValueInFacts(newFacts, use.get());
             if (isTainted) {
               llvm::outs() << "Adding phi node instruction fact (constant)" << "\n";
               newFacts.insert(phiNodeInst);
@@ -352,6 +352,37 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       }
     }
   }
+  // Select instruction
+  else if (const auto selectInst = llvm::dyn_cast<llvm::SelectInst>(instruction)) {
+    llvm::outs() << "Got select instruction" << "\n";
+
+    for (const auto &use : selectInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, use.get());
+      if (isTainted) {
+        llvm::outs() << "Adding select instruction fact" << "\n";
+        newFacts.insert(selectInst);
+        break;
+      }
+    }
+  }
+  // Return instruction
+  /*
+   * Currently not necessary to push fact here as ret instruction doesn't have
+   * a successor that can evaluate the fact... Maybe later needed in order to
+   * figure out whether ret instruction is dependent on environment variable?!
+   */
+  /*
+  else if (const auto returnInst = llvm::dyn_cast<llvm::ReturnInst>(instruction)) {
+    const auto returnValue = returnInst->getReturnValue();
+    if (returnValue) {
+      bool isTainted = isValueInFacts(newFacts, returnValue);
+      if (isTainted) {
+        llvm::outs() << "Adding ret instruction fact" << "\n";
+        newFacts.insert(returnInst);
+      }
+    }
+  }
+  */
   return newFacts;
 }
 
