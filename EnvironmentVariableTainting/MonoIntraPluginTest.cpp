@@ -6,6 +6,8 @@
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
+#include <llvm/IR/Constants.h>
+
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -91,8 +93,8 @@ isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElemen
         if (isFinal) return true;
 
         // continue with inner GEP
-        gepInstPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-        gepFactPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+        gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+        gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
       } while (true);
     }
   }
@@ -111,7 +113,7 @@ isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* valu
     return isGEPInstInFacts(facts, gepInst);
   }
   /*
-   * Compare via reference
+   * Compare via object reference
    */
   return facts.count(value);
 }
@@ -126,16 +128,16 @@ removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetEleme
         bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
         if (!isEqual) break;
 
-        // if operand pointer was alloca instruction we are done
+        // If operand pointer was alloca instruction we are done
         bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
         if (isFinal) {
           facts.erase(fact);
           return;
         }
 
-        // continue with inner GEP
-        gepInstPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-        gepFactPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+        // Continue with inner GEP
+        gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+        gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
       } while (true);
     }
   }
@@ -190,7 +192,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
   MonoSet<const llvm::Value*> newFacts = currentFacts;   // clone
 
-  // Call Instruction
+  // Call instruction
   if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
 
@@ -199,14 +201,15 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         newFacts.insert(instruction);
+        break;
       }
     }
   }
-  // Binary Operator Instruction
+  // Binary operator instruction
   else if (const auto binaryOpInst = llvm::dyn_cast<llvm::BinaryOperator>(instruction)) {
     llvm::outs() << "Got binary operator instruction" << "\n";
 
-    // check if one of the operands contains a tainted value, if so push fact
+    // Check if one of the operands contains a tainted value, if so push fact
     for (const auto &operand : binaryOpInst->operands()) {
       bool isTainted = isValueInFacts(newFacts, operand);
       if (isTainted) {
@@ -216,7 +219,35 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       }
     }
   }
-  // Load Instruction
+  // Compare instruction
+  else if (const auto compareInst = llvm::dyn_cast<llvm::CmpInst>(instruction)) {
+    llvm::outs() << "Got a compare instruction" << "\n";
+
+    // Check if one of the operands contains a tainted value, if so push fact
+    for (const auto &operand : compareInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, operand);
+      if (isTainted) {
+        llvm::outs() << "Adding compare instruction fact" << "\n";
+        newFacts.insert(compareInst);
+        break;
+      }
+    }
+  }
+  // Zext instruction
+  else if (const auto zextInst = llvm::dyn_cast<llvm::ZExtInst>(instruction)) {
+    llvm::outs() << "Got a zextInst instruction" << "\n";
+
+    // Check if one of the operands contains a tainted value, if so push fact
+    for (const auto &operand : zextInst->operands()) {
+      bool isTainted = isValueInFacts(newFacts, operand);
+      if (isTainted) {
+        llvm::outs() << "Adding zextInst instruction fact" << "\n";
+        newFacts.insert(zextInst);
+        break;
+      }
+    }
+  }
+  // Load instruction
   else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(instruction)) {
     llvm::outs() << "Got load instruction" << "\n";
 
@@ -233,7 +264,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       newFacts.insert(loadInst);
     }
   }
-  // Store Instruction
+  // Store instruction
   else if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(instruction)) {
     llvm::outs() << "Got store instruction" << "\n";
 
@@ -274,11 +305,50 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   else if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(instruction)) {
     llvm::outs() << "Got phi node instruction" << "\n";
 
-    // if phi node contains at least one tainted value push fact
-    for (const auto &value : phiNodeInst->incoming_values()) {
-      if (isValueInFacts(newFacts, value)) {
-        llvm::outs() << "Adding phi node instruction fact" << "\n";
-        newFacts.insert(phiNodeInst);
+    const auto trueConstant = llvm::ConstantInt::getTrue(phiNodeInst->getContext());
+    const auto falseConstant = llvm::ConstantInt::getFalse(phiNodeInst->getContext());
+
+    // If phi node contains at least one tainted value push fact
+    for (const auto &block : phiNodeInst->blocks()) {
+      const auto &incomingValue = phiNodeInst->getIncomingValueForBlock(block);
+      /*
+       * We need special treatment if the value v of the <v, bb> pairs is not an
+       * instruction but a constant (true / false). This is necessary to correctly
+       * implement the boolean operators && and ||. E.g. the phi node of an || operation
+       * looks as follows:
+       *
+       * %1 = phi i1 [ true, %entry ], [ %tobool2, %lor.rhs ]
+       *
+       * If the left hand side of the || operation has been a tainted value we cannot identify
+       * this fact based on the phi node itself...
+       *
+       * Whenever we encounter true or false in a <v, bb> pair of a phi node we are backtracking
+       * to the basic block and check the branch instruction for a tainted value.
+       */
+      if (const auto constant = llvm::dyn_cast<llvm::ConstantInt>(incomingValue)) {
+        if (constant == trueConstant || constant == falseConstant) {
+          const auto &terminatorInst = block->getTerminator();
+
+          for (const auto &operand : terminatorInst->operands()) {
+            bool isTainted = isValueInFacts(newFacts, operand);
+            if (isTainted) {
+              llvm::outs() << "Adding phi node instruction fact (constant)" << "\n";
+              newFacts.insert(phiNodeInst);
+              break;
+            }
+          }
+        }
+      }
+      /*
+       * If it's not a constant check whether value is tainted...
+       */
+      else {
+        bool isTainted = isValueInFacts(newFacts, incomingValue);
+        if (isTainted) {
+          llvm::outs() << "Adding phi node instruction fact" << "\n";
+          newFacts.insert(phiNodeInst);
+          break;
+        }
       }
     }
   }
