@@ -43,6 +43,36 @@ static void dumpFacts(const MonoSet<const llvm::Value*>& facts) {
 }
 
 static bool
+isValueInTaintedBasicBlock(const MonoSet<const llvm::Value*>& facts, const llvm::Instruction *instruction) {
+  if (instruction == nullptr) return false;
+
+  /*
+   * Do not add unconditional branch instructions as they would also
+   * be used for basic block checking (and raise an exception as they
+   * do not provide the expected amount of operands...)
+   */
+  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
+    if (!branchInst->isConditional()) return false;
+  }
+
+  const auto bbInst = instruction->getParent();
+  if (bbInst == nullptr) return false;
+
+  for (const auto &fact : facts) {
+    if(const auto condBrInst = llvm::dyn_cast<llvm::BranchInst>(fact)) {
+      const auto bbThen = condBrInst->getOperand(2);
+      const auto bbElse = condBrInst->getOperand(1)->getName().contains_lower("if.else") ?
+            condBrInst->getOperand(1) :
+            nullptr;
+
+      if (bbThen->getName().equals_lower(bbInst->getName())) return true;
+      if (bbElse && bbElse->getName().equals_lower(bbElse->getName())) return true;
+    }
+  }
+  return false;
+}
+
+static bool
 isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtrInst* gepFact) {
   if (gepInst->getNumOperands() != gepFact->getNumOperands()) return false;
 
@@ -101,23 +131,6 @@ isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElemen
   return false;
 }
 
-static bool
-isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
-  /*
-   * We cannot compare a GEP instruction via object reference as for every load a new
-   * instance will be created. Although it possibly holds the same address as a GEP instruction
-   * already part of the set of facts comparison via pointer yields wrong results. Apply own
-   * equality logic supporting nested GEP's.
-   */
-  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
-    return isGEPInstInFacts(facts, gepInst);
-  }
-  /*
-   * Compare via object reference
-   */
-  return facts.count(value);
-}
-
 static void
 removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
   for (auto fact : facts) {
@@ -141,6 +154,58 @@ removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetEleme
       } while (true);
     }
   }
+}
+
+static bool
+isAllocaInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::AllocaInst* allocaInst) {
+  for (const auto fact : facts) {
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      const auto memLocation = storeFact->getPointerOperand();
+      bool isEqual = memLocation == allocaInst;
+      if (isEqual) return true;
+    }
+  }
+  return false;
+}
+
+static void
+removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::AllocaInst* allocaInst) {
+  for (auto it = facts.begin(); it != facts.end(); ) {
+    const auto fact = *it;
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      const auto memLocation = storeFact->getPointerOperand();
+      bool isEqual = memLocation == allocaInst;
+      if (isEqual) {
+        it = facts.erase(it);
+        break;
+      }
+    }
+    ++it;
+  }
+}
+
+static bool
+isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
+  /*
+   * If we get an alloca instruction e.g. from a load instruction we need to check
+   * every tainted store instruction for that address.
+   */
+  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(value)) {
+    return isAllocaInstInFacts(facts, allocaInst);
+  }
+  /*
+   * We cannot compare a GEP instruction via object reference as for every load a new
+   * instance will be created. Although it possibly holds the same address as a GEP instruction
+   * already part of the set of facts comparison via pointer yields wrong results. Apply own
+   * equality logic supporting nested GEP's.
+   */
+  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
+    return isGEPInstInFacts(facts, gepInst);
+  }
+  /*
+   * Compare via object reference
+   */
+  return facts.count(value);
 }
 
 MonoSet<const llvm::Value*>
@@ -192,15 +257,37 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
   MonoSet<const llvm::Value*> newFacts = currentFacts;   // clone
 
+  /*
+   * Every statement within a basic block reachable by a branch instruction
+   * that is dependent on a tainted value is also tainted. For example:
+   *
+   * char *tainted = getenv("gude");
+   * char *a;
+   *
+   * if (tainted != NULL) {
+   *    a = "hello world";
+   * } else {
+   *    ...
+   * }
+   * char *also_tainted = a;
+   *
+   * We push every conditional branch instruction that is dependent on an environment
+   * variable to facts and then check for each instruction whether it is part of a
+   * basic block mentioned in the tainted branch instruction.
+   */
+  bool isBBTainted = isValueInTaintedBasicBlock(newFacts, instruction);
+  if (isBBTainted) {
+    newFacts.insert(instruction);
+  }
   // Call instruction
-  if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
+  else if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
 
     for (const auto &use : callInst->operands()) {
       auto functionName = use->getName();
       if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
-        newFacts.insert(instruction);
+        newFacts.insert(callInst);
         break;
       }
     }
@@ -281,11 +368,11 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
      *        1           |      1       |  -
      */
     if (!isMemLocationTainted && isValueTainted) {
-      llvm::outs() << "Adding memory location: " << memLocation->getName() << "\n";
-      newFacts.insert(memLocation);
+      llvm::outs() << "Adding store instruction" << "\n";
+      newFacts.insert(storeInst);
     }
     else if (isMemLocationTainted && !isValueTainted) {
-      llvm::outs() << "Removing memory location: " << memLocation->getName() << "\n";
+      llvm::outs() << "Removing store instruction" << "\n";
       /*
        * If memory location is a GEP instruction we cannot use erase on the set instance
        * as this works based on object references. Instead we have to iterate all facts
@@ -296,7 +383,17 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
         //dumpFacts(newFacts);
         removeGEPMemoryLocation(newFacts, gepMemLocation);
         //dumpFacts(newFacts);
-      } else {
+      }
+      /*
+       * If memory location is alloca instruction we need to find the corresponding store
+       * instruction in the facts set.
+       */
+      else if (const auto allocaMemLocation = llvm::dyn_cast<llvm::AllocaInst>(memLocation)) {
+        //dumpFacts(newFacts);
+        removeAllocaMemoryLocation(newFacts, allocaMemLocation);
+        //dumpFacts(newFacts);
+      }
+      else {
         newFacts.erase(memLocation);
       }
     }
@@ -362,6 +459,25 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
         llvm::outs() << "Adding select instruction fact" << "\n";
         newFacts.insert(selectInst);
         break;
+      }
+    }
+  }
+  // Branch instruction
+  /*
+   * If we have a conditional branch instruction and the condition is a
+   * tainted value then all branch destination basic blocks are also tainted.
+   */
+  else if(const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
+    llvm::outs() << "Got branch instruction" << "\n";
+
+    bool isConditional = branchInst->isConditional();
+    if (isConditional) {
+      const auto &condition = branchInst->getCondition();
+
+      bool isTainted = isValueInFacts(newFacts, condition);
+      if (isTainted) {
+        llvm::outs() << "Adding conditional branch instruction fact" << "\n";
+        newFacts.insert(branchInst);
       }
     }
   }
