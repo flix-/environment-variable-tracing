@@ -60,13 +60,15 @@ isValueInTaintedBasicBlock(const MonoSet<const llvm::Value*>& facts, const llvm:
 
   for (const auto &fact : facts) {
     if(const auto condBrInst = llvm::dyn_cast<llvm::BranchInst>(fact)) {
-      const auto bbThen = condBrInst->getOperand(2);
-      const auto bbElse = condBrInst->getOperand(1)->getName().contains_lower("if.else") ?
-            condBrInst->getOperand(1) :
-            nullptr;
+      const auto bbLabel1 = condBrInst->getOperand(1)->getName().contains_lower("end") ?
+            nullptr :
+            condBrInst->getOperand(1);
+      const auto bbLabel2 = condBrInst->getOperand(2)->getName().contains_lower("end") ?
+            nullptr :
+            condBrInst->getOperand(2);
 
-      if (bbThen->getName().equals_lower(bbInst->getName())) return true;
-      if (bbElse && bbElse->getName().equals_lower(bbElse->getName())) return true;
+      if (bbLabel1 && bbLabel1->getName().equals_lower(bbInst->getName())) return true;
+      if (bbLabel2 && bbLabel2->getName().equals_lower(bbLabel2->getName())) return true;
     }
   }
   return false;
@@ -111,21 +113,23 @@ isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtr
 static bool
 isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
   for (const auto &fact : facts) {
-    if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
-      const llvm::GetElementPtrInst* gepInstPtr = gepInst;
-      const llvm::GetElementPtrInst* gepFactPtr = gepFact;
-      do {
-        bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
-        if (!isEqual) break;
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(storeFact->getPointerOperand())) {
+        const llvm::GetElementPtrInst* gepInstPtr = gepInst;
+        const llvm::GetElementPtrInst* gepFactPtr = gepFact;
+        do {
+          bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
+          if (!isEqual) break;
 
-        // if operand pointer was alloca instruction we are done
-        bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
-        if (isFinal) return true;
+          // if operand pointer was alloca instruction we are done
+          bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
+          if (isFinal) return true;
 
-        // continue with inner GEP
-        gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-        gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
-      } while (true);
+          // continue with inner GEP
+          gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+          gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+        } while (true);
+      }
     }
   }
   return false;
@@ -134,24 +138,26 @@ isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElemen
 static void
 removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
   for (auto fact : facts) {
-    if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(fact)) {
-      const llvm::GetElementPtrInst* gepInstPtr = gepInst;
-      const llvm::GetElementPtrInst* gepFactPtr = gepFact;
-      do {
-        bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
-        if (!isEqual) break;
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(storeFact->getPointerOperand())) {
+        const llvm::GetElementPtrInst* gepInstPtr = gepInst;
+        const llvm::GetElementPtrInst* gepFactPtr = gepFact;
+        do {
+          bool isEqual = isGEPInstEqual(gepInstPtr, gepFactPtr);
+          if (!isEqual) break;
 
-        // If operand pointer was alloca instruction we are done
-        bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
-        if (isFinal) {
-          facts.erase(fact);
-          return;
-        }
+          // If operand pointer was alloca instruction we are done
+          bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
+          if (isFinal) {
+            facts.erase(fact);
+            return;
+          }
 
-        // Continue with inner GEP
-        gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-        gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
-      } while (true);
+          // Continue with inner GEP
+          gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
+          gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
+        } while (true);
+      }
     }
   }
 }
@@ -160,9 +166,10 @@ static bool
 isAllocaInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::AllocaInst* allocaInst) {
   for (const auto fact : facts) {
     if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      const auto memLocation = storeFact->getPointerOperand();
-      bool isEqual = memLocation == allocaInst;
-      if (isEqual) return true;
+      if (const auto allocaFact = llvm::dyn_cast<llvm::AllocaInst>(storeFact->getPointerOperand())) {
+        bool isEqual = allocaFact == allocaInst;
+        if (isEqual) return true;
+      }
     }
   }
   return false;
@@ -173,11 +180,12 @@ removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Alloc
   for (auto it = facts.begin(); it != facts.end(); ) {
     const auto fact = *it;
     if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      const auto memLocation = storeFact->getPointerOperand();
-      bool isEqual = memLocation == allocaInst;
-      if (isEqual) {
-        it = facts.erase(it);
-        break;
+      if (const auto allocaFact = llvm::dyn_cast<llvm::AllocaInst>(storeFact->getPointerOperand())) {
+        bool isEqual = allocaFact == allocaInst;
+        if (isEqual) {
+          it = facts.erase(it);
+          break;
+        }
       }
     }
     ++it;
@@ -242,7 +250,8 @@ MonoIntraPluginTest::sqSubSetEqual(const MonoSet<const llvm::Value*>& newFacts,
    * join() + add successors of dst if we got additional new facts from predecessor
    */
   bool isNewFactsSubsetOfOldFacts = std::includes(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end());
-  llvm::outs() << "isNewFactsSubsetOfOldFacts: " << isNewFactsSubsetOfOldFacts << "\n";
+
+  //dumpFacts(newFacts);
 
   return isNewFactsSubsetOfOldFacts;
 }
@@ -251,8 +260,9 @@ MonoSet<const llvm::Value*>
 MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
                           const MonoSet<const llvm::Value*> &currentFacts) {
 
+  llvm::outs() << "\n";
   llvm::outs() << "flow()" << "\n";
-  llvm::outs() << "Function: " << instruction->getFunction()->getName() << ", Opcode: " << instruction->getOpcodeName() << "\n";
+  instruction->print(llvm::outs()); llvm::outs() << "\n";
   llvm::outs() << "===========================" << "\n";
 
   MonoSet<const llvm::Value*> newFacts = currentFacts;   // clone
@@ -365,13 +375,10 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
      *        0           |      0       |  -
      *        0           |      1       |  GEN
      *        1           |      0       |  KILL
-     *        1           |      1       |  -
+     *        1           |      1       |  KILL/GEN
      */
-    if (!isMemLocationTainted && isValueTainted) {
-      llvm::outs() << "Adding store instruction" << "\n";
-      newFacts.insert(storeInst);
-    }
-    else if (isMemLocationTainted && !isValueTainted) {
+    // KILL
+    if (isMemLocationTainted) {
       llvm::outs() << "Removing store instruction" << "\n";
       /*
        * If memory location is a GEP instruction we cannot use erase on the set instance
@@ -380,22 +387,23 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
        * memory location.
        */
       if (const auto gepMemLocation = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
-        //dumpFacts(newFacts);
         removeGEPMemoryLocation(newFacts, gepMemLocation);
-        //dumpFacts(newFacts);
       }
       /*
        * If memory location is alloca instruction we need to find the corresponding store
        * instruction in the facts set.
        */
       else if (const auto allocaMemLocation = llvm::dyn_cast<llvm::AllocaInst>(memLocation)) {
-        //dumpFacts(newFacts);
         removeAllocaMemoryLocation(newFacts, allocaMemLocation);
-        //dumpFacts(newFacts);
       }
       else {
         newFacts.erase(memLocation);
       }
+    }
+    // GEN
+    if (isValueTainted) {
+      llvm::outs() << "Adding store instruction" << "\n";
+      newFacts.insert(storeInst);
     }
   }
   // Phi node instruction
@@ -464,7 +472,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
   }
   // Branch instruction
   /*
-   * If we have a conditional branch instruction and the condition is a
+   * If we have a conditional if branch instruction and the condition is a
    * tainted value then all branch destination basic blocks are also tainted.
    */
   else if(const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
@@ -472,12 +480,18 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
     bool isConditional = branchInst->isConditional();
     if (isConditional) {
-      const auto &condition = branchInst->getCondition();
+      // Filter branch instructions
+      bool isIfBranch = branchInst->getOperand(1)->getName().contains_lower("if.");
+      bool isWhileBranch = branchInst->getOperand(1)->getName().contains_lower("while.");
+      bool isDoBranch = branchInst->getOperand(1)->getName().contains_lower("do.");
+      if (isIfBranch || isWhileBranch || isDoBranch) {
+        const auto &condition = branchInst->getCondition();
 
-      bool isTainted = isValueInFacts(newFacts, condition);
-      if (isTainted) {
-        llvm::outs() << "Adding conditional branch instruction fact" << "\n";
-        newFacts.insert(branchInst);
+        bool isTainted = isValueInFacts(newFacts, condition);
+        if (isTainted) {
+          llvm::outs() << "Adding conditional branch instruction fact" << "\n";
+          newFacts.insert(branchInst);
+        }
       }
     }
   }
