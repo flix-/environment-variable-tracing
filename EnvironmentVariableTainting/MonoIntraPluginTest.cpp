@@ -7,6 +7,7 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/CFG.h>
 
 #include <llvm/Support/raw_ostream.h>
 
@@ -43,34 +44,23 @@ static void dumpFacts(const MonoSet<const llvm::Value*>& facts) {
 }
 
 static bool
-isValueInTaintedBasicBlock(const MonoSet<const llvm::Value*>& facts, const llvm::Instruction *instruction) {
+isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction *instruction) {
+  if (branchInst == nullptr) return false;
   if (instruction == nullptr) return false;
-
-  /*
-   * Do not add unconditional branch instructions as they would also
-   * be used for basic block checking (and raise an exception as they
-   * do not provide the expected amount of operands...)
-   */
-  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
-    if (!branchInst->isConditional()) return false;
-  }
 
   const auto bbInst = instruction->getParent();
   if (bbInst == nullptr) return false;
 
-  for (const auto &fact : facts) {
-    if(const auto condBrInst = llvm::dyn_cast<llvm::BranchInst>(fact)) {
-      const auto bbLabel1 = condBrInst->getOperand(1)->getName().contains_lower("end") ?
-            nullptr :
-            condBrInst->getOperand(1);
-      const auto bbLabel2 = condBrInst->getOperand(2)->getName().contains_lower("end") ?
-            nullptr :
-            condBrInst->getOperand(2);
+  const auto bbLabel1 = branchInst->getOperand(1)->getName().contains_lower("end") ?
+        branchInst->getOperand(1) :
+        nullptr;
+  const auto bbLabel2 = branchInst->getOperand(2)->getName().contains_lower("end") ?
+        branchInst->getOperand(2) :
+        nullptr;
 
-      if (bbLabel1 && bbLabel1->getName().equals_lower(bbInst->getName())) return true;
-      if (bbLabel2 && bbLabel2->getName().equals_lower(bbLabel2->getName())) return true;
-    }
-  }
+  if (bbLabel1 && bbLabel1->getName().equals_lower(bbInst->getName())) return true;
+  if (bbLabel2 && bbLabel2->getName().equals_lower(bbInst->getName())) return true;
+
   return false;
 }
 
@@ -192,6 +182,16 @@ removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Alloc
   }
 }
 
+static const llvm::BranchInst*
+findBranchInstInFacts(const MonoSet<const llvm::Value*>& facts) {
+  for (const auto fact : facts) {
+    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(fact)) {
+      return branchInst;
+    }
+  }
+  return nullptr;
+}
+
 static bool
 isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
   /*
@@ -205,7 +205,8 @@ isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* valu
    * We cannot compare a GEP instruction via object reference as for every load a new
    * instance will be created. Although it possibly holds the same address as a GEP instruction
    * already part of the set of facts comparison via pointer yields wrong results. Apply own
-   * equality logic supporting nested GEP's.
+   * equality logic supporting nested GEP's. As with alloca instructions we need to search
+   * all store instructions.
    */
   if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
     return isGEPInstInFacts(facts, gepInst);
@@ -260,37 +261,61 @@ MonoSet<const llvm::Value*>
 MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
                           const MonoSet<const llvm::Value*> &currentFacts) {
 
-  llvm::outs() << "\n";
-  llvm::outs() << "flow()" << "\n";
+  llvm::outs() << "\n" << "flow()" << "\n";
   instruction->print(llvm::outs()); llvm::outs() << "\n";
   llvm::outs() << "===========================" << "\n";
 
   MonoSet<const llvm::Value*> newFacts = currentFacts;   // clone
 
+  bool isCheckOperandsInst = llvm::isa<llvm::UnaryInstruction>(instruction) ||
+                             llvm::isa<llvm::BinaryOperator>(instruction) ||
+                             llvm::isa<llvm::CmpInst>(instruction) ||
+                             llvm::isa<llvm::SelectInst>(instruction);
+
   /*
-   * Every statement within a basic block reachable by a branch instruction
-   * that is dependent on a tainted value is also tainted. For example:
+   * Every statement within a conditional branch whose condition is a tainted
+   * value is also tainted. We push the first branch instruction satisfying
+   * the condition to facts and remove it when leaving the branch. In between
+   * every statement is pushed to facts. We need to make sure that no other
+   * branch instruction is also tainted (nested branches).
    *
    * char *tainted = getenv("gude");
    * char *a;
    *
-   * if (tainted != NULL) {
-   *    a = "hello world";
+   * if (a) {
+   *    if (a) {
+   *      do {
+   *        a = tainted;
+   *      } while (tainted);
+   *    }
+   *    int c = 2;
    * } else {
    *    ...
    * }
    * char *also_tainted = a;
-   *
-   * We push every conditional branch instruction that is dependent on an environment
-   * variable to facts and then check for each instruction whether it is part of a
-   * basic block mentioned in the tainted branch instruction.
    */
-  bool isBBTainted = isValueInTaintedBasicBlock(newFacts, instruction);
-  if (isBBTainted) {
-    newFacts.insert(instruction);
+  const auto taintedBranch = findBranchInstInFacts(newFacts);
+  if (taintedBranch) {
+    // We have a tainted branch instruction within facts...
+    bool removeBranch = isEndOfTaintedBranch(taintedBranch, instruction);
+    if (removeBranch) {
+      newFacts.erase(taintedBranch);
+    } else {
+      // Do not push other branch instructions while in tainted branch
+      bool isBranchInst = llvm::isa<llvm::BranchInst>(instruction);
+      if (!isBranchInst) {
+        newFacts.insert(instruction);
+      }
+      return newFacts;
+    }
   }
+
+  /*
+   * Check instructions for tainted values
+   */
+
   // Call instruction
-  else if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
+  if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
 
     for (const auto &use : callInst->operands()) {
@@ -298,49 +323,20 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       if (functionName.compare(TAINT_CALL) == 0) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         newFacts.insert(callInst);
-        break;
+        return newFacts;
       }
     }
   }
-  // Binary operator instruction
-  else if (const auto binaryOpInst = llvm::dyn_cast<llvm::BinaryOperator>(instruction)) {
-    llvm::outs() << "Got binary operator instruction" << "\n";
+  // Operand checking instruction
+  else if (isCheckOperandsInst) {
+    llvm::outs() << "Got operands checking instruction (" << instruction->getOpcodeName() << ")" << "\n";
 
-    // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &use : binaryOpInst->operands()) {
+    for (const auto &use : instruction->operands()) {
       bool isTainted = isValueInFacts(newFacts, use.get());
       if (isTainted) {
-        llvm::outs() << "Adding binary operator instruction fact" << "\n";
-        newFacts.insert(binaryOpInst);
-        break;
-      }
-    }
-  }
-  // Compare instruction
-  else if (const auto compareInst = llvm::dyn_cast<llvm::CmpInst>(instruction)) {
-    llvm::outs() << "Got a compare instruction" << "\n";
-
-    // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &use : compareInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, use.get());
-      if (isTainted) {
-        llvm::outs() << "Adding compare instruction fact" << "\n";
-        newFacts.insert(compareInst);
-        break;
-      }
-    }
-  }
-  // Zext instruction
-  else if (const auto zextInst = llvm::dyn_cast<llvm::ZExtInst>(instruction)) {
-    llvm::outs() << "Got a zextInst instruction" << "\n";
-
-    // Check if one of the operands contains a tainted value, if so push fact
-    for (const auto &use : zextInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, use.get());
-      if (isTainted) {
-        llvm::outs() << "Adding zextInst instruction fact" << "\n";
-        newFacts.insert(zextInst);
-        break;
+        llvm::outs() << "Adding fact" << "\n";
+        newFacts.insert(instruction);
+        return newFacts;
       }
     }
   }
@@ -359,6 +355,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     if (isMemLocationTainted) {
       llvm::outs() << "Adding load instruction fact" << "\n";
       newFacts.insert(loadInst);
+      return newFacts;
     }
   }
   // Store instruction
@@ -405,6 +402,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       llvm::outs() << "Adding store instruction" << "\n";
       newFacts.insert(storeInst);
     }
+    return newFacts;
   }
   // Phi node instruction
   else if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(instruction)) {
@@ -439,7 +437,7 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
             if (isTainted) {
               llvm::outs() << "Adding phi node instruction fact (constant)" << "\n";
               newFacts.insert(phiNodeInst);
-              break;
+              return newFacts;
             }
           }
         }
@@ -452,67 +450,39 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
         if (isTainted) {
           llvm::outs() << "Adding phi node instruction fact" << "\n";
           newFacts.insert(phiNodeInst);
-          break;
+          return newFacts;
         }
-      }
-    }
-  }
-  // Select instruction
-  else if (const auto selectInst = llvm::dyn_cast<llvm::SelectInst>(instruction)) {
-    llvm::outs() << "Got select instruction" << "\n";
-
-    for (const auto &use : selectInst->operands()) {
-      bool isTainted = isValueInFacts(newFacts, use.get());
-      if (isTainted) {
-        llvm::outs() << "Adding select instruction fact" << "\n";
-        newFacts.insert(selectInst);
-        break;
       }
     }
   }
   // Branch instruction
   /*
-   * If we have a conditional if branch instruction and the condition is a
-   * tainted value then all branch destination basic blocks are also tainted.
+   * Push branch instruction with tainted condition (see above). Note that as long
+   * as there is a branch instruction in facts set we never reach code here.
    */
   else if(const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
     llvm::outs() << "Got branch instruction" << "\n";
 
     bool isConditional = branchInst->isConditional();
+
     if (isConditional) {
       // Filter branch instructions
       bool isIfBranch = branchInst->getOperand(1)->getName().contains_lower("if.");
+      bool isForBranch = branchInst->getOperand(1)->getName().contains_lower("for.");
       bool isWhileBranch = branchInst->getOperand(1)->getName().contains_lower("while.");
       bool isDoBranch = branchInst->getOperand(1)->getName().contains_lower("do.");
-      if (isIfBranch || isWhileBranch || isDoBranch) {
+      if (isIfBranch || isForBranch || isWhileBranch || isDoBranch) {
         const auto &condition = branchInst->getCondition();
 
         bool isTainted = isValueInFacts(newFacts, condition);
         if (isTainted) {
           llvm::outs() << "Adding conditional branch instruction fact" << "\n";
           newFacts.insert(branchInst);
+          return newFacts;
         }
       }
     }
   }
-  // Return instruction
-  /*
-   * Currently not necessary to push fact here as ret instruction doesn't have
-   * a successor that can evaluate the fact... Maybe later needed in order to
-   * figure out whether ret instruction is dependent on environment variable?!
-   */
-  /*
-  else if (const auto returnInst = llvm::dyn_cast<llvm::ReturnInst>(instruction)) {
-    const auto returnValue = returnInst->getReturnValue();
-    if (returnValue) {
-      bool isTainted = isValueInFacts(newFacts, returnValue);
-      if (isTainted) {
-        llvm::outs() << "Adding ret instruction fact" << "\n";
-        newFacts.insert(returnInst);
-      }
-    }
-  }
-  */
   return newFacts;
 }
 
