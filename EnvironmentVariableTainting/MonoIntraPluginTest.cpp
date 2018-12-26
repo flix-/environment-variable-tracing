@@ -65,6 +65,48 @@ isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction
 }
 
 static bool
+isEndOfTaintedSwitch(const llvm::SwitchInst* const switchInst, const llvm::Instruction *instruction) {
+  const auto bbInst = instruction->getParent();
+  if (bbInst == nullptr) return false;
+
+  const auto instructionLabel = bbInst->getName();
+  bool isEndOfSwitch = instructionLabel.contains_lower("epilog");
+  if (!isEndOfSwitch) return false;
+
+  /*
+   * We now have an instruction that belongs to the end of a switch
+   * statement. We need to figure out if the label matches the one
+   * of the switch statement (e.g. we don't want to remove the switch
+   * statement if it is a nested one). If the switch statement has a
+   * default case we can obtain the label immediately if not we check
+   * the labels of every successor of the default case.
+   */
+  const auto defaultBB = switchInst->getDefaultDest();
+  const auto defaultLabel = defaultBB->getName();
+  bool hasDefaultCase = defaultLabel.contains_lower("epilog");
+  if (hasDefaultCase) {
+    return instructionLabel.compare_lower(defaultLabel) == 0;
+  } else {
+    for (const auto succ : defaultBB->getTerminator()->successors()) {
+      const auto defaultSuccessorLabel = succ->getName();
+      if (instructionLabel.compare_lower(defaultSuccessorLabel) == 0) return true;
+    }
+  }
+  return false;
+}
+
+static bool
+isEndOfBranchOrSwitchInst(const llvm::Value *branchOrSwitchInst, const llvm::Instruction *instruction) {
+  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(branchOrSwitchInst)) {
+    return isEndOfTaintedBranch(branchInst, instruction);
+  }
+  else if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(branchOrSwitchInst)) {
+    return isEndOfTaintedSwitch(switchInst, instruction);
+  }
+  return false;
+}
+
+static bool
 isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtrInst* gepFact) {
   if (gepInst->getNumOperands() != gepFact->getNumOperands()) return false;
 
@@ -127,7 +169,10 @@ isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElemen
 
 static void
 removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
-  for (auto fact : facts) {
+  for (auto it = facts.begin(); it != facts.end(); ) {
+    const auto fact = *it;
+    bool isIteratorIncremented = false;
+
     if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
       if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(storeFact->getPointerOperand())) {
         const llvm::GetElementPtrInst* gepInstPtr = gepInst;
@@ -139,8 +184,9 @@ removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetEleme
           // If operand pointer was alloca instruction we are done
           bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
           if (isFinal) {
-            facts.erase(fact);
-            return;
+            it = facts.erase(it);
+            isIteratorIncremented = true;
+            break;
           }
 
           // Continue with inner GEP
@@ -149,6 +195,7 @@ removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetEleme
         } while (true);
       }
     }
+    if (!isIteratorIncremented) ++it;
   }
 }
 
@@ -174,7 +221,23 @@ removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Alloc
         bool isEqual = allocaFact == allocaInst;
         if (isEqual) {
           it = facts.erase(it);
-          break;
+          /*
+           * There can be more than one store statement pointing to the same alloca so we need to
+           * delete all of them. Example:
+           *
+           * int a;
+           * switch (x) {
+           * case 0:
+           *    a = 1;
+           *    break;
+           * case 1:
+           *    a = 2;
+           *    break;
+           * default:
+           *    a = 3;
+           * }
+           */
+          continue;
         }
       }
     }
@@ -182,12 +245,12 @@ removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Alloc
   }
 }
 
-static const llvm::BranchInst*
-findBranchInstInFacts(const MonoSet<const llvm::Value*>& facts) {
+static const llvm::Value*
+findBranchOrSwitchInstInFacts(const MonoSet<const llvm::Value*>& facts) {
   for (const auto fact : facts) {
-    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(fact)) {
-      return branchInst;
-    }
+    bool isBranchInst = llvm::isa<llvm::BranchInst>(fact);
+    bool isSwitchInst = llvm::isa<llvm::SwitchInst>(fact);
+    if (isBranchInst || isSwitchInst) return fact;
   }
   return nullptr;
 }
@@ -277,7 +340,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
    * value is also tainted. We push the first branch instruction satisfying
    * the condition to facts and remove it when leaving the branch. In between
    * every statement is pushed to facts. We need to make sure that no other
-   * branch instruction is also tainted (nested branches).
+   * branch instruction is also tainted (nested branches). Same logic applies
+   * for switch statements.
    *
    * char *tainted = getenv("gude");
    * char *a;
@@ -294,16 +358,18 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
    * }
    * char *also_tainted = a;
    */
-  const auto taintedBranch = findBranchInstInFacts(newFacts);
-  if (taintedBranch) {
-    // We have a tainted branch instruction within facts...
-    bool removeBranch = isEndOfTaintedBranch(taintedBranch, instruction);
-    if (removeBranch) {
-      newFacts.erase(taintedBranch);
+  const auto taintedBlock = findBranchOrSwitchInstInFacts(newFacts);
+  if (taintedBlock) {
+    bool removeBranchOrSwitchInst = isEndOfBranchOrSwitchInst(taintedBlock, instruction);
+    if (removeBranchOrSwitchInst) {
+      newFacts.erase(taintedBlock);
     } else {
-      // Do not push other branch instructions while in tainted branch
-      bool isBranchInst = llvm::isa<llvm::BranchInst>(instruction);
-      if (!isBranchInst) {
+      /*
+       * Push every instruction to facts except branch or switch
+       */
+      bool isBranchOrSwitchInst = llvm::isa<llvm::BranchInst>(instruction) ||
+                                  llvm::isa<llvm::SwitchInst>(instruction);
+      if (!isBranchOrSwitchInst) {
         newFacts.insert(instruction);
       }
       return newFacts;
@@ -320,7 +386,8 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
 
     for (const auto &use : callInst->operands()) {
       auto functionName = use->getName();
-      if (functionName.compare(TAINT_CALL) == 0) {
+      bool isTaintedCall = functionName.compare_lower(TAINT_CALL) == 0;
+      if (isTaintedCall) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         newFacts.insert(callInst);
         return newFacts;
@@ -483,6 +550,19 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
       }
     }
   }
+  // Switch instruction
+  else if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(instruction)) {
+    llvm::outs() << "Got switch instruction" << "\n";
+
+    const auto &condition = switchInst->getCondition();
+    bool isTainted = isValueInFacts(newFacts, condition);
+    if (isTainted) {
+      llvm::outs() << "Adding switch instruction fact" << "\n";
+      newFacts.insert(switchInst);
+      return newFacts;
+    }
+  }
+
   return newFacts;
 }
 
