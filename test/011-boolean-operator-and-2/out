@@ -1,0 +1,602 @@
+0 2018-Dec-27 20:29:34.051186 - [DEBUG] Set-up the command-line parameters
+1 2018-Dec-27 20:29:34.051611 - [INFO] Chosen operation mode: 'phasarLLVM'
+2 2018-Dec-27 20:29:34.051957 - [INFO] No configuration file is used.
+3 2018-Dec-27 20:29:34.052035 - [INFO] Program options have been successfully parsed.
+4 2018-Dec-27 20:29:34.052126 - [INFO] Check program options for logical errors.
+5 2018-Dec-27 20:29:34.052217 - [INFO] Set-up IR database.
+6 2018-Dec-27 20:29:34.057024 - [INFO] Constructed the analysis controller.
+7 2018-Dec-27 20:29:34.057136 - [INFO] Found the following IR files for this project: 
+8 2018-Dec-27 20:29:34.057197 - [INFO] 	main.ll
+9 2018-Dec-27 20:29:34.057257 - [INFO] Check for chosen entry points.
+10 2018-Dec-27 20:29:34.057318 - [INFO] link all llvm modules into a single module for WPA ...
+
+11 2018-Dec-27 20:29:34.057376 - [INFO] link all llvm modules into a single module for WPA ended
+
+12 2018-Dec-27 20:29:34.057436 - [INFO] Preprocess module: main.ll
+13 2018-Dec-27 20:29:34.057789 - [INFO] Running GeneralStatisticsPass
+14 2018-Dec-27 20:29:34.057923 - [INFO] Running ValueAnnotationPass
+15 2018-Dec-27 20:29:34.058255 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'
+
+16 2018-Dec-27 20:29:34.058318 - [INFO] Allocated Types    : 1
+17 2018-Dec-27 20:29:34.058382 - [INFO] Allocation Sites   : 3
+18 2018-Dec-27 20:29:34.058440 - [INFO] Basic Blocks       : 3
+19 2018-Dec-27 20:29:34.058497 - [INFO] Calls Sites        : 4
+20 2018-Dec-27 20:29:34.058555 - [INFO] Functions          : 4
+21 2018-Dec-27 20:29:34.058612 - [INFO] Globals            : 1
+22 2018-Dec-27 20:29:34.058669 - [INFO] Global Pointer     : 1
+23 2018-Dec-27 20:29:34.058726 - [INFO] Instructions       : 18
+24 2018-Dec-27 20:29:34.058784 - [INFO] Memory Intrinsics  : 0
+25 2018-Dec-27 20:29:34.058841 - [INFO] Store Instructions : 3
+26 2018-Dec-27 20:29:34.058898 - [INFO]  
+27 2018-Dec-27 20:29:34.058971 - [INFO]   i32
+28 2018-Dec-27 20:29:34.059451 - [DEBUG] Analyzing function: main
+29 2018-Dec-27 20:29:34.059694 - [INFO] Reconstruct the class hierarchy.
+30 2018-Dec-27 20:29:34.059764 - [INFO] Construct type hierarchy
+31 2018-Dec-27 20:29:34.059825 - [DEBUG] Analyse types in module: main.ll
+32 2018-Dec-27 20:29:34.059975 - [DEBUG] Reconstruct virtual function table for module: main.ll
+33 2018-Dec-27 20:29:34.060043 - [INFO] Reconstruction of class hierarchy completed.
+34 2018-Dec-27 20:29:34.060105 - [INFO] Starting CallGraphAnalysisType: OTF
+35 2018-Dec-27 20:29:34.060215 - [DEBUG] Walking in function: main
+36 2018-Dec-27 20:29:34.060305 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19, ID: 5
+37 2018-Dec-27 20:29:34.060617 - [DEBUG] Found 1 possible target(s)
+38 2018-Dec-27 20:29:34.060677 - [DEBUG] Target name: llvm.dbg.declare
+39 2018-Dec-27 20:29:34.060764 - [DEBUG] Walking in function: llvm.dbg.declare
+40 2018-Dec-27 20:29:34.060827 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+41 2018-Dec-27 20:29:34.060891 - [DEBUG] Found static call-site: %call = call i32 (...) @bar(), !dbg !20, !phasar.instruction.id !21, ID: 6
+42 2018-Dec-27 20:29:34.061129 - [DEBUG] Found 1 possible target(s)
+43 2018-Dec-27 20:29:34.061188 - [DEBUG] Target name: bar
+44 2018-Dec-27 20:29:34.061268 - [DEBUG] Walking in function: bar
+45 2018-Dec-27 20:29:34.061331 - [DEBUG] Function already visited or only declaration: bar
+46 2018-Dec-27 20:29:34.061394 - [DEBUG] Found static call-site: %call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+47 2018-Dec-27 20:29:34.061668 - [DEBUG] Found 1 possible target(s)
+48 2018-Dec-27 20:29:34.061726 - [DEBUG] Target name: getenv
+49 2018-Dec-27 20:29:34.061803 - [DEBUG] Walking in function: getenv
+50 2018-Dec-27 20:29:34.061865 - [DEBUG] Function already visited or only declaration: getenv
+51 2018-Dec-27 20:29:34.061929 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34, ID: 15
+52 2018-Dec-27 20:29:34.062179 - [DEBUG] Found 1 possible target(s)
+53 2018-Dec-27 20:29:34.062238 - [DEBUG] Target name: llvm.dbg.declare
+54 2018-Dec-27 20:29:34.062313 - [DEBUG] Walking in function: llvm.dbg.declare
+55 2018-Dec-27 20:29:34.062394 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+56 2018-Dec-27 20:29:34.062458 - [INFO] Call graph has been constructed
+57 2018-Dec-27 20:29:34.062519 - [INFO] Performing analysis: plugin
+58 2018-Dec-27 20:29:34.062585 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so'
+59 2018-Dec-27 20:29:34.063056 - [INFO] Solving plugin: mono
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+init - MonoIntraPluginTest
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %taint = alloca i32, align 4, !phasar.instruction.id !13
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %a = alloca i32, align 4, !phasar.instruction.id !14
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
+===========================
+Got store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %call = call i32 (...) @bar(), !dbg !20, !phasar.instruction.id !21
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22
+===========================
+Got operands checking instruction (icmp)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br i1 %tobool, label %land.rhs, label %land.end, !dbg !23, !phasar.instruction.id !24
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br i1 %tobool, label %land.rhs, label %land.end, !dbg !23, !phasar.instruction.id !24
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26
+===========================
+Got call instruction
+Adding call instruction fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 1
+join()
+Adding line: 8
+
+flow()
+  %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27
+===========================
+Got operands checking instruction (icmp)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 2
+join()
+Adding line: 8
+Adding line: 8
+
+flow()
+  br label %land.end, !phasar.instruction.id !28
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 2
+join()
+Adding line: 8
+Adding line: 8
+
+flow()
+  %0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29
+===========================
+Got phi node instruction
+Adding phi node instruction fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 3
+join()
+Adding line: 8
+Adding line: 8
+
+flow()
+  %land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
+===========================
+Got operands checking instruction (zext)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 4
+join()
+Adding line: 8
+Adding line: 8
+Adding line: 8
+
+flow()
+  store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 5
+join()
+Adding line: 8
+Adding line: 8
+Adding line: 8
+Adding line: 8
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 5
+join()
+Adding line: 8
+Adding line: 8
+Adding line: 8
+Adding line: 8
+
+flow()
+  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 6
+join()
+Adding line: 8
+Adding line: 8
+Adding line: 8
+Adding line: 8
+Adding line: 9
+
+flow()
+  store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 7
+join()
+Adding line: 8
+Adding line: 9
+Adding line: 8
+Adding line: 8
+Adding line: 8
+Adding line: 9
+
+flow()
+  %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27
+===========================
+Got operands checking instruction (icmp)
+Adding fact
+sqSubSetEqual()
+Old Facts: 2
+New Facts: 2
+
+flow()
+  br label %land.end, !phasar.instruction.id !28
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 2
+New Facts: 2
+
+flow()
+  %0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29
+===========================
+Got phi node instruction
+Adding phi node instruction fact
+sqSubSetEqual()
+Old Facts: 3
+New Facts: 3
+
+flow()
+  %land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
+===========================
+Got operands checking instruction (zext)
+Adding fact
+sqSubSetEqual()
+Old Facts: 4
+New Facts: 4
+
+flow()
+  store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 5
+New Facts: 5
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 5
+New Facts: 5
+
+flow()
+  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 6
+New Facts: 6
+
+flow()
+  store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 7
+New Facts: 7
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
+===========================
+Got call instruction
+
+flow()
+  %taint = alloca i32, align 4, !phasar.instruction.id !13
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  %call = call i32 (...) @bar(), !dbg !20, !phasar.instruction.id !21
+===========================
+Got call instruction
+
+flow()
+  %a = alloca i32, align 4, !phasar.instruction.id !14
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  %land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
+===========================
+Got operands checking instruction (zext)
+Adding fact
+
+flow()
+  store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37
+===========================
+Got store instruction
+Adding store instruction
+
+flow()
+  store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31
+===========================
+Got store instruction
+Adding store instruction
+
+flow()
+  %tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22
+===========================
+Got operands checking instruction (icmp)
+
+flow()
+  %call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26
+===========================
+Got call instruction
+Adding call instruction fact
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
+===========================
+Got store instruction
+
+flow()
+  br i1 %tobool, label %land.rhs, label %land.end, !dbg !23, !phasar.instruction.id !24
+===========================
+Got branch instruction
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34
+===========================
+Got call instruction
+
+flow()
+  %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27
+===========================
+Got operands checking instruction (icmp)
+Adding fact
+
+flow()
+  br label %land.end, !phasar.instruction.id !28
+===========================
+Got branch instruction
+
+flow()
+  %0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29
+===========================
+Got phi node instruction
+Adding phi node instruction fact
+
+flow()
+  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
+===========================
+Got operands checking instruction (load)
+Adding fact
+
+flow()
+  ret i32 0, !dbg !38, !phasar.instruction.id !39worklist size: 18
+worklist size: 17
+worklist size: 16
+worklist size: 15
+worklist size: 14
+worklist size: 13
+worklist size: 12
+worklist size: 11
+worklist size: 10
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 9
+worklist size: 8
+worklist size: 7
+worklist size: 6
+worklist size: 5
+worklist size: 4
+worklist size: 3
+worklist size: 2
+worklist size: 1
+LLVM-Intra-Monotone solver results:
+-----------------------------------
+Instruction:
+%retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1
+Facts:
+	EMPTY
+
+
+Instruction:
+call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19, ID: 5
+Facts:
+	EMPTY
+
+
+Instruction:
+%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
+Facts:
+	EMPTY
+
+
+Instruction:
+%call = call i32 (...) @bar(), !dbg !20, !phasar.instruction.id !21, ID: 6
+Facts:
+	EMPTY
+
+
+Instruction:
+%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
+Facts:
+	EMPTY
+
+
+Instruction:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+Facts:
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+
+
+Instruction:
+store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37, ID: 17
+Facts:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+%1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36, ID: 16
+
+
+Instruction:
+store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
+Facts:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+
+
+Instruction:
+%tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22, ID: 7
+Facts:
+	EMPTY
+
+
+Instruction:
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4
+Facts:
+	EMPTY
+
+
+Instruction:
+br i1 %tobool, label %land.rhs, label %land.end, !dbg !23, !phasar.instruction.id !24, ID: 8
+Facts:
+	EMPTY
+
+
+Instruction:
+call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34, ID: 15
+Facts:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+
+
+Instruction:
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+Facts:
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+
+
+Instruction:
+br label %land.end, !phasar.instruction.id !28, ID: 11
+Facts:
+%call1 = call i32 @getenv(i8* getelementptr inbou60 2018-Dec-27 20:29:34.081175 - [INFO] Write results to file
+61 2018-Dec-27 20:29:34.081350 - [INFO] Shutdown llvm and the analysis framework.
+
+===========================
+printReport()
+nds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+
+
+Instruction:
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+Facts:
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+
+
+Instruction:
+%1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36, ID: 16
+Facts:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+
+
+Instruction:
+ret i32 0, !dbg !38, !phasar.instruction.id !39, ID: 18
+Facts:
+%land.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13
+store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37, ID: 17
+store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
+%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9
+%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
+%0 = phi i1 [ false, %entry ], [ %tobool2, %land.rhs ], !phasar.instruction.id !29, ID: 12
+%1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36, ID: 16
+
+

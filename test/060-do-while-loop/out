@@ -1,0 +1,296 @@
+0 2018-Dec-27 20:29:42.886921 - [DEBUG] Set-up the command-line parameters
+1 2018-Dec-27 20:29:42.887340 - [INFO] Chosen operation mode: 'phasarLLVM'
+2 2018-Dec-27 20:29:42.887689 - [INFO] No configuration file is used.
+3 2018-Dec-27 20:29:42.887765 - [INFO] Program options have been successfully parsed.
+4 2018-Dec-27 20:29:42.887856 - [INFO] Check program options for logical errors.
+5 2018-Dec-27 20:29:42.887945 - [INFO] Set-up IR database.
+6 2018-Dec-27 20:29:42.891891 - [INFO] Constructed the analysis controller.
+7 2018-Dec-27 20:29:42.892000 - [INFO] Found the following IR files for this project: 
+8 2018-Dec-27 20:29:42.892061 - [INFO] 	main.ll
+9 2018-Dec-27 20:29:42.892120 - [INFO] Check for chosen entry points.
+10 2018-Dec-27 20:29:42.892181 - [INFO] link all llvm modules into a single module for WPA ...
+
+11 2018-Dec-27 20:29:42.892239 - [INFO] link all llvm modules into a single module for WPA ended
+
+12 2018-Dec-27 20:29:42.892299 - [INFO] Preprocess module: main.ll
+13 2018-Dec-27 20:29:42.892673 - [INFO] Running GeneralStatisticsPass
+14 2018-Dec-27 20:29:42.892798 - [INFO] Running ValueAnnotationPass
+15 2018-Dec-27 20:29:42.893062 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'
+
+16 2018-Dec-27 20:29:42.893126 - [INFO] Allocated Types    : 1
+17 2018-Dec-27 20:29:42.893189 - [INFO] Allocation Sites   : 2
+18 2018-Dec-27 20:29:42.893246 - [INFO] Basic Blocks       : 4
+19 2018-Dec-27 20:29:42.893303 - [INFO] Calls Sites        : 2
+20 2018-Dec-27 20:29:42.893360 - [INFO] Functions          : 3
+21 2018-Dec-27 20:29:42.893417 - [INFO] Globals            : 0
+22 2018-Dec-27 20:29:42.893474 - [INFO] Global Pointer     : 0
+23 2018-Dec-27 20:29:42.893531 - [INFO] Instructions       : 11
+24 2018-Dec-27 20:29:42.893588 - [INFO] Memory Intrinsics  : 0
+25 2018-Dec-27 20:29:42.893645 - [INFO] Store Instructions : 2
+26 2018-Dec-27 20:29:42.893702 - [INFO]  
+27 2018-Dec-27 20:29:42.893775 - [INFO]   i32
+28 2018-Dec-27 20:29:42.894113 - [DEBUG] Analyzing function: main
+29 2018-Dec-27 20:29:42.894310 - [INFO] Reconstruct the class hierarchy.
+30 2018-Dec-27 20:29:42.894379 - [INFO] Construct type hierarchy
+31 2018-Dec-27 20:29:42.894440 - [DEBUG] Analyse types in module: main.ll
+32 2018-Dec-27 20:29:42.894579 - [DEBUG] Reconstruct virtual function table for module: main.ll
+33 2018-Dec-27 20:29:42.894645 - [INFO] Reconstruction of class hierarchy completed.
+34 2018-Dec-27 20:29:42.894707 - [INFO] Starting CallGraphAnalysisType: OTF
+35 2018-Dec-27 20:29:42.894811 - [DEBUG] Walking in function: main
+36 2018-Dec-27 20:29:42.894896 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a, metadata !18, metadata !20), !dbg !21, !phasar.instruction.id !22, ID: 4
+37 2018-Dec-27 20:29:42.895171 - [DEBUG] Found 1 possible target(s)
+38 2018-Dec-27 20:29:42.895230 - [DEBUG] Target name: llvm.dbg.declare
+39 2018-Dec-27 20:29:42.895316 - [DEBUG] Walking in function: llvm.dbg.declare
+40 2018-Dec-27 20:29:42.895379 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+41 2018-Dec-27 20:29:42.895443 - [DEBUG] Found static call-site: %call = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 7
+42 2018-Dec-27 20:29:42.895666 - [DEBUG] Found 1 possible target(s)
+43 2018-Dec-27 20:29:42.895758 - [DEBUG] Target name: foo
+44 2018-Dec-27 20:29:42.895840 - [DEBUG] Walking in function: foo
+45 2018-Dec-27 20:29:42.895902 - [DEBUG] Function already visited or only declaration: foo
+46 2018-Dec-27 20:29:42.895964 - [INFO] Call graph has been constructed
+47 2018-Dec-27 20:29:42.896026 - [INFO] Performing analysis: plugin
+48 2018-Dec-27 20:29:42.896093 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so'
+49 2018-Dec-27 20:29:42.896561 - [INFO] Solving plugin: mono
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+init - MonoIntraPluginTest
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !11
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %a = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !13
+===========================
+Got store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br label %do.body, !dbg !14, !llvm.loop !15, !phasar.instruction.id !17
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !18, metadata !20), !dbg !21, !phasar.instruction.id !22
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  store i32 100, i32* %a, align 4, !dbg !21, !phasar.instruction.id !23
+===========================
+Got store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br label %do.cond, !dbg !24, !phasar.instruction.id !25
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %call = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %tobool = icmp ne i32 %call, 0, !dbg !24, !phasar.instruction.id !28
+===========================
+Got operands checking instruction (icmp)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br i1 %tobool, label %do.body, label %do.end, !dbg !24, !llvm.loop !15, !phasar.instruction.id !29
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  br i1 %tobool, label %do.body, label %do.end, !dbg !24, !llvm.loop !15, !phasar.instruction.id !29
+===========================
+Got branch instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !18, metadata !20), !dbg !21, !phasar.instruction.id !22
+===========================
+Got call instruction
+
+flow()
+  %a = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  br label %do.cond, !dbg !24, !phasar.instruction.id !25
+===========================
+Got branch instruction
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !11
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  %call = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27
+===========================
+Got call instruction
+
+flow()
+  store i32 100, i32* %a, align 4, !dbg !21, !phasar.instruction.id !23
+===========================
+Got store instruction
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !13
+===========================
+Got store instruction
+
+flow()
+  %tobool = icmp ne i32 %call, 0, !dbg !24, !phasar.instruction.id !28
+===========================
+Got operands checking instruction (icmp)
+
+flow()
+  ret i32 0, !dbg !30, !phasar.instruction.id !31
+===========================
+
+flow()
+  br i1 %tobool, label %do.body, label %do.end, !dbg !24, !llvm.loop !15, !phasar.instruction.id !29
+===========================
+Got branch instruction
+
+flow()
+  br label %do.body, !dbg !14, !llvm.loop !15, !phasar.instruction.id !1750 2018-Dec-27 20:29:42.902052 - [INFO] Write results to file
+51 2018-Dec-27 20:29:42.902212 - [INFO] Shutdown llvm and the analysis framework.
+
+===========================
+Got branch instruction
+printReport()
+worklist size: 11
+worklist size: 10
+worklist size: 9
+worklist size: 8
+worklist size: 7
+worklist size: 6
+worklist size: 5
+worklist size: 4
+worklist size: 3
+worklist size: 2
+worklist size: 1
+LLVM-Intra-Monotone solver results:
+-----------------------------------
+Instruction:
+call void @llvm.dbg.declare(metadata i32* %a, metadata !18, metadata !20), !dbg !21, !phasar.instruction.id !22, ID: 4
+Facts:
+	EMPTY
+
+
+Instruction:
+%a = alloca i32, align 4, !phasar.instruction.id !12, ID: 1
+Facts:
+	EMPTY
+
+
+Instruction:
+br label %do.cond, !dbg !24, !phasar.instruction.id !25, ID: 6
+Facts:
+	EMPTY
+
+
+Instruction:
+%retval = alloca i32, align 4, !phasar.instruction.id !11, ID: 0
+Facts:
+	EMPTY
+
+
+Instruction:
+%call = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 7
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 100, i32* %a, align 4, !dbg !21, !phasar.instruction.id !23, ID: 5
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !13, ID: 2
+Facts:
+	EMPTY
+
+
+Instruction:
+%tobool = icmp ne i32 %call, 0, !dbg !24, !phasar.instruction.id !28, ID: 8
+Facts:
+	EMPTY
+
+
+Instruction:
+ret i32 0, !dbg !30, !phasar.instruction.id !31, ID: 10
+Facts:
+	EMPTY
+
+
+Instruction:
+br i1 %tobool, label %do.body, label %do.end, !dbg !24, !llvm.loop !15, !phasar.instruction.id !29, ID: 9
+Facts:
+	EMPTY
+
+
+Instruction:
+br label %do.body, !dbg !14, !llvm.loop !15, !phasar.instruction.id !17, ID: 3
+Facts:
+	EMPTY
+
+

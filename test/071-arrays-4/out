@@ -1,0 +1,804 @@
+0 2018-Dec-27 20:29:44.693382 - [DEBUG] Set-up the command-line parameters
+1 2018-Dec-27 20:29:44.693802 - [INFO] Chosen operation mode: 'phasarLLVM'
+2 2018-Dec-27 20:29:44.694153 - [INFO] No configuration file is used.
+3 2018-Dec-27 20:29:44.694229 - [INFO] Program options have been successfully parsed.
+4 2018-Dec-27 20:29:44.694329 - [INFO] Check program options for logical errors.
+5 2018-Dec-27 20:29:44.694419 - [INFO] Set-up IR database.
+6 2018-Dec-27 20:29:44.700237 - [INFO] Constructed the analysis controller.
+7 2018-Dec-27 20:29:44.700353 - [INFO] Found the following IR files for this project: 
+8 2018-Dec-27 20:29:44.700414 - [INFO] 	main.ll
+9 2018-Dec-27 20:29:44.700473 - [INFO] Check for chosen entry points.
+10 2018-Dec-27 20:29:44.700534 - [INFO] link all llvm modules into a single module for WPA ...
+
+11 2018-Dec-27 20:29:44.700592 - [INFO] link all llvm modules into a single module for WPA ended
+
+12 2018-Dec-27 20:29:44.700653 - [INFO] Preprocess module: main.ll
+13 2018-Dec-27 20:29:44.701012 - [INFO] Running GeneralStatisticsPass
+14 2018-Dec-27 20:29:44.701150 - [INFO] Running ValueAnnotationPass
+15 2018-Dec-27 20:29:44.701506 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'
+
+16 2018-Dec-27 20:29:44.701570 - [INFO] Allocated Types    : 2
+17 2018-Dec-27 20:29:44.701634 - [INFO] Allocation Sites   : 3
+18 2018-Dec-27 20:29:44.701692 - [INFO] Basic Blocks       : 1
+19 2018-Dec-27 20:29:44.701749 - [INFO] Calls Sites        : 3
+20 2018-Dec-27 20:29:44.701806 - [INFO] Functions          : 3
+21 2018-Dec-27 20:29:44.701863 - [INFO] Globals            : 1
+22 2018-Dec-27 20:29:44.701921 - [INFO] Global Pointer     : 1
+23 2018-Dec-27 20:29:44.701978 - [INFO] Instructions       : 25
+24 2018-Dec-27 20:29:44.702035 - [INFO] Memory Intrinsics  : 0
+25 2018-Dec-27 20:29:44.702092 - [INFO] Store Instructions : 5
+26 2018-Dec-27 20:29:44.702149 - [INFO]  
+27 2018-Dec-27 20:29:44.702223 - [INFO]   i32
+28 2018-Dec-27 20:29:44.702286 - [INFO]   [2 x [2 x i32]]
+29 2018-Dec-27 20:29:44.702818 - [DEBUG] Analyzing function: main
+30 2018-Dec-27 20:29:44.705328 - [INFO] Reconstruct the class hierarchy.
+31 2018-Dec-27 20:29:44.705400 - [INFO] Construct type hierarchy
+32 2018-Dec-27 20:29:44.705460 - [DEBUG] Analyse types in module: main.ll
+33 2018-Dec-27 20:29:44.705634 - [DEBUG] Reconstruct virtual function table for module: main.ll
+34 2018-Dec-27 20:29:44.705703 - [INFO] Reconstruction of class hierarchy completed.
+35 2018-Dec-27 20:29:44.705783 - [INFO] Starting CallGraphAnalysisType: OTF
+36 2018-Dec-27 20:29:44.705983 - [DEBUG] Walking in function: main
+37 2018-Dec-27 20:29:44.706075 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata [2 x [2 x i32]]* %numbers, metadata !16, metadata !20), !dbg !21, !phasar.instruction.id !22, ID: 5
+38 2018-Dec-27 20:29:44.706451 - [DEBUG] Found 1 possible target(s)
+39 2018-Dec-27 20:29:44.706510 - [DEBUG] Target name: llvm.dbg.declare
+40 2018-Dec-27 20:29:44.706592 - [DEBUG] Walking in function: llvm.dbg.declare
+41 2018-Dec-27 20:29:44.706655 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+42 2018-Dec-27 20:29:44.706719 - [DEBUG] Found static call-site: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+43 2018-Dec-27 20:29:44.707043 - [DEBUG] Found 1 possible target(s)
+44 2018-Dec-27 20:29:44.707101 - [DEBUG] Target name: getenv
+45 2018-Dec-27 20:29:44.707182 - [DEBUG] Walking in function: getenv
+46 2018-Dec-27 20:29:44.707244 - [DEBUG] Function already visited or only declaration: getenv
+47 2018-Dec-27 20:29:44.707308 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %rc, metadata !44, metadata !20), !dbg !45, !phasar.instruction.id !46, ID: 19
+48 2018-Dec-27 20:29:44.707582 - [DEBUG] Found 1 possible target(s)
+49 2018-Dec-27 20:29:44.707642 - [DEBUG] Target name: llvm.dbg.declare
+50 2018-Dec-27 20:29:44.707716 - [DEBUG] Walking in function: llvm.dbg.declare
+51 2018-Dec-27 20:29:44.707778 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+52 2018-Dec-27 20:29:44.707857 - [INFO] Call graph has been constructed
+53 2018-Dec-27 20:29:44.707919 - [INFO] Performing analysis: plugin
+54 2018-Dec-27 20:29:44.707984 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so'
+55 2018-Dec-27 20:29:44.708470 - [INFO] Solving plugin: mono
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+init - MonoIntraPluginTest
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %numbers = alloca [2 x [2 x i32]], align 16, !phasar.instruction.id !13
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %rc = alloca i32, align 4, !phasar.instruction.id !14
+===========================
+Got operands checking instruction (alloca)
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
+===========================
+Got store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  call void @llvm.dbg.declare(metadata [2 x [2 x i32]]* %numbers, metadata !16, metadata !20), !dbg !21, !phasar.instruction.id !22
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %arrayidx = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !23, !phasar.instruction.id !24
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %arrayidx1 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx, i64 0, i64 0, !dbg !23, !phasar.instruction.id !25
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  store i32 42, i32* %arrayidx1, align 16, !dbg !26, !phasar.instruction.id !27
+===========================
+Got store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 0
+
+flow()
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
+===========================
+Got call instruction
+Adding call instruction fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 1
+join()
+Adding line: 10
+
+flow()
+  %arrayidx2 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !30, !phasar.instruction.id !31
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 1
+join()
+Adding line: 10
+
+flow()
+  %arrayidx3 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx2, i64 0, i64 1, !dbg !30, !phasar.instruction.id !32
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 1
+join()
+Adding line: 10
+
+flow()
+  store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 2
+join()
+Adding line: 10
+Adding line: 10
+
+flow()
+  %arrayidx4 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !35, !phasar.instruction.id !36
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 2
+join()
+Adding line: 10
+Adding line: 10
+
+flow()
+  %arrayidx5 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx4, i64 0, i64 1, !dbg !35, !phasar.instruction.id !37
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 2
+join()
+Adding line: 10
+Adding line: 10
+
+flow()
+  %0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 3
+join()
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  %arrayidx6 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !39, !phasar.instruction.id !40
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 3
+join()
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  %arrayidx7 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx6, i64 0, i64 0, !dbg !39, !phasar.instruction.id !41
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 3
+join()
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 4
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !44, metadata !20), !dbg !45, !phasar.instruction.id !46
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 4
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  %arrayidx8 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !47, !phasar.instruction.id !48
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 4
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  %arrayidx9 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx8, i64 0, i64 0, !dbg !47, !phasar.instruction.id !49
+===========================
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 4
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+
+flow()
+  %1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 5
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+Adding line: 13
+
+flow()
+  store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 6
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+Adding line: 13
+Adding line: 13
+
+flow()
+  %2 = load i32, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !53
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 0
+New Facts: 7
+join()
+Adding line: 11
+Adding line: 10
+Adding line: 10
+Adding line: 11
+Adding line: 13
+Adding line: 13
+Adding line: 15
+
+flow()
+  %arrayidx2 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !30, !phasar.instruction.id !31
+===========================
+sqSubSetEqual()
+Old Facts: 1
+New Facts: 1
+
+flow()
+  %arrayidx3 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx2, i64 0, i64 1, !dbg !30, !phasar.instruction.id !32
+===========================
+sqSubSetEqual()
+Old Facts: 1
+New Facts: 1
+
+flow()
+  store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 2
+New Facts: 2
+
+flow()
+  %arrayidx4 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !35, !phasar.instruction.id !36
+===========================
+sqSubSetEqual()
+Old Facts: 2
+New Facts: 2
+
+flow()
+  %arrayidx5 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx4, i64 0, i64 1, !dbg !35, !phasar.instruction.id !37
+===========================
+sqSubSetEqual()
+Old Facts: 2
+New Facts: 2
+
+flow()
+  %0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 3
+New Facts: 3
+
+flow()
+  %arrayidx6 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !39, !phasar.instruction.id !40
+===========================
+sqSubSetEqual()
+Old Facts: 3
+New Facts: 3
+
+flow()
+  %arrayidx7 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx6, i64 0, i64 0, !dbg !39, !phasar.instruction.id !41
+===========================
+sqSubSetEqual()
+Old Facts: 3
+New Facts: 3
+
+flow()
+  store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 4
+New Facts: 4
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !44, metadata !20), !dbg !45, !phasar.instruction.id !46
+===========================
+Got call instruction
+sqSubSetEqual()
+Old Facts: 4
+New Facts: 4
+
+flow()
+  %arrayidx8 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !47, !phasar.instruction.id !48
+===========================
+sqSubSetEqual()
+Old Facts: 4
+New Facts: 4
+
+flow()
+  %arrayidx9 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx8, i64 0, i64 0, !dbg !47, !phasar.instruction.id !49
+===========================
+sqSubSetEqual()
+Old Facts: 4
+New Facts: 4
+
+flow()
+  %1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 5
+New Facts: 5
+
+flow()
+  store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51
+===========================
+Got store instruction
+Adding store instruction
+sqSubSetEqual()
+Old Facts: 6
+New Facts: 6
+
+flow()
+  %2 = load i32, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !53
+===========================
+Got operands checking instruction (load)
+Adding fact
+sqSubSetEqual()
+Old Facts: 7
+New Facts: 7
+
+flow()
+  call void @llvm.dbg.declare(metadata [2 x [2 x i32]]* %numbers, metadata !16, metadata !20), !dbg !21, !phasar.instruction.id !22
+===========================
+Got call instruction
+
+flow()
+  %numbers = alloca [2 x [2 x i32]], align 16, !phasar.instruction.id !13
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  %rc = alloca i32, align 4, !phasar.instruction.id !14
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  %retval = alloca i32, align 4, !phasar.instruction.id !12
+===========================
+Got operands checking instruction (alloca)
+
+flow()
+  store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43
+===========================
+Got store instruction
+Adding store instruction
+
+flow()
+  store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34
+===========================
+Got store instruction
+Adding store instruction
+
+flow()
+  %arrayidx1 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx, i64 0, i64 0, !dbg !23, !phasar.instruction.id !25
+===========================
+
+flow()
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
+===========================
+Got call instruction
+Adding call instruction fact
+
+flow()
+  store i32 42, i32* %arrayidx1, align 16, !dbg !26, !phasar.instruction.id !27
+===========================
+Got store instruction
+
+flow()
+  %arrayidx2 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !30, !phasar.instruction.id !31
+===========================
+
+flow()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
+===========================
+Got store instruction
+
+flow()
+  %arrayidx = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !23, !phasar.instruction.id !24
+===========================
+
+flow()
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !44, metadata !20), !dbg !45, !phasar.instruction.id !46
+===========================
+Got call instruction
+
+flow()
+  %arrayidx3 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx2, i64 0, i64 1, !dbg !30, !phasar.instruction.id !32
+===========================
+
+flow()
+  %arrayidx4 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !35, !phasar.instruction.id !36
+===========================
+
+flow()
+  %arrayidx5 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx4, i64 0, i64 1, !dbg !35, !phasar.instruction.id !37
+===========================
+
+flow()
+  %0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38
+===========================
+Got operands checking instruction (load)
+Adding fact
+
+flow()
+  %arrayidx6 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !39, !phasar.instruction.id !40
+===========================
+
+flow()
+  %arrayidx7 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx6, i64 0, i64 0, !dbg !39, !phasar.instruction.id !41
+===========================
+
+flow()
+  %arrayidx8 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !47, !phasar.instruction.id !48
+===========================
+
+flow()
+  %arrayidx9 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx8, i64 0, i64 0, !dbg !47, !phasar.instruction.id !49
+===========================
+
+flow()
+  %1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50
+===========================
+Got operands checking instruction (load)
+Adding fact
+
+flow()
+  store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51
+===========================
+Got store instruction
+Adding store instruction
+
+flow()
+  %2 = load i32, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !53
+===========================
+Got operands checking instruction (load)
+Adding fact
+
+flow()
+  ret i32 %2, !dbg !54, !phasar.instruction.id !55worklist size: 24
+worklist size: 23
+worklist size: 22
+worklist size: 21
+worklist size: 20
+worklist size: 19
+worklist size: 18
+worklist size: 17
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 16
+worklist size: 15
+worklist size: 14
+worklist size: 13
+worklist size: 12
+worklist size: 11
+worklist size: 10
+worklist size: 9
+worklist size: 8
+worklist size: 7
+worklist size: 6
+worklist size: 5
+worklist size: 4
+worklist size: 3
+worklist size: 2
+worklist size: 1
+LLVM-Intra-Monotone solver results:
+-----------------------------------
+Instruction:
+call void @llvm.dbg.declare(metadata [2 x [2 x i32]]* %numbers, metadata !16, metadata !20), !dbg !21, !phasar.instruction.id !22, ID: 5
+Facts:
+	EMPTY
+
+
+Instruction:
+%numbers = alloca [2 x [2 x i32]], align 16, !phasar.instruction.id !13, ID: 2
+Facts:
+	EMPTY
+
+
+Instruction:
+%rc = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
+Facts:
+	EMPTY
+
+
+Instruction:
+%retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+Facts:
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+%arrayidx1 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx, i64 0, i64 0, !dbg !23, !phasar.instruction.id !25, ID: 7
+Facts:
+	EMPTY
+
+
+Instruction:
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 42, i32* %arrayidx1, align 16, !dbg !26, !phasar.instruction.id !27, ID: 8
+Facts:
+	EMPTY
+
+
+Instruction:
+%arrayidx2 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !30, !phasar.instruction.id !31, ID: 10
+Facts:
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4
+Facts:
+	EMPTY
+
+
+Instruction:
+%arrayidx = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !23, !phasar.instruction.id !24, ID: 6
+Facts:
+	EMPTY
+
+
+Instruction:
+call void @llvm.dbg.declare(metadata i32* %rc, metadata !44, metadata !20), !dbg !45, !phasar.instruction.id !46, ID: 19
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+%arrayidx3 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx2, i64 0, i64 1, !dbg !30, !phasar.instruction.id !32, ID: 11
+Facts:
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+%arrayidx4 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 0, !dbg !35, !phasar.instruction.id !36, ID: 13
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+%arrayidx5 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx4, i64 0, i64 1, !dbg !35, !phasar.instruction.id !37, ID: 14
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+
+
+Instruction:
+%arrayidx6 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !39, !phasar.instruction.id !40, ID: 16
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+%arrayidx7 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx6, i64 0, i64 0, !dbg !39, !phasar.instruction.id !41, ID: 17
+Facts:
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+%arrayidx8 = getelementptr inbounds [2 x [2 x i32]], [2 x [2 x i32]]* %numbers, i64 0, i64 1, !dbg !47, !phasar.instruction.id !48, ID: 20
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+%arrayidx9 = getelementptr inbounds [2 x i32], [2 x i32]* %arrayidx8, i64 0, i64 0, !dbg !47, !phasar.instruction.id !49, ID: 21
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+%1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50, ID: 22
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+
+
+Instruction:
+store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51, ID: 23
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+%1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50, ID: 22
+
+
+Instruction:
+%2 = load i32, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !53, ID: 24
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayid56 2018-Dec-27 20:29:44.740158 - [INFO] Write results to file
+57 2018-Dec-27 20:29:44.740337 - [INFO] Shutdown llvm and the analysis framework.
+
+===========================
+printReport()
+x3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+%1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50, ID: 22
+store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51, ID: 23
+
+
+Instruction:
+ret i32 %2, !dbg !54, !phasar.instruction.id !55, ID: 25
+Facts:
+store i32 %0, i32* %arrayidx7, align 8, !dbg !42, !phasar.instruction.id !43, ID: 18
+store i32 %call, i32* %arrayidx3, align 4, !dbg !33, !phasar.instruction.id !34, ID: 12
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 9
+%0 = load i32, i32* %arrayidx5, align 4, !dbg !35, !phasar.instruction.id !38, ID: 15
+%1 = load i32, i32* %arrayidx9, align 8, !dbg !47, !phasar.instruction.id !50, ID: 22
+store i32 %1, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !51, ID: 23
+%2 = load i32, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !53, ID: 24
+
+
