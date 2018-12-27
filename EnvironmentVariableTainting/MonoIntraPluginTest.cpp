@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <stack>
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
@@ -56,28 +57,61 @@ isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction
    * We now have an instruction that belongs to the end of a branch
    * statement. We need to figure out if the label matches the one
    * of the branch statement. There are two cases to consider.
-   * (1) We find a direct match (2) We need to check whether the label
-   * of the instruction is reachable by the branch instruction.
+   * (1) If the branch does not have an else/else if part then we
+   * can match the instruction label directly against the labels of
+   * the branch instruction. (2) If there is an else/else if part
+   * we need to figure out the label of the block where the branch
+   * merges.
    */
   // Case 1
   const auto bbLabel1 = branchInst->getOperand(1)->getName();
   const auto bbLabel2 = branchInst->getOperand(2)->getName();
 
-  bool isDirectLabelMatch = instructionLabel.compare_lower(bbLabel1) == 0 ||
-                            instructionLabel.compare_lower(bbLabel2) == 0;
-  if (isDirectLabelMatch) return true;
+  bool isBranchWithoutElse = bbLabel1.contains_lower("end") ||
+                             bbLabel2.contains_lower("end");
 
-  // Case 2
-  // TODO: is this pattern always working? maybe need recursive function k-bound?!
-  for (const auto succ : branchInst->successors()) {
-    const auto terminatorInst = succ->getTerminator();
-    bool hasSuccessors = terminatorInst->getNumSuccessors() != 0;
-    if (!hasSuccessors) continue;
-
-    const auto terminatorInstLabel = succ->getTerminator()->getSuccessor(0)->getName();
-    if (instructionLabel.compare_lower(terminatorInstLabel) == 0) return true;
+  if (isBranchWithoutElse) {
+    bool isMatch = instructionLabel.compare_lower(bbLabel1) == 0 ||
+                   instructionLabel.compare_lower(bbLabel2) == 0;
+    if (isMatch) {
+      return true;
+    } else {
+      return false;
+    }
   }
-  return false;
+  // Case 2
+  /*
+   * The way we determine the basic block where the branch merges
+   * is as follows:
+   *
+   * We first push our branch instruction on the stack and then
+   * follow one side of the branch (here left side). Whenever we
+   * encounter a conditional branch instruction (new nested branch)
+   * we push the branch instruction on the stack.
+   * Whenever we encounter a basic block with an "end" label we
+   * pop the stack as this means the branch instruction has merged.
+   * If we pop our initial branch instruction the stack is empty and
+   * we have reached the merge block of the branch.
+   */
+  std::stack<const llvm::BranchInst*> branchStack;
+  branchStack.push(branchInst);
+
+  const llvm::TerminatorInst* terminatorInstPtr = branchInst;
+  while (!branchStack.empty()) {
+    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
+
+    const auto bbLabel = terminatorInstPtr->getParent()->getName();
+    bool isEnd = bbLabel.contains_lower("end");
+    if (isEnd) branchStack.pop();
+
+    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInstPtr)) {
+      if (branchInst->isConditional()) branchStack.push(branchInst);
+    }
+  }
+
+  const auto endOfBranchLabel = terminatorInstPtr->getParent()->getName();
+
+  return instructionLabel.compare_lower(endOfBranchLabel) == 0;
 }
 
 static bool
@@ -104,7 +138,7 @@ isEndOfTaintedSwitch(const llvm::SwitchInst* const switchInst, const llvm::Instr
   if (hasDefaultCase) return instructionLabel.compare_lower(defaultLabel) == 0;
 
   // Case 2
-  // TODO: is this pattern always working? maybe need recursive function k-bound?!
+  // TODO: is this pattern always working? maybe need same approach as for branches?!
   for (const auto succ : defaultBB->getTerminator()->successors()) {
     const auto defaultSuccessorLabel = succ->getName();
     if (instructionLabel.compare_lower(defaultSuccessorLabel) == 0) return true;
