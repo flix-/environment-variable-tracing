@@ -45,22 +45,38 @@ static void dumpFacts(const MonoSet<const llvm::Value*>& facts) {
 
 static bool
 isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction *instruction) {
-  if (branchInst == nullptr) return false;
-  if (instruction == nullptr) return false;
-
   const auto bbInst = instruction->getParent();
   if (bbInst == nullptr) return false;
 
-  const auto bbLabel1 = branchInst->getOperand(1)->getName().contains_lower("end") ?
-        branchInst->getOperand(1) :
-        nullptr;
-  const auto bbLabel2 = branchInst->getOperand(2)->getName().contains_lower("end") ?
-        branchInst->getOperand(2) :
-        nullptr;
+  const auto instructionLabel = bbInst->getName();
+  bool isEndOfBranch = instructionLabel.contains_lower("end");
+  if (!isEndOfBranch) return false;
 
-  if (bbLabel1 && bbLabel1->getName().equals_lower(bbInst->getName())) return true;
-  if (bbLabel2 && bbLabel2->getName().equals_lower(bbInst->getName())) return true;
+  /*
+   * We now have an instruction that belongs to the end of a branch
+   * statement. We need to figure out if the label matches the one
+   * of the branch statement. There are two cases to consider.
+   * (1) We find a direct match (2) We need to check whether the label
+   * of the instruction is reachable by the branch instruction.
+   */
+  // Case 1
+  const auto bbLabel1 = branchInst->getOperand(1)->getName();
+  const auto bbLabel2 = branchInst->getOperand(2)->getName();
 
+  bool isDirectLabelMatch = instructionLabel.compare_lower(bbLabel1) == 0 ||
+                            instructionLabel.compare_lower(bbLabel2) == 0;
+  if (isDirectLabelMatch) return true;
+
+  // Case 2
+  // TODO: is this pattern always working? maybe need recursive function k-bound?!
+  for (const auto succ : branchInst->successors()) {
+    const auto terminatorInst = succ->getTerminator();
+    bool hasSuccessors = terminatorInst->getNumSuccessors() != 0;
+    if (!hasSuccessors) continue;
+
+    const auto terminatorInstLabel = succ->getTerminator()->getSuccessor(0)->getName();
+    if (instructionLabel.compare_lower(terminatorInstLabel) == 0) return true;
+  }
   return false;
 }
 
@@ -78,19 +94,20 @@ isEndOfTaintedSwitch(const llvm::SwitchInst* const switchInst, const llvm::Instr
    * statement. We need to figure out if the label matches the one
    * of the switch statement (e.g. we don't want to remove the switch
    * statement if it is a nested one). If the switch statement has a
-   * default case we can obtain the label immediately if not we check
-   * the labels of every successor of the default case.
+   * default case we can obtain the label immediately (1) if not we
+   * check the labels of every successor of the default case (2).
    */
+  // Case 1
   const auto defaultBB = switchInst->getDefaultDest();
   const auto defaultLabel = defaultBB->getName();
   bool hasDefaultCase = defaultLabel.contains_lower("epilog");
-  if (hasDefaultCase) {
-    return instructionLabel.compare_lower(defaultLabel) == 0;
-  } else {
-    for (const auto succ : defaultBB->getTerminator()->successors()) {
-      const auto defaultSuccessorLabel = succ->getName();
-      if (instructionLabel.compare_lower(defaultSuccessorLabel) == 0) return true;
-    }
+  if (hasDefaultCase) return instructionLabel.compare_lower(defaultLabel) == 0;
+
+  // Case 2
+  // TODO: is this pattern always working? maybe need recursive function k-bound?!
+  for (const auto succ : defaultBB->getTerminator()->successors()) {
+    const auto defaultSuccessorLabel = succ->getName();
+    if (instructionLabel.compare_lower(defaultSuccessorLabel) == 0) return true;
   }
   return false;
 }
@@ -533,20 +550,13 @@ MonoIntraPluginTest::flow(const llvm::Instruction* instruction,
     bool isConditional = branchInst->isConditional();
 
     if (isConditional) {
-      // Filter branch instructions
-      bool isIfBranch = branchInst->getOperand(1)->getName().contains_lower("if.");
-      bool isForBranch = branchInst->getOperand(1)->getName().contains_lower("for.");
-      bool isWhileBranch = branchInst->getOperand(1)->getName().contains_lower("while.");
-      bool isDoBranch = branchInst->getOperand(1)->getName().contains_lower("do.");
-      if (isIfBranch || isForBranch || isWhileBranch || isDoBranch) {
-        const auto &condition = branchInst->getCondition();
+      const auto &condition = branchInst->getCondition();
 
-        bool isTainted = isValueInFacts(newFacts, condition);
-        if (isTainted) {
-          llvm::outs() << "Adding conditional branch instruction fact" << "\n";
-          newFacts.insert(branchInst);
-          return newFacts;
-        }
+      bool isTainted = isValueInFacts(newFacts, condition);
+      if (isTainted) {
+        llvm::outs() << "Adding conditional branch instruction fact" << "\n";
+        newFacts.insert(branchInst);
+        return newFacts;
       }
     }
   }
