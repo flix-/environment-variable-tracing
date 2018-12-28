@@ -1,16 +1,16 @@
-#ifndef MONOINTRAPLUGINTEST_H
-#define MONOINTRAPLUGINTEST_H
+#ifndef MONOINTRAENVIRONMENTVARIABLETRACING_H
+#define MONOINTRAENVIRONMENTVARIABLETRACING_H
 
 #include <phasar/PhasarLLVM/Plugins/Interfaces/Mono/IntraMonoProblemPlugin.h>
 
 namespace psr {
 
-class MonoIntraPluginTest
+class MonoIntraEnvironmentVariableTracing
     : public IntraMonoProblemPlugin {
 
 public:
-  MonoIntraPluginTest(LLVMBasedCFG& cfg, const llvm::Function* f) : IntraMonoProblemPlugin(cfg, f) {}
-  virtual ~MonoIntraPluginTest() override = default;
+  MonoIntraEnvironmentVariableTracing(LLVMBasedCFG& cfg, const llvm::Function* f) : IntraMonoProblemPlugin(cfg, f) {}
+  virtual ~MonoIntraEnvironmentVariableTracing() override = default;
 
   MonoSet<const llvm::Value*> join(const MonoSet<const llvm::Value*> &Lhs, const MonoSet<const llvm::Value*> &Rhs) override;
   bool sqSubSetEqual(const MonoSet<const llvm::Value*> &Lhs, const MonoSet<const llvm::Value*> &Rhs) override;
@@ -22,4 +22,4 @@ public:
 };
 
 } // namespace
-#endif // MONOINTRAPLUGINTEST_H
+#endif // MONOINTRAENVIRONMENTVARIABLETRACING_H

@@ -1,0 +1,885 @@
+0 2018-Dec-28 21:52:00.295404 - [DEBUG] Set-up the command-line parameters
+1 2018-Dec-28 21:52:00.295825 - [INFO] Chosen operation mode: 'phasarLLVM'
+2 2018-Dec-28 21:52:00.296188 - [INFO] No configuration file is used.
+3 2018-Dec-28 21:52:00.296265 - [INFO] Program options have been successfully parsed.
+4 2018-Dec-28 21:52:00.296357 - [INFO] Check program options for logical errors.
+5 2018-Dec-28 21:52:00.296447 - [INFO] Set-up IR database.
+6 2018-Dec-28 21:52:00.304715 - [INFO] Constructed the analysis controller.
+7 2018-Dec-28 21:52:00.304841 - [INFO] Found the following IR files for this project: 
+8 2018-Dec-28 21:52:00.304902 - [INFO] 	main.ll
+9 2018-Dec-28 21:52:00.304961 - [INFO] Check for chosen entry points.
+10 2018-Dec-28 21:52:00.305023 - [INFO] link all llvm modules into a single module for WPA ...
+
+11 2018-Dec-28 21:52:00.305081 - [INFO] link all llvm modules into a single module for WPA ended
+
+12 2018-Dec-28 21:52:00.305141 - [INFO] Preprocess module: main.ll
+13 2018-Dec-28 21:52:00.305481 - [INFO] Running GeneralStatisticsPass
+14 2018-Dec-28 21:52:00.305631 - [INFO] Running ValueAnnotationPass
+15 2018-Dec-28 21:52:00.306114 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'
+
+16 2018-Dec-28 21:52:00.306177 - [INFO] Allocated Types    : 3
+17 2018-Dec-28 21:52:00.306242 - [INFO] Allocation Sites   : 3
+18 2018-Dec-28 21:52:00.306299 - [INFO] Basic Blocks       : 1
+19 2018-Dec-28 21:52:00.306356 - [INFO] Calls Sites        : 3
+20 2018-Dec-28 21:52:00.306414 - [INFO] Functions          : 3
+21 2018-Dec-28 21:52:00.306471 - [INFO] Globals            : 2
+22 2018-Dec-28 21:52:00.306528 - [INFO] Global Pointer     : 2
+23 2018-Dec-28 21:52:00.306625 - [INFO] Instructions       : 38
+24 2018-Dec-28 21:52:00.306683 - [INFO] Memory Intrinsics  : 0
+25 2018-Dec-28 21:52:00.306741 - [INFO] Store Instructions : 6
+26 2018-Dec-28 21:52:00.306798 - [INFO]  
+27 2018-Dec-28 21:52:00.306873 - [INFO]   i32
+28 2018-Dec-28 21:52:00.306940 - [INFO]   %struct.a = type { i8*, %struct.b }
+29 2018-Dec-28 21:52:00.307003 - [INFO]   i8*
+30 2018-Dec-28 21:52:00.307705 - [DEBUG] Analyzing function: main
+31 2018-Dec-28 21:52:00.325753 - [INFO] Reconstruct the class hierarchy.
+32 2018-Dec-28 21:52:00.325878 - [INFO] Construct type hierarchy
+33 2018-Dec-28 21:52:00.325941 - [DEBUG] Analyse types in module: main.ll
+34 2018-Dec-28 21:52:00.326232 - [DEBUG] Reconstruct virtual function table for module: main.ll
+35 2018-Dec-28 21:52:00.326395 - [INFO] Reconstruction of class hierarchy completed.
+36 2018-Dec-28 21:52:00.326461 - [INFO] Starting CallGraphAnalysisType: OTF
+37 2018-Dec-28 21:52:00.327247 - [DEBUG] Walking in function: main
+38 2018-Dec-28 21:52:00.327334 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !17, metadata !34), !dbg !35, !phasar.instruction.id !36, ID: 6
+39 2018-Dec-28 21:52:00.327824 - [DEBUG] Found 1 possible target(s)
+40 2018-Dec-28 21:52:00.327884 - [DEBUG] Target name: llvm.dbg.declare
+41 2018-Dec-28 21:52:00.327967 - [DEBUG] Walking in function: llvm.dbg.declare
+42 2018-Dec-28 21:52:00.328030 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+43 2018-Dec-28 21:52:00.328093 - [DEBUG] Found static call-site: %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+44 2018-Dec-28 21:52:00.328528 - [DEBUG] Found 1 possible target(s)
+45 2018-Dec-28 21:52:00.328587 - [DEBUG] Target name: getenv
+46 2018-Dec-28 21:52:00.328668 - [DEBUG] Walking in function: getenv
+47 2018-Dec-28 21:52:00.328730 - [DEBUG] Function already visited or only declaration: getenv
+48 2018-Dec-28 21:52:00.328795 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59, ID: 18
+49 2018-Dec-28 21:52:00.329182 - [DEBUG] Found 1 possible target(s)
+50 2018-Dec-28 21:52:00.329241 - [DEBUG] Target name: llvm.dbg.declare
+51 2018-Dec-28 21:52:00.329316 - [DEBUG] Walking in function: llvm.dbg.declare
+52 2018-Dec-28 21:52:00.329378 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare
+53 2018-Dec-28 21:52:00.329461 - [INFO] Call graph has been constructed
+54 2018-Dec-28 21:52:00.329524 - [INFO] Performing analysis: plugin
+55 2018-Dec-28 21:52:00.329591 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so'
+56 2018-Dec-28 21:52:00.330106 - [INFO] Solving plugin: mono
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+init - MonoIntraEnvironmentVariableTracing
+
+  %retval = alloca i32, align 4, !phasar.instruction.id !13
+Got operands checking instruction (alloca)
+
+  %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+Got operands checking instruction (alloca)
+
+  %a5 = alloca i8*, align 8, !phasar.instruction.id !15
+Got operands checking instruction (alloca)
+
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !16
+Got store instruction
+
+  call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !17, metadata !34), !dbg !35, !phasar.instruction.id !36
+Got call instruction
+
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38
+Got call instruction
+Adding call instruction fact
+Adding line: 22
+
+  %a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !39, !phasar.instruction.id !40
+Adding line: 22
+
+  store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42
+Got store instruction
+Adding store instruction
+Adding line: 22
+Adding line: 22
+
+  %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
+Adding line: 22
+Adding line: 22
+
+  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+Got load instruction
+Adding load instruction fact
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !46, !phasar.instruction.id !47
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !48, !phasar.instruction.id !49
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !50, !phasar.instruction.id !51
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !52, !phasar.instruction.id !53
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %arrayidx4 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a3, i64 0, i64 0, !dbg !50, !phasar.instruction.id !54
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56
+Got store instruction
+Adding store instruction
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59
+Got call instruction
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+
+  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+Got load instruction
+Adding load instruction fact
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+
+  store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70
+Got store instruction
+Adding store instruction
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %b11 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %a12 = getelementptr inbounds %struct.b, %struct.b* %b11, i32 0, i32 0, !dbg !73, !phasar.instruction.id !74
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %arrayidx13 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a12, i64 0, i64 0, !dbg !75, !phasar.instruction.id !76
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %a14 = getelementptr inbounds %struct.c, %struct.c* %arrayidx13, i32 0, i32 0, !dbg !77, !phasar.instruction.id !78
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %arrayidx15 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a14, i64 0, i64 0, !dbg !75, !phasar.instruction.id !79
+Adding line: 23
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0), i8** %arrayidx15, align 8, !dbg !80, !phasar.instruction.id !81
+Got store instruction
+Removing store instruction
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+Got load instruction
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+Adding line: 25
+
+  store i8* %2, i8** %a5, align 8, !dbg !92, !phasar.instruction.id !93
+Got store instruction
+Removing store instruction
+Adding line: 22
+Adding line: 22
+Adding line: 23
+Adding line: 25
+
+  %a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !39, !phasar.instruction.id !40
+
+  store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42
+Got store instruction
+Adding store instruction
+
+  %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
+
+  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+Got load instruction
+Adding load instruction fact
+
+  %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !46, !phasar.instruction.id !47
+
+  %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !48, !phasar.instruction.id !49
+
+  %arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !50, !phasar.instruction.id !51
+
+  %a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !52, !phasar.instruction.id !53
+
+  %arrayidx4 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a3, i64 0, i64 0, !dbg !50, !phasar.instruction.id !54
+
+  store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56
+Got store instruction
+Adding store instruction
+
+  call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59
+Got call instruction
+
+  %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+
+  %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+
+  %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+
+  %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+
+  %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
+
+  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+Got load instruction
+Adding load instruction fact
+
+  store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70
+Got store instruction
+Adding store instruction
+
+  %b11 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72
+
+  %a12 = getelementptr inbounds %struct.b, %struct.b* %b11, i32 0, i32 0, !dbg !73, !phasar.instruction.id !74
+
+  %arrayidx13 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a12, i64 0, i64 0, !dbg !75, !phasar.instruction.id !76
+
+  %a14 = getelementptr inbounds %struct.c, %struct.c* %arrayidx13, i32 0, i32 0, !dbg !77, !phasar.instruction.id !78
+
+  %arrayidx15 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a14, i64 0, i64 0, !dbg !75, !phasar.instruction.id !79
+
+  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0), i8** %arrayidx15, align 8, !dbg !80, !phasar.instruction.id !81
+Got store instruction
+Removing store instruction
+
+  %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+
+  %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+
+  %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+
+  %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+
+  %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
+
+  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+Got load instruction
+
+  store i8* %2, i8** %a5, align 8, !dbg !92, !phasar.instruction.id !93
+Got store instruction
+Removing store instruction
+
+  call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !17, metadata !34), !dbg !35, !phasar.instruction.id !36
+Got call instruction
+
+  %retval = alloca i32, align 4, !phasar.instruction.id !13
+Got operands checking instruction (alloca)
+
+  store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56
+Got store instruction
+Adding store instruction
+
+  store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42
+Got store instruction
+Adding store instruction
+
+  %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
+
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38
+Got call instruction
+Adding call instruction fact
+
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !16
+Got store instruction
+
+  %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !46, !phasar.instruction.id !47
+
+  %a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !39, !phasar.instruction.id !40
+
+  %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+Got operands checking instruction (alloca)
+
+  %a5 = alloca i8*, align 8, !phasar.instruction.id !15
+Got operands checking instruction (alloca)
+
+  call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59
+Got call instruction
+
+  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+Got load instruction
+Adding load instruction fact
+
+  %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !48, !phasar.instruction.id !49
+
+  %arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !50, !phasar.instruction.id !51
+
+  %a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !52, !phasar.instruction.id !53
+
+  %arrayidx4 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a3, i64 0, i64 0, !dbg !50, !phasar.instruction.id !54
+
+  %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+
+  %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+
+  %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+
+  %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+
+  %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
+
+  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+Got load instruction
+Adding load instruction fact
+
+  store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70
+Got store instruction
+Adding store instruction
+
+  %b11 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72
+
+  %a12 = getelementptr inbounds %struct.b, %struct.b* %b11, i32 0, i32 0, !dbg !73, !phasar.instruction.id !74
+
+  %arrayidx13 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a12, i64 0, i64 0, !dbg !75, !phasar.instruction.id !76
+
+  %a14 = getelementptr inbounds %struct.c, %struct.c* %arrayidx13, i32 0, i32 0, !dbg !77, !phasar.instruction.id !78
+
+  %arrayidx15 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a14, i64 0, i64 0, !dbg !75, !phasar.instruction.id !79
+
+  store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0), i8** %arrayidx15, align 8, !dbg !80, !phasar.instruction.id !81
+Got store instruction
+Removing store instruction
+
+  %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+
+  %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+
+  %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+
+  %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+
+  %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
+
+  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+Got load instruction
+
+  store i8* %2, i8** %a5, align 8, !dbg !92, !phasar.instruction.id !93
+Got store instruction
+Removing store instruction
+
+  ret i32 0, !dbg !94, !phasar.instruction.id !95worklist size: 37
+worklist size: 36
+worklist size: 35
+worklist size: 34
+worklist size: 33
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 32
+worklist size: 31
+worklist size: 30
+worklist size: 29
+worklist size: 28
+worklist size: 27
+worklist size: 26
+worklist size: 25
+worklist size: 24
+worklist size: 23
+worklist size: 22
+worklist size: 21
+worklist size: 20
+worklist size: 19
+worklist size: 18
+worklist size: 17
+worklist size: 16
+worklist size: 15
+worklist size: 14
+worklist size: 13
+worklist size: 12
+worklist size: 11
+worklist size: 10
+worklist size: 9
+worklist size: 8
+worklist size: 7
+worklist size: 6
+worklist size: 5
+worklist size: 4
+worklist size: 3
+worklist size: 2
+worklist size: 1
+LLVM-Intra-Monotone solver results:
+-----------------------------------
+Instruction:
+call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !17, metadata !34), !dbg !35, !phasar.instruction.id !36, ID: 6
+Facts:
+	EMPTY
+
+
+Instruction:
+%retval = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
+Facts:
+	EMPTY
+
+
+Instruction:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+Facts:
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+
+
+Instruction:
+%a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44, ID: 10
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+
+
+Instruction:
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+Facts:
+	EMPTY
+
+
+Instruction:
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !16, ID: 5
+Facts:
+	EMPTY
+
+
+Instruction:
+%b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !46, !phasar.instruction.id !47, ID: 12
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !39, !phasar.instruction.id !40, ID: 8
+Facts:
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+
+
+Instruction:
+%foo = alloca %struct.a, align 8, !phasar.instruction.id !14, ID: 3
+Facts:
+	EMPTY
+
+
+Instruction:
+%a5 = alloca i8*, align 8, !phasar.instruction.id !15, ID: 4
+Facts:
+	EMPTY
+
+
+Instruction:
+call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59, ID: 18
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+
+
+Instruction:
+%a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !48, !phasar.instruction.id !49, ID: 13
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !50, !phasar.instruction.id !51, ID: 14
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !52, !phasar.instruction.id !53, ID: 15
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%arrayidx4 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a3, i64 0, i64 0, !dbg !50, !phasar.instruction.id !54, ID: 16
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61, ID: 19
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63, ID: 20
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65, ID: 21
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67, ID: 22
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68, ID: 23
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+
+
+Instruction:
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+
+
+Instruction:
+%b11 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72, ID: 26
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%a12 = getelementptr inbounds %struct.b, %struct.b* %b11, i32 0, i32 0, !dbg !73, !phasar.instruction.id !74, ID: 27
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%arrayidx13 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a12, i64 0, i64 0, !dbg !75, !phasar.instruction.id !76, ID: 28
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%a14 = getelementptr inbounds %struct.c, %struct.c* %arrayidx13, i32 0, i32 0, !dbg !77, !phasar.instruction.id !78, ID: 29
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%arrayidx15 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a14, i64 0, i64 0, !dbg !75, !phasar.instruction.id !79, ID: 30
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0), i8** %arrayidx15, align 8, !dbg !80, !phasar.instruction.id !81, ID: 31
+Facts:
+store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56, ID: 17
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83, ID: 32
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85, ID: 33
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87, ID: 34
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89, ID: 35
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id 57 2018-Dec-28 21:52:00.426536 - [INFO] Write results to file
+58 2018-Dec-28 21:52:00.426855 - [INFO] Shutdown llvm and the analysis framework.
+
+!38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90, ID: 36
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+%2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91, ID: 37
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+store i8* %2, i8** %a5, align 8, !dbg !92, !phasar.instruction.id !93, ID: 38
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70, ID: 25
+
+
+Instruction:
+ret i32 0, !dbg !94, !phasar.instruction.id !95, ID: 39
+Facts:
+store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42, ID: 9
+%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38, ID: 7
+%0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45, ID: 11
+%1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69, ID: 24
+
+
