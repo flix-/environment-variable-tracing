@@ -84,30 +84,30 @@ isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction
    * The way we determine the basic block where the branch merges
    * is as follows:
    *
-   * We first push our branch instruction on the stack and then
-   * follow one side of the branch (here left side). Whenever we
-   * encounter a conditional branch instruction (new nested branch)
-   * we push the branch instruction on the stack.
-   * Whenever we encounter a basic block with an "end" label we
-   * pop the stack as this means the branch instruction has merged.
-   * If we pop our initial branch instruction the stack is empty and
-   * we have reached the merge block of the branch.
+   * Starting with the branch instruction whenever we encounter a
+   * conditional branch instruction (beginning of a new branch)
+   * we push it on the stack. Then we follow one side of the branch
+   * (here left side). Whenever we encounter a basic block with an
+   * "end" label (end of a branch) we pop the stack as this means
+   * the branch instruction has merged. If we pop our initial branch
+   * instruction the stack is empty and we have reached the merge
+   * block of the branch. terminatorInstPtr will point to the
+   * basic block where the branch instruction has merged.
    */
   std::stack<const llvm::BranchInst*> branchStack;
-  branchStack.push(branchInst);
 
   const llvm::TerminatorInst* terminatorInstPtr = branchInst;
-  while (!branchStack.empty()) {
+  do {
+    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInstPtr)) {
+      if (branchInst->isConditional()) branchStack.push(branchInst);
+    }
+
     terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
 
     const auto bbLabel = terminatorInstPtr->getParent()->getName();
     bool isEnd = bbLabel.contains_lower("end");
     if (isEnd) branchStack.pop();
-
-    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInstPtr)) {
-      if (branchInst->isConditional()) branchStack.push(branchInst);
-    }
-  }
+  } while (!branchStack.empty());
 
   const auto endOfBranchLabel = terminatorInstPtr->getParent()->getName();
 
@@ -127,23 +127,36 @@ isEndOfTaintedSwitch(const llvm::SwitchInst* const switchInst, const llvm::Instr
    * We now have an instruction that belongs to the end of a switch
    * statement. We need to figure out if the label matches the one
    * of the switch statement (e.g. we don't want to remove the switch
-   * statement if it is a nested one). If the switch statement has a
-   * default case we can obtain the label immediately (1) if not we
-   * check the labels of every successor of the default case (2).
+   * statement if it is a nested one). If the default case of the
+   * switch statement points to an epilog (no default branch) we can
+   * obtain the label immediately (1) if not we need to determine the
+   * label of the end of the switch statement (see branch algorithm) (2).
    */
   // Case 1
   const auto defaultBB = switchInst->getDefaultDest();
   const auto defaultLabel = defaultBB->getName();
-  bool hasDefaultCase = defaultLabel.contains_lower("epilog");
-  if (hasDefaultCase) return instructionLabel.compare_lower(defaultLabel) == 0;
+  bool isEpilogLabel = defaultLabel.contains_lower("epilog");
+  if (isEpilogLabel) return instructionLabel.compare_lower(defaultLabel) == 0;
 
   // Case 2
-  // TODO: is this pattern always working? maybe need same approach as for branches?!
-  for (const auto succ : defaultBB->getTerminator()->successors()) {
-    const auto defaultSuccessorLabel = succ->getName();
-    if (instructionLabel.compare_lower(defaultSuccessorLabel) == 0) return true;
-  }
-  return false;
+  std::stack<const llvm::SwitchInst*> switchStack;
+
+  const llvm::TerminatorInst* terminatorInstPtr = switchInst;
+  do {
+    if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
+      switchStack.push(switchInst);
+    }
+
+    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
+
+    const auto bbLabel = terminatorInstPtr->getParent()->getName();
+    bool isEpilog = bbLabel.contains_lower("epilog");
+    if (isEpilog) switchStack.pop();
+  } while (!switchStack.empty());
+
+  const auto endOfSwitchLabel = terminatorInstPtr->getParent()->getName();
+
+  return instructionLabel.compare_lower(endOfSwitchLabel) == 0;
 }
 
 static bool
