@@ -99,7 +99,7 @@ function create_summary_end {
 create_summary_start
 
 
-for test_dir in ./[0-9][0-9][0-9]*
+for test_dir in ./[1-9][0-9][0-9]*
 do
     echo "Handling ${test_dir}"
     cd ${test_dir}
