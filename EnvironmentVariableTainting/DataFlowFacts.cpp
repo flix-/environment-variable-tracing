@@ -7,6 +7,15 @@
 
 using namespace psr;
 
+static const llvm::Value*
+getNextNonBitCastPointer(const llvm::Value* bitCastInst) {
+  auto ptr = bitCastInst;
+  while (const auto bitCastPtr = llvm::dyn_cast<llvm::BitCastInst>(ptr)) {
+    ptr = bitCastPtr->getOperand(0);
+  }
+  return ptr;
+}
+
 static bool
 isAllocaInstEqual(const llvm::AllocaInst* allocaInst1, const llvm::AllocaInst* allocaInst2) {
   return allocaInst1 == allocaInst2;
@@ -29,15 +38,6 @@ isGEPInstEqual(const llvm::GetElementPtrInst* gepInst1, const llvm::GetElementPt
     if (gepInst1Indice != gepInst2Indice) return false;
   }
   return true;
-}
-
-static const llvm::Value*
-getNextNonBitCastPointer(const llvm::Value* bitCastInst) {
-  auto ptr = bitCastInst;
-  while (const auto bitCastPtr = llvm::dyn_cast<llvm::BitCastInst>(ptr)) {
-    ptr = bitCastPtr->getOperand(0);
-  }
-  return ptr;
 }
 
 static bool
