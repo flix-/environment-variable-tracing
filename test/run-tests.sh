@@ -98,8 +98,13 @@ function create_summary_end {
 
 create_summary_start
 
+DIRECTORY=${1}
+if [ -z "${DIRECTORY}" ]
+then
+    DIRECTORY="./[0-9][0-9][0-9]*"
+fi
 
-for test_dir in ./[0-9][0-9][0-9]*
+for test_dir in ${DIRECTORY}
 do
     echo "Handling ${test_dir}"
     cd ${test_dir}

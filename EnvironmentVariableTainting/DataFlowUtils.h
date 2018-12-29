@@ -12,7 +12,6 @@ class DataFlowUtils
 public:
   DataFlowUtils() = delete;
 
-  static bool isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtrInst* gepFact);
   static bool isEndOfBranchOrSwitchInst(const llvm::Value *branchOrSwitchInst, const llvm::Instruction *instruction);
   static void dumpFacts(const MonoSet<const llvm::Value*>& facts);
 };

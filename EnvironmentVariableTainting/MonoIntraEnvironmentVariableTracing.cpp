@@ -164,6 +164,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got store instruction" << "\n";
 
     const auto memLocation = storeInst->getPointerOperand();
+
     const auto value = storeInst->getValueOperand();
     bool isMemLocationTainted = DataFlowFacts::isMemoryLocationInFacts(newFacts, memLocation);
     bool isValueTainted = DataFlowFacts::isValueInFacts(newFacts, value);

@@ -3,211 +3,128 @@
 #include "DataFlowUtils.h"
 
 #include <llvm/IR/Instructions.h>
+#include <llvm/Support/raw_ostream.h>
 
 using namespace psr;
 
 static bool
-isAllocaInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::AllocaInst* allocaInst) {
-  for (const auto fact : facts) {
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto allocaFact = llvm::dyn_cast<llvm::AllocaInst>(storeFact->getPointerOperand())) {
-        bool isEqual = allocaFact == allocaInst;
-        if (isEqual) return true;
-      }
-    }
-  }
-  return false;
+isAllocaInstEqual(const llvm::AllocaInst* allocaInst1, const llvm::AllocaInst* allocaInst2) {
+  return allocaInst1 == allocaInst2;
 }
 
 static bool
-isGEPInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
-  for (const auto &fact : facts) {
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(storeFact->getPointerOperand())) {
-        const llvm::GetElementPtrInst* gepInstPtr = gepInst;
-        const llvm::GetElementPtrInst* gepFactPtr = gepFact;
-        do {
-          bool isEqual = DataFlowUtils::isGEPInstEqual(gepInstPtr, gepFactPtr);
-          if (!isEqual) break;
+isGEPInstEqual(const llvm::GetElementPtrInst* gepInst1, const llvm::GetElementPtrInst* gepInst2) {
+  bool hasSameNumOfOperands = gepInst1->getNumOperands() == gepInst2->getNumOperands();
+  if (!hasSameNumOfOperands) return false;
 
-          // if operand pointer was alloca instruction we are done
-          bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
-          if (isFinal) return true;
+  // Compare Pointer Type
+  const auto gepInst1OperandType = gepInst1->getOperand(0)->getType();
+  const auto gepInst2OperandType = gepInst2->getOperand(0)->getType();
+  if (gepInst1OperandType != gepInst2OperandType) return false;
 
-          // continue with inner GEP
-          gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-          gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
-        } while (true);
-      }
-    }
+  // Compare Indices
+  for (unsigned int i = 1; i < gepInst1->getNumOperands(); i++) {
+    const auto *gepInst1Indice = gepInst1->getOperand(i);
+    const auto *gepInst2Indice = gepInst2->getOperand(i);
+    if (gepInst1Indice != gepInst2Indice) return false;
   }
-  return false;
+  return true;
 }
 
 static bool
-isBitCastInstInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::BitCastInst* bitCastInst) {
-  for (const auto fact : facts) {
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto bitCastFact = llvm::dyn_cast<llvm::BitCastInst>(storeFact->getPointerOperand())) {
-        const auto allocaFact = bitCastFact->getOperand(0);
-        const auto allocaInst = bitCastInst->getOperand(0);
-        bool isEqual = allocaFact == allocaInst;
-        if (isEqual) return true;
-      }
+isBitCastInstEqual(const llvm::BitCastInst* bitCastInst1, const llvm::BitCastInst* bitCastInst2) {
+  bool isValueTypeEqual = bitCastInst1->getOperand(0)->getType() == bitCastInst2->getOperand(0)->getType();
+  if (!isValueTypeEqual) return false;
+
+  return true;
+}
+
+static bool
+isMemoryLocationEqual(const llvm::Value* memLocation1, const llvm::Value* memLocation2) {
+  const llvm::Value* memLocationPtr1 = memLocation1;
+  const llvm::Value* memLocationPtr2 = memLocation2;
+  do {
+    // Try Alloca
+    bool isMemLocation1Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr1);
+    bool isMemLocation2Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr2);
+    if (isMemLocation1Alloca != isMemLocation2Alloca) return false;
+
+    if (isMemLocation1Alloca) {
+      const auto memLocation1Alloca = llvm::cast<llvm::AllocaInst>(memLocationPtr1);
+      const auto memLocation2Alloca = llvm::cast<llvm::AllocaInst>(memLocationPtr2);
+      return isAllocaInstEqual(memLocation1Alloca, memLocation2Alloca);
     }
-  }
-  return false;
+
+    // Try GEP
+    bool isMemLocation1GEP = llvm::isa<llvm::GetElementPtrInst>(memLocationPtr1);
+    bool isMemLocation2GEP = llvm::isa<llvm::GetElementPtrInst>(memLocationPtr2);
+    if (isMemLocation1GEP != isMemLocation2GEP) return false;
+
+    if (isMemLocation1GEP) {
+      const auto memLocation1GEP = llvm::cast<llvm::GetElementPtrInst>(memLocationPtr1);
+      const auto memLocation2GEP = llvm::cast<llvm::GetElementPtrInst>(memLocationPtr2);
+      bool isEqual = isGEPInstEqual(memLocation1GEP, memLocation2GEP);
+      if (!isEqual) return false;
+
+      memLocationPtr1 = memLocation1GEP->getPointerOperand();
+      memLocationPtr2 = memLocation2GEP->getPointerOperand();
+      continue;
+    }
+
+    // Try BitCast
+    bool isMemLocation1BitCast = llvm::isa<llvm::BitCastInst>(memLocationPtr1);
+    bool isMemLocation2BitCast = llvm::isa<llvm::BitCastInst>(memLocationPtr2);
+    if (isMemLocation1BitCast != isMemLocation2BitCast) return false;
+
+    if (isMemLocation1BitCast) {
+      const auto memLocation1BitCast = llvm::cast<llvm::BitCastInst>(memLocationPtr1);
+      const auto memLocation2BitCast = llvm::cast<llvm::BitCastInst>(memLocationPtr2);
+      bool isEqual = isBitCastInstEqual(memLocation1BitCast, memLocation2BitCast);
+      if (!isEqual) return false;
+
+      memLocationPtr1 = memLocation1BitCast->getOperand(0);
+      memLocationPtr2 = memLocation2BitCast->getOperand(0);
+      continue;
+    }
+  } while (true);
 }
 
 bool
-DataFlowFacts::isMemoryLocationInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
-  /*
-   * If we get an alloca instruction e.g. from a load instruction we need to check
-   * every tainted store instruction for that address.
-   */
-  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(value)) {
-    return isAllocaInstInFacts(facts, allocaInst);
-  }
-  /*
-   * We cannot compare a GEP instruction via object reference as for every load a new
-   * instance will be created. Although it possibly holds the same address as a GEP instruction
-   * already part of the set of facts comparison via pointer yields wrong results. Apply own
-   * equality logic supporting nested GEP's. As with alloca instructions we need to search
-   * all store instructions.
-   */
-  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
-    return isGEPInstInFacts(facts, gepInst);
-  }
-  /*
-   * Unions... Check every tainted store instruction for a bitCastInst and whether they are
-   * pointing to the same alloca instance.
-   */
-  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(value)) {
-    return isBitCastInstInFacts(facts, bitCastInst);
-  }
+DataFlowFacts::isMemoryLocationInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
+  bool isPtrType = memLocation->getType()->isPointerTy();
+  assert(isPtrType && "Memory location must be a Pointer Type");
 
-  throw std::runtime_error("We got a memory location of an unknown type -- Did we miss sth.?");
+  for (const auto fact : facts) {
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      const auto memLocationFact = storeFact->getPointerOperand();
+      bool isEqual = isMemoryLocationEqual(memLocationFact, memLocation);
+      if (isEqual) return true;
+    }
+  }
+  return false;
 }
 
 bool
 DataFlowFacts::isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
-  /*
-   * Compare via object reference
-   */
   return facts.count(value);
-}
-
-static void
-removeAllocaMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::AllocaInst* allocaInst) {
-  for (auto it = facts.begin(); it != facts.end(); ) {
-    const auto fact = *it;
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto allocaFact = llvm::dyn_cast<llvm::AllocaInst>(storeFact->getPointerOperand())) {
-        bool isEqual = allocaFact == allocaInst;
-        if (isEqual) {
-          it = facts.erase(it);
-          /*
-           * There can be more than one store statement pointing to the same alloca so we need to
-           * delete all of them. Example:
-           *
-           * int a;
-           * switch (x) {
-           * case 0:
-           *    a = 1;
-           *    break;
-           * case 1:
-           *    a = 2;
-           *    break;
-           * default:
-           *    a = 3;
-           * }
-           */
-          continue;
-        }
-      }
-    }
-    ++it;
-  }
-}
-
-static void
-removeGEPMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::GetElementPtrInst* gepInst) {
-  for (auto it = facts.begin(); it != facts.end(); ) {
-    const auto fact = *it;
-    bool isIteratorIncremented = false;
-
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto gepFact = llvm::dyn_cast<llvm::GetElementPtrInst>(storeFact->getPointerOperand())) {
-        const llvm::GetElementPtrInst* gepInstPtr = gepInst;
-        const llvm::GetElementPtrInst* gepFactPtr = gepFact;
-        do {
-          bool isEqual = DataFlowUtils::isGEPInstEqual(gepInstPtr, gepFactPtr);
-          if (!isEqual) break;
-
-          // If operand pointer was alloca instruction we are done
-          bool isFinal = llvm::isa<llvm::AllocaInst>(gepInstPtr->getPointerOperand());
-          if (isFinal) {
-            it = facts.erase(it);
-            isIteratorIncremented = true;
-            break;
-          }
-
-          // Continue with inner GEP
-          gepInstPtr = llvm::cast<llvm::GetElementPtrInst>(gepInstPtr->getPointerOperand());
-          gepFactPtr = llvm::cast<llvm::GetElementPtrInst>(gepFactPtr->getPointerOperand());
-        } while (true);
-      }
-    }
-    if (!isIteratorIncremented) ++it;
-  }
-}
-
-static void
-removeBitCastMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::BitCastInst* bitCastInst) {
-  for (auto it = facts.begin(); it != facts.end(); ) {
-    const auto fact = *it;
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      if (const auto bitCastFact = llvm::dyn_cast<llvm::BitCastInst>(storeFact->getPointerOperand())) {
-        const auto allocaFact = bitCastFact->getOperand(0);
-        const auto allocaInst = bitCastInst->getOperand(0);
-        bool isEqual = allocaFact == allocaInst;
-        if (isEqual) {
-          it = facts.erase(it);
-          continue;
-        }
-      }
-    }
-    ++it;
-  }
 }
 
 void
 DataFlowFacts::removeMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
-  /*
-   * If memory location is alloca instruction we need to find the corresponding store
-   * instruction in the facts set.
-   */
-  if (const auto allocaMemLocation = llvm::dyn_cast<llvm::AllocaInst>(memLocation)) {
-    removeAllocaMemoryLocation(facts, allocaMemLocation);
-  }
-  /*
-   * If memory location is a GEP instruction we cannot use erase on the set instance
-   * as this works based on object references. Instead we have to iterate all facts
-   * and remove the GEP instruction that is pointing to the store instruction's
-   * memory location.
-   */
-  else if (const auto gepMemLocation = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
-    removeGEPMemoryLocation(facts, gepMemLocation);
-  }
-  /*
-   * Find the store instructions holding bitcast that points to same alloca instruction
-   * as our memLocation
-   */
-  else if (const auto bitCastMemLocation = llvm::dyn_cast<llvm::BitCastInst>(memLocation)) {
-    removeBitCastMemoryLocation(facts, bitCastMemLocation);
-  }
-  else {
-    throw std::runtime_error("We got a memory location of an unknown type -- Did we miss sth.?");
+  bool isPtrType = memLocation->getType()->isPointerTy();
+  assert(isPtrType && "Memory location must be a Pointer Type");
+
+  for (auto it = facts.begin(); it != facts.end(); ) {
+    const auto fact = *it;
+    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+      const auto memLocationFact = storeFact->getPointerOperand();
+      bool isEqual = isMemoryLocationEqual(memLocationFact, memLocation);
+      if (isEqual) {
+        it = facts.erase(it);
+        continue;
+      }
+    }
+    ++it;
   }
 }
 

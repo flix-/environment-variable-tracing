@@ -6,42 +6,6 @@
 
 using namespace psr;
 
-bool
-DataFlowUtils::isGEPInstEqual(const llvm::GetElementPtrInst* gepInst, const llvm::GetElementPtrInst* gepFact) {
-  if (gepInst->getNumOperands() != gepFact->getNumOperands()) return false;
-
-  for (unsigned int i = 0; i < gepInst->getNumOperands(); i++) {
-    const auto *gepInstOperand = gepInst->getOperand(i);
-    const auto *gepFactOperand = gepFact->getOperand(i);
-
-    /*
-     * Compare the first operand (ptr) by type if it is another GEP instruction.
-     * This is necessary for nested structs as another GEP instructions cannot
-     * be compared via object reference.
-     */
-    bool isInstOperandGepPtr = llvm::isa<llvm::GetElementPtrInst>(gepInstOperand);
-    bool isFactOperandGepPtr = llvm::isa<llvm::GetElementPtrInst>(gepFactOperand);
-    if (isInstOperandGepPtr != isFactOperandGepPtr) return false;
-
-    if (isInstOperandGepPtr && isFactOperandGepPtr) {
-      const auto gepInstOperandType = gepInstOperand->getType();
-      const auto gepFactOperandType = gepFactOperand->getType();
-      if (gepInstOperandType != gepFactOperandType) {
-        return false;
-      }
-      continue;
-    }
-
-    /*
-     * Compare everything else via object reference (alloca / indices)
-     */
-    if (gepInstOperand != gepFactOperand) {
-      return false;
-    }
-  }
-  return true;
-}
-
 static bool
 isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction *instruction) {
   const auto bbInst = instruction->getParent();
