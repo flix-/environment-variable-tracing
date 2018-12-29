@@ -30,7 +30,7 @@ main()
     s.u.s.u[0].taint = getenv("hello world");
     char *also_tainted = s.u.s.u[0].taint;
 
-    s.u.a = 1;
+    s.u.s.u[0].a = 1;
     char *not_tainted = s.u.s.u[0].taint;
 
     return 0;

@@ -35,17 +35,20 @@ entry:
   %0 = load i8*, i8** %taint7, align 8, !dbg !50
   store i8* %0, i8** %also_tainted, align 8, !dbg !45
   %u8 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !51
-  %a = bitcast %union.u1* %u8 to i32*, !dbg !52
-  store i32 1, i32* %a, align 8, !dbg !53
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !54, metadata !35), !dbg !55
-  %u9 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !56
-  %s10 = bitcast %union.u1* %u9 to %struct.s2*, !dbg !57
-  %u11 = getelementptr inbounds %struct.s2, %struct.s2* %s10, i32 0, i32 0, !dbg !58
-  %arrayidx12 = getelementptr inbounds [2 x %union.u2], [2 x %union.u2]* %u11, i64 0, i64 0, !dbg !59
-  %taint13 = bitcast %union.u2* %arrayidx12 to i8**, !dbg !60
-  %1 = load i8*, i8** %taint13, align 8, !dbg !60
-  store i8* %1, i8** %not_tainted, align 8, !dbg !55
-  ret i32 0, !dbg !61
+  %s9 = bitcast %union.u1* %u8 to %struct.s2*, !dbg !52
+  %u10 = getelementptr inbounds %struct.s2, %struct.s2* %s9, i32 0, i32 0, !dbg !53
+  %arrayidx11 = getelementptr inbounds [2 x %union.u2], [2 x %union.u2]* %u10, i64 0, i64 0, !dbg !54
+  %a = bitcast %union.u2* %arrayidx11 to i32*, !dbg !55
+  store i32 1, i32* %a, align 8, !dbg !56
+  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !57, metadata !35), !dbg !58
+  %u12 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !59
+  %s13 = bitcast %union.u1* %u12 to %struct.s2*, !dbg !60
+  %u14 = getelementptr inbounds %struct.s2, %struct.s2* %s13, i32 0, i32 0, !dbg !61
+  %arrayidx15 = getelementptr inbounds [2 x %union.u2], [2 x %union.u2]* %u14, i64 0, i64 0, !dbg !62
+  %taint16 = bitcast %union.u2* %arrayidx15 to i8**, !dbg !63
+  %1 = load i8*, i8** %taint16, align 8, !dbg !63
+  store i8* %1, i8** %not_tainted, align 8, !dbg !58
+  ret i32 0, !dbg !64
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -115,11 +118,14 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !51 = !DILocation(line: 33, column: 7, scope: !7)
 !52 = !DILocation(line: 33, column: 9, scope: !7)
 !53 = !DILocation(line: 33, column: 11, scope: !7)
-!54 = !DILocalVariable(name: "not_tainted", scope: !7, file: !1, line: 34, type: !15)
-!55 = !DILocation(line: 34, column: 11, scope: !7)
-!56 = !DILocation(line: 34, column: 27, scope: !7)
-!57 = !DILocation(line: 34, column: 29, scope: !7)
-!58 = !DILocation(line: 34, column: 31, scope: !7)
-!59 = !DILocation(line: 34, column: 25, scope: !7)
-!60 = !DILocation(line: 34, column: 36, scope: !7)
-!61 = !DILocation(line: 36, column: 5, scope: !7)
+!54 = !DILocation(line: 33, column: 5, scope: !7)
+!55 = !DILocation(line: 33, column: 16, scope: !7)
+!56 = !DILocation(line: 33, column: 18, scope: !7)
+!57 = !DILocalVariable(name: "not_tainted", scope: !7, file: !1, line: 34, type: !15)
+!58 = !DILocation(line: 34, column: 11, scope: !7)
+!59 = !DILocation(line: 34, column: 27, scope: !7)
+!60 = !DILocation(line: 34, column: 29, scope: !7)
+!61 = !DILocation(line: 34, column: 31, scope: !7)
+!62 = !DILocation(line: 34, column: 25, scope: !7)
+!63 = !DILocation(line: 34, column: 36, scope: !7)
+!64 = !DILocation(line: 36, column: 5, scope: !7)

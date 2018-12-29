@@ -12,9 +12,9 @@ class DataFlowFacts
 public:
   DataFlowFacts() = delete;
 
-  static bool isMemoryLocationInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value);
+  static bool isExactMemoryLocationTainted(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value);
   static bool isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value);
-  static void removeMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation);
+  static void removeExactMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation);
   static const llvm::Value* findBranchOrSwitchInstInFacts(const MonoSet<const llvm::Value*>& facts);
 };
 

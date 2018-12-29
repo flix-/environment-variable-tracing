@@ -31,12 +31,13 @@ isGEPInstEqual(const llvm::GetElementPtrInst* gepInst1, const llvm::GetElementPt
   return true;
 }
 
-static bool
-isBitCastInstEqual(const llvm::BitCastInst* bitCastInst1, const llvm::BitCastInst* bitCastInst2) {
-  bool isValueTypeEqual = bitCastInst1->getOperand(0)->getType() == bitCastInst2->getOperand(0)->getType();
-  if (!isValueTypeEqual) return false;
-
-  return true;
+static const llvm::Value*
+getNextNonBitCastPointer(const llvm::Value* bitCastInst) {
+  auto ptr = bitCastInst;
+  while (const auto bitCastPtr = llvm::dyn_cast<llvm::BitCastInst>(ptr)) {
+    ptr = bitCastPtr->getOperand(0);
+  }
+  return ptr;
 }
 
 static bool
@@ -44,6 +45,14 @@ isMemoryLocationEqual(const llvm::Value* memLocation1, const llvm::Value* memLoc
   const llvm::Value* memLocationPtr1 = memLocation1;
   const llvm::Value* memLocationPtr2 = memLocation2;
   do {
+    /*
+     * We move forward to the next non BitCastInst pointer as BitCasts do not
+     * change the memory location but only its interpretation. Blindly trying
+     * without cast check fuzz...
+     */
+    memLocationPtr1 = getNextNonBitCastPointer(memLocationPtr1);
+    memLocationPtr2 = getNextNonBitCastPointer(memLocationPtr2);
+
     // Try Alloca
     bool isMemLocation1Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr1);
     bool isMemLocation2Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr2);
@@ -70,27 +79,11 @@ isMemoryLocationEqual(const llvm::Value* memLocation1, const llvm::Value* memLoc
       memLocationPtr2 = memLocation2GEP->getPointerOperand();
       continue;
     }
-
-    // Try BitCast
-    bool isMemLocation1BitCast = llvm::isa<llvm::BitCastInst>(memLocationPtr1);
-    bool isMemLocation2BitCast = llvm::isa<llvm::BitCastInst>(memLocationPtr2);
-    if (isMemLocation1BitCast != isMemLocation2BitCast) return false;
-
-    if (isMemLocation1BitCast) {
-      const auto memLocation1BitCast = llvm::cast<llvm::BitCastInst>(memLocationPtr1);
-      const auto memLocation2BitCast = llvm::cast<llvm::BitCastInst>(memLocationPtr2);
-      bool isEqual = isBitCastInstEqual(memLocation1BitCast, memLocation2BitCast);
-      if (!isEqual) return false;
-
-      memLocationPtr1 = memLocation1BitCast->getOperand(0);
-      memLocationPtr2 = memLocation2BitCast->getOperand(0);
-      continue;
-    }
   } while (true);
 }
 
 bool
-DataFlowFacts::isMemoryLocationInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
+DataFlowFacts::isExactMemoryLocationTainted(const MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
   bool isPtrType = memLocation->getType()->isPointerTy();
   assert(isPtrType && "Memory location must be a Pointer Type");
 
@@ -110,7 +103,7 @@ DataFlowFacts::isValueInFacts(const MonoSet<const llvm::Value*>& facts, const ll
 }
 
 void
-DataFlowFacts::removeMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
+DataFlowFacts::removeExactMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
   bool isPtrType = memLocation->getType()->isPointerTy();
   assert(isPtrType && "Memory location must be a Pointer Type");
 

@@ -7,31 +7,23 @@ union u2 {
     char *taint;
 };
 
-struct s2 {
-    union u2 u[2];
-};
-
 union u1 {
     int a;
     double b;
-    struct s2 s;
-};
-
-struct s1 {
-    char *taint;
-    union u1 u;
-    int a;
+    union u2 u;
 };
 
 int
 main()
 {
-    struct s1 s;
-    s.u.s.u[0].taint = getenv("hello world");
-    char *also_tainted = s.u.s.u[0].taint;
+    union u1 un;
+    un.u.taint = getenv("hello world");
 
-    s.u.s.u[0].a = 1;
-    char *not_tainted = s.u.s.u[0].taint;
+    char *a = un.u.taint;
+
+    un.a = 1;
+
+    char *b = un.u.taint;
 
     return 0;
 }

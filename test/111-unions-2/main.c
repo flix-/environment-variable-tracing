@@ -21,7 +21,7 @@ main()
 
     char *a = un.u.taint;
 
-    un.a = 1;
+    un.u.a = 1;
 
     char *b = un.u.taint;
 

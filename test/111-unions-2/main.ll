@@ -26,14 +26,15 @@ entry:
   %taint2 = bitcast %union.u2* %u1 to i8**, !dbg !33
   %0 = load i8*, i8** %taint2, align 8, !dbg !33
   store i8* %0, i8** %a, align 8, !dbg !31
-  %a3 = bitcast %union.u1* %un to i32*, !dbg !34
-  store i32 1, i32* %a3, align 8, !dbg !35
-  call void @llvm.dbg.declare(metadata i8** %b, metadata !36, metadata !24), !dbg !37
-  %u4 = bitcast %union.u1* %un to %union.u2*, !dbg !38
-  %taint5 = bitcast %union.u2* %u4 to i8**, !dbg !39
-  %1 = load i8*, i8** %taint5, align 8, !dbg !39
-  store i8* %1, i8** %b, align 8, !dbg !37
-  ret i32 0, !dbg !40
+  %u3 = bitcast %union.u1* %un to %union.u2*, !dbg !34
+  %a4 = bitcast %union.u2* %u3 to i32*, !dbg !35
+  store i32 1, i32* %a4, align 8, !dbg !36
+  call void @llvm.dbg.declare(metadata i8** %b, metadata !37, metadata !24), !dbg !38
+  %u5 = bitcast %union.u1* %un to %union.u2*, !dbg !39
+  %taint6 = bitcast %union.u2* %u5 to i8**, !dbg !40
+  %1 = load i8*, i8** %taint6, align 8, !dbg !40
+  store i8* %1, i8** %b, align 8, !dbg !38
+  ret i32 0, !dbg !41
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -85,8 +86,9 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !33 = !DILocation(line: 22, column: 20, scope: !7)
 !34 = !DILocation(line: 24, column: 8, scope: !7)
 !35 = !DILocation(line: 24, column: 10, scope: !7)
-!36 = !DILocalVariable(name: "b", scope: !7, file: !1, line: 26, type: !22)
-!37 = !DILocation(line: 26, column: 11, scope: !7)
-!38 = !DILocation(line: 26, column: 18, scope: !7)
-!39 = !DILocation(line: 26, column: 20, scope: !7)
-!40 = !DILocation(line: 28, column: 5, scope: !7)
+!36 = !DILocation(line: 24, column: 12, scope: !7)
+!37 = !DILocalVariable(name: "b", scope: !7, file: !1, line: 26, type: !22)
+!38 = !DILocation(line: 26, column: 11, scope: !7)
+!39 = !DILocation(line: 26, column: 18, scope: !7)
+!40 = !DILocation(line: 26, column: 20, scope: !7)
+!41 = !DILocation(line: 28, column: 5, scope: !7)

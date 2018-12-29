@@ -146,7 +146,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got load instruction" << "\n";
 
     const auto memLocation = loadInst->getPointerOperand();
-    bool isMemLocationTainted = DataFlowFacts::isMemoryLocationInFacts(newFacts, memLocation);
+    bool isMemLocationTainted = DataFlowFacts::isExactMemoryLocationTainted(newFacts, memLocation);
 
     /*
      * memLocationTainted |
@@ -166,7 +166,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     const auto memLocation = storeInst->getPointerOperand();
 
     const auto value = storeInst->getValueOperand();
-    bool isMemLocationTainted = DataFlowFacts::isMemoryLocationInFacts(newFacts, memLocation);
+    bool isMemLocationTainted = DataFlowFacts::isExactMemoryLocationTainted(newFacts, memLocation);
     bool isValueTainted = DataFlowFacts::isValueInFacts(newFacts, value);
 
     /*
@@ -179,7 +179,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     // KILL
     if (isMemLocationTainted) {
       llvm::outs() << "Removing store instruction" << "\n";
-      DataFlowFacts::removeMemoryLocation(newFacts, memLocation);
+      DataFlowFacts::removeExactMemoryLocation(newFacts, memLocation);
     }
     // GEN
     if (isValueTainted) {
