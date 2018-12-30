@@ -8,12 +8,18 @@
 using namespace psr;
 
 static const llvm::Value*
-getNextNonBitCastPointer(const llvm::Value* bitCastInst) {
-  auto ptr = bitCastInst;
-  while (const auto bitCastPtr = llvm::dyn_cast<llvm::BitCastInst>(ptr)) {
-    ptr = bitCastPtr->getOperand(0);
+getFirstMemoryLocationAfterHighestBitCast(const llvm::Value* value) {
+  const llvm::BitCastInst* latestBitCastInst = nullptr;
+
+  const llvm::Instruction* memInstructionPtr = llvm::cast<llvm::Instruction>(value);
+  while (!llvm::isa<llvm::AllocaInst>(memInstructionPtr)) {
+    bool isBitCast = llvm::isa<llvm::BitCastInst>(memInstructionPtr);
+    if (isBitCast) latestBitCastInst = llvm::cast<llvm::BitCastInst>(memInstructionPtr);
+
+    memInstructionPtr = llvm::cast<llvm::Instruction>(memInstructionPtr->getOperand(0));
   }
-  return ptr;
+  if (latestBitCastInst == nullptr) return value;
+  return latestBitCastInst->getOperand(0);
 }
 
 static bool
@@ -22,61 +28,68 @@ isAllocaInstEqual(const llvm::AllocaInst* allocaInst1, const llvm::AllocaInst* a
 }
 
 static bool
-isGEPInstEqual(const llvm::GetElementPtrInst* gepInst1, const llvm::GetElementPtrInst* gepInst2) {
-  bool hasSameNumOfOperands = gepInst1->getNumOperands() == gepInst2->getNumOperands();
+isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP, const llvm::GetElementPtrInst* memLocationInstGEP) {
+  bool hasSameNumOfOperands = memLocationFactGEP->getNumOperands() == memLocationInstGEP->getNumOperands();
   if (!hasSameNumOfOperands) return false;
 
   // Compare Pointer Type
-  const auto gepInst1OperandType = gepInst1->getOperand(0)->getType();
-  const auto gepInst2OperandType = gepInst2->getOperand(0)->getType();
-  if (gepInst1OperandType != gepInst2OperandType) return false;
+  const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
+  const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
+  if (gepFactOperandType != gepInstOperandType) return false;
 
   // Compare Indices
-  for (unsigned int i = 1; i < gepInst1->getNumOperands(); i++) {
-    const auto *gepInst1Indice = gepInst1->getOperand(i);
-    const auto *gepInst2Indice = gepInst2->getOperand(i);
-    if (gepInst1Indice != gepInst2Indice) return false;
+  for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
+    const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
+    const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
+    if (gepFactIndice != gepInstIndice) return false;
   }
   return true;
 }
 
 static bool
-isMemoryLocationEqual(const llvm::Value* memLocation1, const llvm::Value* memLocation2) {
-  const llvm::Value* memLocationPtr1 = memLocation1;
-  const llvm::Value* memLocationPtr2 = memLocation2;
+isSameOpcode(const llvm::Value* op1, const llvm::Value* op2) {
+  const auto inst1 = llvm::cast<llvm::Instruction>(op1);
+  const auto inst2 = llvm::cast<llvm::Instruction>(op2);
+
+  return inst1->getOpcode() == inst2->getOpcode();
+}
+
+static bool
+isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
+  /*
+   * We start after the last BitCast because that is the most outer union. Everything within points
+   * to the same memory location (same AllocaInst). So if e.g. we have a union that contains x nested
+   * structs including y nested arrays all we need to compare is the alloca instruction 1 up to the
+   * BitCast instruction...
+   */
+  const llvm::Value* memLocationFactPtr = getFirstMemoryLocationAfterHighestBitCast(memLocationFact);
+  const llvm::Value* memLocationInstPtr = getFirstMemoryLocationAfterHighestBitCast(memLocationInst);
+
   do {
-    /*
-     * We move forward to the next non BitCastInst pointer as BitCasts do not
-     * change the memory location but only its interpretation. Blindly trying
-     * without cast check fuzz...
-     */
-    memLocationPtr1 = getNextNonBitCastPointer(memLocationPtr1);
-    memLocationPtr2 = getNextNonBitCastPointer(memLocationPtr2);
+    bool sameOpcode = isSameOpcode(memLocationFactPtr, memLocationInstPtr);
+    if (!sameOpcode) return false;
 
     // Try Alloca
-    bool isMemLocation1Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr1);
-    bool isMemLocation2Alloca = llvm::isa<llvm::AllocaInst>(memLocationPtr2);
-    if (isMemLocation1Alloca != isMemLocation2Alloca) return false;
+    bool isAlloca = llvm::isa<llvm::AllocaInst>(memLocationFactPtr);
+    if (isAlloca) {
+      const auto memLocationFactAlloca = llvm::cast<llvm::AllocaInst>(memLocationFactPtr);
+      const auto memLocationInstAlloca = llvm::cast<llvm::AllocaInst>(memLocationInstPtr);
 
-    if (isMemLocation1Alloca) {
-      const auto memLocation1Alloca = llvm::cast<llvm::AllocaInst>(memLocationPtr1);
-      const auto memLocation2Alloca = llvm::cast<llvm::AllocaInst>(memLocationPtr2);
-      return isAllocaInstEqual(memLocation1Alloca, memLocation2Alloca);
+      return isAllocaInstEqual(memLocationFactAlloca, memLocationInstAlloca);
     }
 
     // Try GEP
-    bool isMemLocation1GEP = llvm::isa<llvm::GetElementPtrInst>(memLocationPtr1);
-    bool isMemLocation2GEP = llvm::isa<llvm::GetElementPtrInst>(memLocationPtr2);
-    if (isMemLocation1GEP != isMemLocation2GEP) return false;
+    bool isGEP = llvm::isa<llvm::GetElementPtrInst>(memLocationFactPtr);
+    if (isGEP) {
+      const auto memLocationFactGEP = llvm::cast<llvm::GetElementPtrInst>(memLocationFactPtr);
+      const auto memLocationInstGEP = llvm::cast<llvm::GetElementPtrInst>(memLocationInstPtr);
 
-    if (isMemLocation1GEP) {
-      const auto memLocation1GEP = llvm::cast<llvm::GetElementPtrInst>(memLocationPtr1);
-      const auto memLocation2GEP = llvm::cast<llvm::GetElementPtrInst>(memLocationPtr2);
-      bool isEqual = isGEPInstEqual(memLocation1GEP, memLocation2GEP);
+      bool isEqual = isGEPInstEqual(memLocationFactGEP, memLocationInstGEP);
       if (!isEqual) return false;
 
-      memLocationPtr1 = memLocation1GEP->getPointerOperand();
-      memLocationPtr2 = memLocation2GEP->getPointerOperand();
+      memLocationFactPtr = memLocationFactGEP->getPointerOperand();
+      memLocationInstPtr = memLocationInstGEP->getPointerOperand();
+
       continue;
     }
   } while (true);

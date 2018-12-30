@@ -2,36 +2,39 @@ extern char *getenv(const char *name);
 extern int foo();
 extern int bar();
 
-union u2 {
-    int a;
+union u3 {
     char *taint;
+    char *tainted;
 };
 
-struct s2 {
-    union u2 u[2];
+union u2 {
+    char *taint;
+    double d;
+    union u3 u;
 };
 
 union u1 {
-    int a;
-    double b;
-    struct s2 s;
+    union u2 u;
+    char *taint;
 };
 
 struct s1 {
-    char *taint;
     union u1 u;
-    int a;
+    union u2 uu;
+    char *taint;
 };
 
 int
 main()
 {
     struct s1 s;
-    s.u.s.u[0].taint = getenv("hello world");
-    char *also_tainted = s.u.s.u[0].taint;
+    s.taint = getenv("hi");
 
-    s.u.a = 1;
-    char *not_tainted = s.u.s.u[0].taint;
+    char *tainted = s.taint;
+    char *not_tainted = s.u.u.u.tainted;
+
+    s.u.taint = s.taint;
+    tainted = s.u.taint;
 
     return 0;
 }

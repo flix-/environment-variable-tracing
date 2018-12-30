@@ -2,23 +2,29 @@ extern char *getenv(const char *name);
 extern int foo();
 extern int bar();
 
+union u3 {
+    char *taint;
+    char *tainted;
+};
+
+union u2 {
+    char *taint;
+    double d;
+    union u3 u;
+};
+
 union u1 {
-    int a;
-    double b;
+    union u2 u;
     char *taint;
 };
 
 int
 main()
 {
-    union u1 un;
-    un.taint = getenv("hello world");
+    union u1 u;
+    u.u.u.taint = getenv("hi");
 
-    char *a = un.taint;
-
-    un.a = 1;
-
-    char *b = un.taint;
+    char *tainted = u.taint;
 
     return 0;
 }

@@ -3,33 +3,30 @@ source_filename = "main.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
 
-%union.u1 = type { double }
+%union.u1 = type { %union.u2 }
+%union.u2 = type { i8* }
+%union.u3 = type { i8* }
 
-@.str = private unnamed_addr constant [12 x i8] c"hello world\00", align 1
+@.str = private unnamed_addr constant [3 x i8] c"hi\00", align 1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define i32 @main() #0 !dbg !7 {
 entry:
   %retval = alloca i32, align 4
-  %un = alloca %union.u1, align 8
-  %a = alloca i8*, align 8
-  %b = alloca i8*, align 8
+  %u = alloca %union.u1, align 8
+  %tainted = alloca i8*, align 8
   store i32 0, i32* %retval, align 4
-  call void @llvm.dbg.declare(metadata %union.u1* %un, metadata !11, metadata !20), !dbg !21
-  %call = call i8* @getenv(i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str, i32 0, i32 0)), !dbg !22
-  %taint = bitcast %union.u1* %un to i8**, !dbg !23
-  store i8* %call, i8** %taint, align 8, !dbg !24
-  call void @llvm.dbg.declare(metadata i8** %a, metadata !25, metadata !20), !dbg !26
-  %taint1 = bitcast %union.u1* %un to i8**, !dbg !27
-  %0 = load i8*, i8** %taint1, align 8, !dbg !27
-  store i8* %0, i8** %a, align 8, !dbg !26
-  %a2 = bitcast %union.u1* %un to i32*, !dbg !28
-  store i32 1, i32* %a2, align 8, !dbg !29
-  call void @llvm.dbg.declare(metadata i8** %b, metadata !30, metadata !20), !dbg !31
-  %taint3 = bitcast %union.u1* %un to i8**, !dbg !32
-  %1 = load i8*, i8** %taint3, align 8, !dbg !32
-  store i8* %1, i8** %b, align 8, !dbg !31
-  ret i32 0, !dbg !33
+  call void @llvm.dbg.declare(metadata %union.u1* %u, metadata !11, metadata !28), !dbg !29
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !30
+  %u1 = bitcast %union.u1* %u to %union.u2*, !dbg !31
+  %u2 = bitcast %union.u2* %u1 to %union.u3*, !dbg !32
+  %taint = bitcast %union.u3* %u2 to i8**, !dbg !33
+  store i8* %call, i8** %taint, align 8, !dbg !34
+  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !35, metadata !28), !dbg !36
+  %taint3 = bitcast %union.u1* %u to i8**, !dbg !37
+  %0 = load i8*, i8** %taint3, align 8, !dbg !37
+  store i8* %0, i8** %tainted, align 8, !dbg !36
+  ret i32 0, !dbg !38
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -52,30 +49,35 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !4 = !{i32 2, !"Debug Info Version", i32 3}
 !5 = !{i32 1, !"wchar_size", i32 4}
 !6 = !{!"clang version 5.0.1 (tags/RELEASE_501/final 348479)"}
-!7 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 12, type: !8, isLocal: false, isDefinition: true, scopeLine: 13, isOptimized: false, unit: !0, variables: !2)
+!7 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 22, type: !8, isLocal: false, isDefinition: true, scopeLine: 23, isOptimized: false, unit: !0, variables: !2)
 !8 = !DISubroutineType(types: !9)
 !9 = !{!10}
 !10 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!11 = !DILocalVariable(name: "un", scope: !7, file: !1, line: 14, type: !12)
-!12 = distinct !DICompositeType(tag: DW_TAG_union_type, name: "u1", file: !1, line: 5, size: 64, elements: !13)
-!13 = !{!14, !15, !17}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "a", scope: !12, file: !1, line: 6, baseType: !10, size: 32)
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "b", scope: !12, file: !1, line: 7, baseType: !16, size: 64)
-!16 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
-!17 = !DIDerivedType(tag: DW_TAG_member, name: "taint", scope: !12, file: !1, line: 8, baseType: !18, size: 64)
+!11 = !DILocalVariable(name: "u", scope: !7, file: !1, line: 24, type: !12)
+!12 = distinct !DICompositeType(tag: DW_TAG_union_type, name: "u1", file: !1, line: 16, size: 64, elements: !13)
+!13 = !{!14, !27}
+!14 = !DIDerivedType(tag: DW_TAG_member, name: "u", scope: !12, file: !1, line: 17, baseType: !15, size: 64)
+!15 = distinct !DICompositeType(tag: DW_TAG_union_type, name: "u2", file: !1, line: 10, size: 64, elements: !16)
+!16 = !{!17, !20, !22}
+!17 = !DIDerivedType(tag: DW_TAG_member, name: "taint", scope: !15, file: !1, line: 11, baseType: !18, size: 64)
 !18 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !19, size: 64)
 !19 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-!20 = !DIExpression()
-!21 = !DILocation(line: 14, column: 14, scope: !7)
-!22 = !DILocation(line: 15, column: 16, scope: !7)
-!23 = !DILocation(line: 15, column: 8, scope: !7)
-!24 = !DILocation(line: 15, column: 14, scope: !7)
-!25 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 17, type: !18)
-!26 = !DILocation(line: 17, column: 11, scope: !7)
-!27 = !DILocation(line: 17, column: 18, scope: !7)
-!28 = !DILocation(line: 19, column: 8, scope: !7)
-!29 = !DILocation(line: 19, column: 10, scope: !7)
-!30 = !DILocalVariable(name: "b", scope: !7, file: !1, line: 21, type: !18)
-!31 = !DILocation(line: 21, column: 11, scope: !7)
-!32 = !DILocation(line: 21, column: 18, scope: !7)
-!33 = !DILocation(line: 23, column: 5, scope: !7)
+!20 = !DIDerivedType(tag: DW_TAG_member, name: "d", scope: !15, file: !1, line: 12, baseType: !21, size: 64)
+!21 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "u", scope: !15, file: !1, line: 13, baseType: !23, size: 64)
+!23 = distinct !DICompositeType(tag: DW_TAG_union_type, name: "u3", file: !1, line: 5, size: 64, elements: !24)
+!24 = !{!25, !26}
+!25 = !DIDerivedType(tag: DW_TAG_member, name: "taint", scope: !23, file: !1, line: 6, baseType: !18, size: 64)
+!26 = !DIDerivedType(tag: DW_TAG_member, name: "tainted", scope: !23, file: !1, line: 7, baseType: !18, size: 64)
+!27 = !DIDerivedType(tag: DW_TAG_member, name: "taint", scope: !12, file: !1, line: 18, baseType: !18, size: 64)
+!28 = !DIExpression()
+!29 = !DILocation(line: 24, column: 14, scope: !7)
+!30 = !DILocation(line: 25, column: 19, scope: !7)
+!31 = !DILocation(line: 25, column: 7, scope: !7)
+!32 = !DILocation(line: 25, column: 9, scope: !7)
+!33 = !DILocation(line: 25, column: 11, scope: !7)
+!34 = !DILocation(line: 25, column: 17, scope: !7)
+!35 = !DILocalVariable(name: "tainted", scope: !7, file: !1, line: 27, type: !18)
+!36 = !DILocation(line: 27, column: 11, scope: !7)
+!37 = !DILocation(line: 27, column: 23, scope: !7)
+!38 = !DILocation(line: 29, column: 5, scope: !7)
