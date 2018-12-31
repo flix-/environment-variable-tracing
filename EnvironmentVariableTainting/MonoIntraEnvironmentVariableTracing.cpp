@@ -8,9 +8,10 @@
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
+#include "llvm/IR/IntrinsicInst.h"
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Constants.h>
-#include <llvm/IR/CFG.h>
+
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -42,8 +43,7 @@ MonoSet<const llvm::Value*>
 MonoIntraEnvironmentVariableTracing::join(const MonoSet<const llvm::Value*>& oldFacts, const MonoSet<const llvm::Value*>& newFacts) {
 
   MonoSet<const llvm::Value*> res;
-  std::set_union(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end(),
-    std::inserter(res, res.begin()));
+  std::set_union(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end(), std::inserter(res, res.begin()));
 
   for (const auto v : res) {
     if (const auto instruction = llvm::dyn_cast<llvm::Instruction>(v)) {
@@ -65,7 +65,7 @@ MonoIntraEnvironmentVariableTracing::sqSubSetEqual(const MonoSet<const llvm::Val
    */
   bool isNewFactsSubsetOfOldFacts = std::includes(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end());
 
-  //DataFlowUtils::dumpFacts(newFacts);
+  DataFlowUtils::dumpFacts(newFacts);
 
   return isNewFactsSubsetOfOldFacts;
 }
@@ -127,13 +127,34 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
    * Check instructions for tainted values
    */
 
+  // Intrinsics... Memcpy (later check IntrinsicInst --> MemIntrinsic)
+  if (const auto memCpyInst = llvm::dyn_cast<llvm::MemCpyInst>(instruction)) {
+    llvm::outs() << "Got memcpy instruction" << "\n";
+
+    const auto srcMemLocation = memCpyInst->getRawSource();
+    const auto dstMemLocation = memCpyInst->getRawDest();
+
+    bool isSrcMemLocationTainted = DataFlowFacts::isMemoryLocationTainted(newFacts, srcMemLocation);
+
+    // KILL
+    llvm::outs() << "Removing memory location" << "\n";
+    DataFlowFacts::removeMemoryLocation(newFacts, dstMemLocation);
+
+    // GEN
+    if (isSrcMemLocationTainted) {
+      llvm::outs() << "Adding memory location (memcpy)" << "\n";
+      newFacts.insert(memCpyInst);
+    }
+    return newFacts;
+  }
   // Call instruction
-  if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
+  else if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
     llvm::outs() << "Got call instruction" << "\n";
 
-    for (const auto &use : callInst->operands()) {
-      auto functionName = use->getName();
-      bool isTaintedCall = functionName.compare_lower(TAINT_CALL) == 0;
+    const auto calledFunction = callInst->getCalledFunction();
+    if (calledFunction) {
+      const auto calledFunctionName = calledFunction->getName();
+      bool isTaintedCall = calledFunctionName.compare_lower(TAINT_CALL) == 0;
       if (isTaintedCall) {
         llvm::outs() << "Adding call instruction fact" << "\n";
         newFacts.insert(callInst);
@@ -146,7 +167,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got load instruction" << "\n";
 
     const auto memLocation = loadInst->getPointerOperand();
-    bool isMemLocationTainted = DataFlowFacts::isExactMemoryLocationTainted(newFacts, memLocation);
+    bool isMemLocationTainted = DataFlowFacts::isMemoryLocationTainted(newFacts, memLocation);
 
     /*
      * memLocationTainted |
@@ -164,10 +185,14 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got store instruction" << "\n";
 
     const auto memLocation = storeInst->getPointerOperand();
-
     const auto value = storeInst->getValueOperand();
-    bool isMemLocationTainted = DataFlowFacts::isExactMemoryLocationTainted(newFacts, memLocation);
-    bool isValueTainted = DataFlowFacts::isValueInFacts(newFacts, value);
+
+    /*
+     * If our value is a pointer we need to search memory locations
+     */
+    bool isValueTainted = DataFlowFacts::isMemoryLocation(value) ?
+          DataFlowFacts::isMemoryLocationTainted(newFacts, value) :
+          DataFlowFacts::isValueTainted(newFacts, value);
 
     /*
      * memLocationTainted | valueTainted |
@@ -177,13 +202,12 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
      *        1           |      1       |  KILL/GEN
      */
     // KILL
-    if (isMemLocationTainted) {
-      llvm::outs() << "Removing store instruction" << "\n";
-      DataFlowFacts::removeExactMemoryLocation(newFacts, memLocation);
-    }
+    llvm::outs() << "Removing memory location" << "\n";
+    DataFlowFacts::removeMemoryLocation(newFacts, memLocation);
+
     // GEN
     if (isValueTainted) {
-      llvm::outs() << "Adding store instruction" << "\n";
+      llvm::outs() << "Adding memory location (store)" << "\n";
       newFacts.insert(storeInst);
     }
     return newFacts;
@@ -217,7 +241,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
           const auto &terminatorInst = block->getTerminator();
 
           for (const auto &use : terminatorInst->operands()) {
-            bool isTainted = DataFlowFacts::isValueInFacts(newFacts, use.get());
+            bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get());
             if (isTainted) {
               llvm::outs() << "Adding phi node instruction fact (constant)" << "\n";
               newFacts.insert(phiNodeInst);
@@ -230,7 +254,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
        * If it's not a constant check whether value is tainted...
        */
       else {
-        bool isTainted = DataFlowFacts::isValueInFacts(newFacts, incomingValue);
+        bool isTainted = DataFlowFacts::isValueTainted(newFacts, incomingValue);
         if (isTainted) {
           llvm::outs() << "Adding phi node instruction fact" << "\n";
           newFacts.insert(phiNodeInst);
@@ -252,7 +276,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     if (isConditional) {
       const auto &condition = branchInst->getCondition();
 
-      bool isTainted = DataFlowFacts::isValueInFacts(newFacts, condition);
+      bool isTainted = DataFlowFacts::isValueTainted(newFacts, condition);
       if (isTainted) {
         llvm::outs() << "Adding conditional branch instruction fact" << "\n";
         newFacts.insert(branchInst);
@@ -265,7 +289,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got switch instruction" << "\n";
 
     const auto &condition = switchInst->getCondition();
-    bool isTainted = DataFlowFacts::isValueInFacts(newFacts, condition);
+    bool isTainted = DataFlowFacts::isValueTainted(newFacts, condition);
     if (isTainted) {
       llvm::outs() << "Adding switch instruction fact" << "\n";
       newFacts.insert(switchInst);
@@ -277,7 +301,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got operands checking instruction (" << instruction->getOpcodeName() << ")" << "\n";
 
     for (const auto &use : instruction->operands()) {
-      bool isTainted = DataFlowFacts::isValueInFacts(newFacts, use.get());
+      bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get());
       if (isTainted) {
         llvm::outs() << "Adding fact" << "\n";
         newFacts.insert(instruction);
@@ -285,7 +309,6 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
       }
     }
   }
-
   return newFacts;
 }
 

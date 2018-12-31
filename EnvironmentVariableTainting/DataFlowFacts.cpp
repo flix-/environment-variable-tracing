@@ -3,6 +3,8 @@
 #include "DataFlowUtils.h"
 
 #include <llvm/IR/Instructions.h>
+#include "llvm/IR/IntrinsicInst.h"
+
 #include <llvm/Support/raw_ostream.h>
 
 using namespace psr;
@@ -57,10 +59,10 @@ isSameOpcode(const llvm::Value* op1, const llvm::Value* op2) {
 static bool
 isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
   /*
-   * We start after the last BitCast because that is the most outer union. Everything within points
-   * to the same memory location (same AllocaInst). So if e.g. we have a union that contains x nested
-   * structs including y nested arrays all we need to compare is the alloca instruction 1 up to the
-   * BitCast instruction...
+   * We start after the last BitCast because that is the most outer union. Everything within does not
+   * change the final memory location. So if e.g. we have a union that contains x nested structs
+   * including y nested arrays all we need to compare is the alloca instruction 1 up to the BitCast
+   * instruction...
    */
   const llvm::Value* memLocationFactPtr = getFirstMemoryLocationAfterHighestBitCast(memLocationFact);
   const llvm::Value* memLocationInstPtr = getFirstMemoryLocationAfterHighestBitCast(memLocationInst);
@@ -95,14 +97,47 @@ isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* mem
   } while (true);
 }
 
+static const llvm::Value*
+getMemoryLocationFromValue(const llvm::Value* value) {
+  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(value)) {
+    return storeInst->getPointerOperand();
+  }
+  if (const auto memCpyInst = llvm::dyn_cast<llvm::MemCpyInst>(value)) {
+    return memCpyInst->getRawDest();
+  }
+  return nullptr;
+}
+
 bool
-DataFlowFacts::isExactMemoryLocationTainted(const MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
-  bool isPtrType = memLocation->getType()->isPointerTy();
-  assert(isPtrType && "Memory location must be a Pointer Type");
+DataFlowFacts::isValueTainted(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
+  return facts.count(value);
+}
+
+const llvm::Value*
+getMemoryLocationInst(const llvm::Value* memLocation) {
+  bool isMemoryLocation = llvm::isa<llvm::AllocaInst>(memLocation) ||
+                          llvm::isa<llvm::GetElementPtrInst>(memLocation) ||
+                          llvm::isa<llvm::BitCastInst>(memLocation);
+  if (isMemoryLocation) return memLocation;
+
+  if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocation)) {
+    return getMemoryLocationInst(loadInst->getPointerOperand());
+  }
+  return nullptr;
+}
+
+bool
+DataFlowFacts::isMemoryLocation(const llvm::Value* value) {
+  return getMemoryLocationInst(value);
+}
+
+bool
+DataFlowFacts::isMemoryLocationTainted(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
+  const auto* memLocation = getMemoryLocationInst(value);
+  if (!memLocation) return false;
 
   for (const auto fact : facts) {
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      const auto memLocationFact = storeFact->getPointerOperand();
+    if (const auto memLocationFact = getMemoryLocationFromValue(fact)) {
       bool isEqual = isMemoryLocationEqual(memLocationFact, memLocation);
       if (isEqual) return true;
     }
@@ -110,20 +145,14 @@ DataFlowFacts::isExactMemoryLocationTainted(const MonoSet<const llvm::Value*>& f
   return false;
 }
 
-bool
-DataFlowFacts::isValueInFacts(const MonoSet<const llvm::Value*>& facts, const llvm::Value* value) {
-  return facts.count(value);
-}
-
 void
-DataFlowFacts::removeExactMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
+DataFlowFacts::removeMemoryLocation(MonoSet<const llvm::Value*>& facts, const llvm::Value* memLocation) {
   bool isPtrType = memLocation->getType()->isPointerTy();
   assert(isPtrType && "Memory location must be a Pointer Type");
 
   for (auto it = facts.begin(); it != facts.end(); ) {
     const auto fact = *it;
-    if (const auto storeFact = llvm::dyn_cast<llvm::StoreInst>(fact)) {
-      const auto memLocationFact = storeFact->getPointerOperand();
+    if (const auto memLocationFact = getMemoryLocationFromValue(fact)) {
       bool isEqual = isMemoryLocationEqual(memLocationFact, memLocation);
       if (isEqual) {
         it = facts.erase(it);
