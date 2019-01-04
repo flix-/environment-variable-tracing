@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <string.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+int
+main()
+{
+    char *tainted = getenv("hi");
+    char dst;
+
+    memcpy(&dst, tainted, 1);
+
+    return 0;
+}
+
+</pre>
+<div>
+0 2019-Jan-04 17:20:28.858040 - [DEBUG] Set-up the command-line parameters<br>
+1 2019-Jan-04 17:20:28.858477 - [INFO] Chosen operation mode: 'phasarLLVM'<br>
+2 2019-Jan-04 17:20:28.858829 - [INFO] No configuration file is used.<br>
+3 2019-Jan-04 17:20:28.858907 - [INFO] Program options have been successfully parsed.<br>
+4 2019-Jan-04 17:20:28.858998 - [INFO] Check program options for logical errors.<br>
+5 2019-Jan-04 17:20:28.859087 - [INFO] Set-up IR database.<br>
+6 2019-Jan-04 17:20:28.863430 - [INFO] Constructed the analysis controller.<br>
+7 2019-Jan-04 17:20:28.863537 - [INFO] Found the following IR files for this project: <br>
+8 2019-Jan-04 17:20:28.863598 - [INFO] 	main.ll<br>
+9 2019-Jan-04 17:20:28.863657 - [INFO] Check for chosen entry points.<br>
+10 2019-Jan-04 17:20:28.863718 - [INFO] link all llvm modules into a single module for WPA ...<br>
+<br>
+11 2019-Jan-04 17:20:28.863776 - [INFO] link all llvm modules into a single module for WPA ended<br>
+<br>
+12 2019-Jan-04 17:20:28.863836 - [INFO] Preprocess module: main.ll<br>
+13 2019-Jan-04 17:20:28.864174 - [INFO] Running GeneralStatisticsPass<br>
+14 2019-Jan-04 17:20:28.864294 - [INFO] Running ValueAnnotationPass<br>
+15 2019-Jan-04 17:20:28.864587 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'<br>
+<br>
+16 2019-Jan-04 17:20:28.864652 - [INFO] Allocated Types    : 3<br>
+17 2019-Jan-04 17:20:28.864716 - [INFO] Allocation Sites   : 3<br>
+18 2019-Jan-04 17:20:28.864773 - [INFO] Basic Blocks       : 1<br>
+19 2019-Jan-04 17:20:28.864831 - [INFO] Calls Sites        : 4<br>
+20 2019-Jan-04 17:20:28.864910 - [INFO] Functions          : 4<br>
+21 2019-Jan-04 17:20:28.864970 - [INFO] Globals            : 1<br>
+22 2019-Jan-04 17:20:28.865028 - [INFO] Global Pointer     : 1<br>
+23 2019-Jan-04 17:20:28.865085 - [INFO] Instructions       : 11<br>
+24 2019-Jan-04 17:20:28.865143 - [INFO] Memory Intrinsics  : 1<br>
+25 2019-Jan-04 17:20:28.865200 - [INFO] Store Instructions : 2<br>
+26 2019-Jan-04 17:20:28.865257 - [INFO]  <br>
+27 2019-Jan-04 17:20:28.865331 - [INFO]   i8<br>
+28 2019-Jan-04 17:20:28.865393 - [INFO]   i32<br>
+29 2019-Jan-04 17:20:28.865455 - [INFO]   i8*<br>
+30 2019-Jan-04 17:20:28.865862 - [DEBUG] Analyzing function: main<br>
+31 2019-Jan-04 17:20:28.866652 - [INFO] Reconstruct the class hierarchy.<br>
+32 2019-Jan-04 17:20:28.866725 - [INFO] Construct type hierarchy<br>
+33 2019-Jan-04 17:20:28.866786 - [DEBUG] Analyse types in module: main.ll<br>
+34 2019-Jan-04 17:20:28.866937 - [DEBUG] Reconstruct virtual function table for module: main.ll<br>
+35 2019-Jan-04 17:20:28.867006 - [INFO] Reconstruction of class hierarchy completed.<br>
+36 2019-Jan-04 17:20:28.867068 - [INFO] Starting CallGraphAnalysisType: OTF<br>
+37 2019-Jan-04 17:20:28.867193 - [DEBUG] Walking in function: main<br>
+38 2019-Jan-04 17:20:28.867279 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !19), !dbg !20, !phasar.instruction.id !21, ID: 5<br>
+39 2019-Jan-04 17:20:28.867575 - [DEBUG] Found 1 possible target(s)<br>
+40 2019-Jan-04 17:20:28.867635 - [DEBUG] Target name: llvm.dbg.declare<br>
+41 2019-Jan-04 17:20:28.867717 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+42 2019-Jan-04 17:20:28.867780 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+43 2019-Jan-04 17:20:28.867844 - [DEBUG] Found static call-site: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+44 2019-Jan-04 17:20:28.868103 - [DEBUG] Found 1 possible target(s)<br>
+45 2019-Jan-04 17:20:28.868162 - [DEBUG] Target name: getenv<br>
+46 2019-Jan-04 17:20:28.868280 - [DEBUG] Walking in function: getenv<br>
+47 2019-Jan-04 17:20:28.868345 - [DEBUG] Function already visited or only declaration: getenv<br>
+48 2019-Jan-04 17:20:28.868409 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i8* %dst, metadata !25, metadata !19), !dbg !26, !phasar.instruction.id !27, ID: 8<br>
+49 2019-Jan-04 17:20:28.868628 - [DEBUG] Found 1 possible target(s)<br>
+50 2019-Jan-04 17:20:28.868687 - [DEBUG] Target name: llvm.dbg.declare<br>
+51 2019-Jan-04 17:20:28.868761 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+52 2019-Jan-04 17:20:28.868824 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+53 2019-Jan-04 17:20:28.868906 - [DEBUG] Found static call-site: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31, ID: 10<br>
+54 2019-Jan-04 17:20:28.869137 - [DEBUG] Found 1 possible target(s)<br>
+55 2019-Jan-04 17:20:28.869195 - [DEBUG] Target name: llvm.memcpy.p0i8.p0i8.i64<br>
+56 2019-Jan-04 17:20:28.869273 - [DEBUG] Walking in function: llvm.memcpy.p0i8.p0i8.i64<br>
+57 2019-Jan-04 17:20:28.869335 - [DEBUG] Function already visited or only declaration: llvm.memcpy.p0i8.p0i8.i64<br>
+58 2019-Jan-04 17:20:28.869397 - [INFO] Call graph has been constructed<br>
+59 2019-Jan-04 17:20:28.869458 - [INFO] Performing analysis: plugin<br>
+60 2019-Jan-04 17:20:28.869524 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so'<br>
+61 2019-Jan-04 17:20:28.870006 - [INFO] Solving plugin: mono<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/EnvironmentVariableTainting/libEnvironmentVariableTainting.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+init - MonoIntraEnvironmentVariableTracing<br>
+<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !12<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %tainted = alloca i8*, align 8, !phasar.instruction.id !13<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %dst = alloca i8, align 1, !phasar.instruction.id !14<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !19), !dbg !20, !phasar.instruction.id !21<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+Got call instruction<br>
+Adding call instruction fact<br>
+Dumping facts<br>
+=============<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+=============<br>
+<br>
+Adding line number: 10<br>
+<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+=============<br>
+<br>
+Adding line number: 10<br>
+Adding line number: 10<br>
+<br>
+  call void @llvm.dbg.declare(metadata i8* %dst, metadata !25, metadata !19), !dbg !26, !phasar.instruction.id !27<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+=============<br>
+<br>
+Adding line number: 10<br>
+Adding line number: 10<br>
+<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+=============<br>
+<br>
+Adding line number: 10<br>
+Adding line number: 10<br>
+Adding line number: 13<br>
+<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31<br>
+Got memcpy instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (memcpy)<br>
+Dumping facts<br>
+=============<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+=============<br>
+<br>
+Adding line number: 13<br>
+Adding line number: 10<br>
+Adding line number: 10<br>
+Adding line number: 13<br>
+<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i8* %dst, metadata !25, metadata !19), !dbg !26, !phasar.instruction.id !27<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+=============<br>
+<br>
+<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31<br>
+Got memcpy instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (memcpy)<br>
+Dumping facts<br>
+=============<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31<br>
+Got memcpy instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (memcpy)<br>
+<br>
+  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !19), !dbg !20, !phasar.instruction.id !21<br>
+Got call instruction<br>
+<br>
+  %tainted = alloca i8*, align 8, !phasar.instruction.id !13<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %dst = alloca i8, align 1, !phasar.instruction.id !14<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !12<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23<br>
+Got call instruction<br>
+Adding call instruction fact<br>
+<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  %0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+<br>
+  call void @llvm.dbg.declare(metadata i8* %dst, metadata !25, metadata !19), !dbg !26, !phasar.instruction.id !27<br>
+Got call instruction<br>
+<br>
+  ret i32 0, !dbg !32, !phasar.instruction.id !3362 2019-Jan-04 17:20:28.882448 - [INFO] Write results to file<br>
+63 2019-Jan-04 17:20:28.882619 - [INFO] Shutdown llvm and the analysis framework.<br>
+<br>
+worklist size: 10<br>
+worklist size: 9<br>
+worklist size: 8<br>
+worklist size: 7<br>
+worklist size: 6<br>
+worklist size: 5<br>
+worklist size: 5<br>
+worklist size: 5<br>
+worklist size: 5<br>
+worklist size: 5<br>
+worklist size: 4<br>
+worklist size: 3<br>
+worklist size: 2<br>
+worklist size: 1<br>
+LLVM-Intra-Monotone solver results:<br>
+-----------------------------------<br>
+Instruction:<br>
+call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31, ID: 10<br>
+Facts:<br>
+store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24, ID: 7<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+%0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29, ID: 9<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !19), !dbg !20, !phasar.instruction.id !21, ID: 5<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%tainted = alloca i8*, align 8, !phasar.instruction.id !13, ID: 2<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%dst = alloca i8, align 1, !phasar.instruction.id !14, ID: 3<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24, ID: 7<br>
+Facts:<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+<br>
+<br>
+Instruction:<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29, ID: 9<br>
+Facts:<br>
+store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24, ID: 7<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i8* %dst, metadata !25, metadata !19), !dbg !26, !phasar.instruction.id !27, ID: 8<br>
+Facts:<br>
+store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24, ID: 7<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+<br>
+<br>
+Instruction:<br>
+ret i32 0, !dbg !32, !phasar.instruction.id !33, ID: 11<br>
+Facts:<br>
+call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dst, i8* %0, i64 1, i32 1, i1 false), !dbg !30, !phasar.instruction.id !31, ID: 10<br>
+store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24, ID: 7<br>
+%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23, ID: 6<br>
+%0 = load i8*, i8** %tainted, align 8, !dbg !28, !phasar.instruction.id !29, ID: 9<br>
+<br>
+<br>
+</div>
+</body>
+</html>

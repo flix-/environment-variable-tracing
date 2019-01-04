@@ -49,9 +49,9 @@ MonoIntraEnvironmentVariableTracing::join(const MonoSet<const llvm::Value*>& old
     if (const auto instruction = llvm::dyn_cast<llvm::Instruction>(v)) {
       const llvm::DebugLoc loc = instruction->getDebugLoc();
       if (loc) {
-        unsigned int line = loc.getLine();
-        llvm::outs() << "Adding line: " << line << "\n";
-        lineNumbers.insert(line);
+        unsigned int lineNumber = loc.getLine();
+        llvm::outs() << "Adding line number: " << lineNumber << "\n";
+        lineNumbers.insert(lineNumber);
       }
     }
   }
@@ -134,11 +134,12 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     const auto srcMemLocation = memCpyInst->getRawSource();
     const auto dstMemLocation = memCpyInst->getRawDest();
 
-    bool isSrcMemLocationTainted = DataFlowFacts::isMemoryLocationTainted(newFacts, srcMemLocation);
+    bool isSrcMemLocationTainted = DataFlowFacts::isValueTainted(newFacts, srcMemLocation) ||
+                                   DataFlowFacts::isMemoryLocationTainted(newFacts, srcMemLocation);
 
     // KILL
-    llvm::outs() << "Removing memory location" << "\n";
-    DataFlowFacts::removeMemoryLocation(newFacts, dstMemLocation);
+    unsigned long cnt = DataFlowFacts::removeMemoryLocation(newFacts, dstMemLocation);
+    llvm::outs() << "Removed " << cnt << " memory locations from facts" << "\n";
 
     // GEN
     if (isSrcMemLocationTainted) {
@@ -167,7 +168,15 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got load instruction" << "\n";
 
     const auto memLocation = loadInst->getPointerOperand();
-    bool isMemLocationTainted = DataFlowFacts::isMemoryLocationTainted(newFacts, memLocation);
+
+    /*
+     * The first load will have a memory address and all subsequent loads in the
+     * load chain will just have the previous load encapsulated. The first load
+     * takes us to the value (e.g. of an alloca), every subsequent load dereferences
+     * once more. We check value first as it is cheaper...
+     */
+    bool isMemLocationTainted = DataFlowFacts::isValueTainted(newFacts, memLocation) ||
+                                DataFlowFacts::isMemoryLocationTainted(newFacts, memLocation);
 
     /*
      * memLocationTainted |
@@ -188,11 +197,19 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     const auto value = storeInst->getValueOperand();
 
     /*
-     * If our value is a pointer we need to search memory locations
+     * Value can be a tainted value or pointer (tainted memory location).
+     * The latter one is usually due to an address:
+     *
+     * char *a = getenv("hi");
+     * char **b = &a;
+     *
+     * The value (RHS) is just a pointer to the alloca instruction of a.
+     * We will not find such a value in facts as that would need a load that
+     * captures it which is not happening (we want the address of a not
+     * the content --> load %a).
      */
-    bool isValueTainted = DataFlowFacts::isMemoryLocation(value) ?
-          DataFlowFacts::isMemoryLocationTainted(newFacts, value) :
-          DataFlowFacts::isValueTainted(newFacts, value);
+    bool isValueTainted = DataFlowFacts::isValueTainted(newFacts, value) ||
+                          DataFlowFacts::isMemoryLocationTainted(newFacts, value);
 
     /*
      * memLocationTainted | valueTainted |
@@ -202,8 +219,8 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
      *        1           |      1       |  KILL/GEN
      */
     // KILL
-    llvm::outs() << "Removing memory location" << "\n";
-    DataFlowFacts::removeMemoryLocation(newFacts, memLocation);
+    unsigned long cnt = DataFlowFacts::removeMemoryLocation(newFacts, memLocation);
+    llvm::outs() << "Removed " << cnt << " memory locations from facts" << "\n";
 
     // GEN
     if (isValueTainted) {
@@ -309,6 +326,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
       }
     }
   }
+
   return newFacts;
 }
 
