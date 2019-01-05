@@ -52,8 +52,8 @@ isSameOpcode(const llvm::Value* op1, const llvm::Value* op2) {
 
 static bool
 isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue, std::queue<const llvm::Value*>& instGEPQueue) {
-  assert(factGEPQueue.back() == POISON_PILL &&
-         instGEPQueue.back() == POISON_PILL);
+  assert(factGEPQueue.back() == POISON_PILL);
+  assert(instGEPQueue.back() == POISON_PILL);
 
   bool isSameSize = factGEPQueue.size() == instGEPQueue.size();
   if (!isSameSize) return false;
@@ -118,7 +118,7 @@ isMemoryLocationLazilyEqual(const llvm::Value* memLocationFact, const llvm::Valu
 
   /*
    * We have reached the same alloca. If we have a struct or array then the alloca
-   * contains different values. Comparing GEP instances to figure out the correct
+   * contains multiple values. Comparing GEP instances to figure out the correct
    * location...
    */
   memLocationFactQueue.pop();
@@ -126,7 +126,7 @@ isMemoryLocationLazilyEqual(const llvm::Value* memLocationFact, const llvm::Valu
 
   /*
    * If there was no GEP instance in both memory locations we should only have the poison pill
-   * on stack...
+   * in queue...
    */
   bool isOnlyPoisonPillLeft = (memLocationFactQueue.size() == 1) &&
                               (memLocationInstQueue.size() == 1);
@@ -230,8 +230,8 @@ getMemoryLocationFromFact(const llvm::Value* value) {
   if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(value)) {
     return storeInst->getPointerOperand();
   }
-  if (const auto memCpyInst = llvm::dyn_cast<llvm::MemCpyInst>(value)) {
-    return memCpyInst->getRawDest();
+  if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(value)) {
+    return memTransferInst->getRawDest();
   }
   return nullptr;
 }

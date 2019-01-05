@@ -127,12 +127,12 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
    * Check instructions for tainted values
    */
 
-  // Intrinsics... Memcpy (later check IntrinsicInst --> MemIntrinsic)
-  if (const auto memCpyInst = llvm::dyn_cast<llvm::MemCpyInst>(instruction)) {
-    llvm::outs() << "Got memcpy instruction" << "\n";
+  // Memcpy / Memmove instruction
+  if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(instruction)) {
+    llvm::outs() << "Got memcpy/memmove instruction" << "\n";
 
-    const auto srcMemLocation = memCpyInst->getRawSource();
-    const auto dstMemLocation = memCpyInst->getRawDest();
+    const auto srcMemLocation = memTransferInst->getRawSource();
+    const auto dstMemLocation = memTransferInst->getRawDest();
 
     bool isSrcMemLocationTainted = DataFlowFacts::isValueTainted(newFacts, srcMemLocation) ||
                                    DataFlowFacts::isMemoryLocationTainted(newFacts, srcMemLocation);
@@ -143,10 +143,19 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
 
     // GEN
     if (isSrcMemLocationTainted) {
-      llvm::outs() << "Adding memory location (memcpy)" << "\n";
-      newFacts.insert(memCpyInst);
+      llvm::outs() << "Adding memory location (memcpy/memmove)" << "\n";
+      newFacts.insert(memTransferInst);
     }
     return newFacts;
+  }
+  else if (const auto memSetInst = llvm::dyn_cast<llvm::MemSetInst>(instruction)) {
+    llvm::outs() << "Got memset instruction" << "\n";
+
+    const auto dstMemLocation = memSetInst->getRawDest();
+
+    // KILL
+    unsigned long cnt = DataFlowFacts::removeMemoryLocation(newFacts, dstMemLocation);
+    llvm::outs() << "Removed " << cnt << " memory locations from facts" << "\n";
   }
   // Call instruction
   else if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(instruction)) {
