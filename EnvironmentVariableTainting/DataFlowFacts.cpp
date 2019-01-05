@@ -11,84 +11,7 @@
 
 using namespace psr;
 
-//static bool
-//isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue, std::queue<const llvm::Value*>& instGEPQueue) {
-//  bool isSameSize = factGEPQueue.size() == instGEPQueue.size();
-//  if (!isSameSize) return false;
-
-//  while (!factGEPQueue.empty()) {
-//    if (factGEPQueue.front() == nullptr && instGEPQueue.front() == nullptr) return true;
-//    if (factGEPQueue.front() == nullptr || instGEPQueue.front() == nullptr) return false;
-
-//    const auto factGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(factGEPQueue.front());
-//    const auto instGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(instGEPQueue.front());
-
-//    bool isEqual = isGEPInstEqual(factGEPPtr, instGEPPtr);
-//    if (!isEqual) return false;
-
-//    factGEPQueue.pop();
-//    instGEPQueue.pop();
-//  }
-//  return true;
-//}
-
-//static std::queue<const llvm::Value*>
-//getAllocaGEPQueueFromMemoryLocation(const llvm::Value *memLocation) {
-//  std::queue<const llvm::Value*> queue;
-
-//  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(memLocation)) {
-//    queue.push(allocaInst);
-//    return queue;
-//  }
-
-//  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(memLocation)) {
-//    queue = getAllocaGEPQueueFromMemoryLocation(bitCastInst->getOperand(0));
-//  }
-//  else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocation)) {
-//    queue = getAllocaGEPQueueFromMemoryLocation(loadInst->getOperand(0));
-//  }
-//  else if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
-//    queue = getAllocaGEPQueueFromMemoryLocation(gepInst->getPointerOperand());
-//    bool isPoisoned = !queue.empty() && queue.back() == nullptr;
-//    if (isPoisoned) return queue;
-
-//    queue.push(gepInst);
-//    return queue;
-//  }
-
-//  bool isPoisoned = !queue.empty() && queue.back() == nullptr;
-//  if (!isPoisoned) {
-//    queue.push(nullptr);
-//  }
-//  return queue;
-//}
-
-//static bool
-//isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
-//  std::queue<const llvm::Value*> memLocationFactQueue = getAllocaGEPQueueFromMemoryLocation(memLocationFact);
-//  std::queue<const llvm::Value*> memLocationInstQueue = getAllocaGEPQueueFromMemoryLocation(memLocationInst);
-
-//  assert(memLocationFactQueue.size() > 0 && "Queue size must be > 0");
-//  assert(memLocationInstQueue.size() > 0 && "Queue size must be > 0");
-
-//  bool gotAlloca = memLocationFactQueue.front() != nullptr &&
-//                   memLocationInstQueue.front() != nullptr;
-//  if (!gotAlloca) return false;
-
-//  bool isSameAlloca = memLocationFactQueue.front() == memLocationInstQueue.front();
-//  if (!isSameAlloca) return false;
-
-//  /*
-//   * If we have an array alloca we need to compare all GEP instances...
-//   */
-//  memLocationFactQueue.pop();
-//  memLocationInstQueue.pop();
-
-//  bool isGEPInstancesEqual = isLastGEPInstancesEqual(memLocationFactQueue, memLocationInstQueue);
-//  if (!isGEPInstancesEqual) return false;
-
-//  return true;
-//}
+static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("ALL I NEED IS A UNIQUE PTR");
 
 static bool
 isLoadInstEqual(const llvm::LoadInst* loadInst1, const llvm::LoadInst* loadInst2) {
@@ -127,6 +50,97 @@ isSameOpcode(const llvm::Value* op1, const llvm::Value* op2) {
   return inst1->getOpcode() == inst2->getOpcode();
 }
 
+static bool
+isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue, std::queue<const llvm::Value*>& instGEPQueue) {
+  assert(factGEPQueue.back() == POISON_PILL &&
+         instGEPQueue.back() == POISON_PILL);
+
+  bool isSameSize = factGEPQueue.size() == instGEPQueue.size();
+  if (!isSameSize) return false;
+
+  while (!(factGEPQueue.front() == POISON_PILL)) {
+    const auto factGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(factGEPQueue.front());
+    const auto instGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(instGEPQueue.front());
+
+    bool isEqual = isGEPInstEqual(factGEPPtr, instGEPPtr);
+    if (!isEqual) return false;
+
+    factGEPQueue.pop();
+    instGEPQueue.pop();
+  }
+  return true;
+}
+
+static std::queue<const llvm::Value*>
+getAllocaGEPQueueFromMemoryLocation(const llvm::Value *memLocation) {
+  std::queue<const llvm::Value*> queue;
+
+  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(memLocation)) {
+    queue.push(allocaInst);
+    return queue;
+  }
+
+  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(memLocation)) {
+    queue = getAllocaGEPQueueFromMemoryLocation(bitCastInst->getOperand(0));
+  }
+  else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocation)) {
+    queue = getAllocaGEPQueueFromMemoryLocation(loadInst->getOperand(0));
+  }
+  else if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocation)) {
+    queue = getAllocaGEPQueueFromMemoryLocation(gepInst->getPointerOperand());
+    bool isPoisoned = !queue.empty() && queue.back() == POISON_PILL;
+    if (isPoisoned) return queue;
+
+    queue.push(gepInst);
+    return queue;
+  }
+
+  bool isPoisoned = !queue.empty() && queue.back() == POISON_PILL;
+  if (!isPoisoned) queue.push(POISON_PILL);
+
+  return queue;
+}
+
+static bool
+isMemoryLocationLazilyEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
+  std::queue<const llvm::Value*> memLocationFactQueue = getAllocaGEPQueueFromMemoryLocation(memLocationFact);
+  std::queue<const llvm::Value*> memLocationInstQueue = getAllocaGEPQueueFromMemoryLocation(memLocationInst);
+
+  if (memLocationFactQueue.back() != POISON_PILL) memLocationFactQueue.push(POISON_PILL);
+  if (memLocationInstQueue.back() != POISON_PILL) memLocationInstQueue.push(POISON_PILL);
+
+  bool gotAlloca = llvm::isa<llvm::AllocaInst>(memLocationFactQueue.front()) &&
+                   llvm::isa<llvm::AllocaInst>(memLocationInstQueue.front());
+  if (!gotAlloca) return false;
+
+  bool isSameAlloca = memLocationFactQueue.front() == memLocationInstQueue.front();
+  if (!isSameAlloca) return false;
+
+  /*
+   * We have reached the same alloca. If we have a struct or array then the alloca
+   * contains different values. Comparing GEP instances to figure out the correct
+   * location...
+   */
+  memLocationFactQueue.pop();
+  memLocationInstQueue.pop();
+
+  /*
+   * If there was no GEP instance in both memory locations we should only have the poison pill
+   * on stack...
+   */
+  bool isOnlyPoisonPillLeft = (memLocationFactQueue.size() == 1) &&
+                              (memLocationInstQueue.size() == 1);
+  if (isOnlyPoisonPillLeft) return true;
+
+  assert(llvm::isa<llvm::GetElementPtrInst>(memLocationFactQueue.front()));
+  assert(llvm::isa<llvm::GetElementPtrInst>(memLocationInstQueue.front()));
+
+  bool isGEPInstancesEqual = isLastGEPInstancesEqual(memLocationFactQueue, memLocationInstQueue);
+  if (!isGEPInstancesEqual) return false;
+
+  return true;
+}
+
 static const llvm::Value*
 getFirstMemoryLocationAfterHighestBitCast(const llvm::Value* memLocation) {
   const llvm::BitCastInst* latestBitCastInst = nullptr;
@@ -152,7 +166,7 @@ getFirstMemoryLocationAfterHighestBitCast(const llvm::Value* memLocation) {
 }
 
 static bool
-isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
+isMemoryLocationStrictlyEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
   /*
    * We start after the last BitCast because that is the most outer union. Everything within does not
    * change the final memory location. So if e.g. we have a union that contains x nested structs
@@ -220,6 +234,11 @@ getMemoryLocationFromFact(const llvm::Value* value) {
     return memCpyInst->getRawDest();
   }
   return nullptr;
+}
+
+static bool
+isMemoryLocationEqual(const llvm::Value* memLocationFact, const llvm::Value* memLocationInst) {
+  return isMemoryLocationLazilyEqual(memLocationFact, memLocationInst);
 }
 
 bool

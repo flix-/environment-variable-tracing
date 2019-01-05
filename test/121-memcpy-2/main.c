@@ -12,6 +12,8 @@ main()
 
     memcpy(&dst, tainted, 1);
 
+    char t = dst;
+
     return 0;
 }
 
