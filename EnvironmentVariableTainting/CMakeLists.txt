@@ -3,6 +3,8 @@ add_library(EnvironmentVariableTainting MODULE
   DataFlowUtils.cpp
   DataFlowFacts.h
   DataFlowFacts.cpp
+  LineNumberStore.h
+  LineNumberStore.cpp
   MonoIntraEnvironmentVariableTracing.h
   MonoIntraEnvironmentVariableTracing.cpp
 )

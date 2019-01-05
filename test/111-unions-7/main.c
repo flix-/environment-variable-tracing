@@ -26,6 +26,7 @@ main()
     s.u.s.strings[1] = "untaint";
 
     char *not_tainted = s.u.s.strings[0];
+    char *not_tainted2 = s.u.s.strings[1];
 
     return 0;
 }

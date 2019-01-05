@@ -17,6 +17,7 @@ entry:
   %s = alloca %struct.s1, align 8
   %tainted = alloca i8*, align 8
   %not_tainted = alloca i8*, align 8
+  %not_tainted2 = alloca i8*, align 8
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !11, metadata !28), !dbg !29
   %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !30
@@ -42,7 +43,14 @@ entry:
   %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %strings9, i64 0, i64 0, !dbg !50
   %1 = load i8*, i8** %arrayidx10, align 8, !dbg !50
   store i8* %1, i8** %not_tainted, align 8, !dbg !46
-  ret i32 0, !dbg !51
+  call void @llvm.dbg.declare(metadata i8** %not_tainted2, metadata !51, metadata !28), !dbg !52
+  %u11 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !53
+  %s12 = bitcast %union.u1* %u11 to %struct.s2*, !dbg !54
+  %strings13 = getelementptr inbounds %struct.s2, %struct.s2* %s12, i32 0, i32 0, !dbg !55
+  %arrayidx14 = getelementptr inbounds [2 x i8*], [2 x i8*]* %strings13, i64 0, i64 1, !dbg !56
+  %2 = load i8*, i8** %arrayidx14, align 8, !dbg !56
+  store i8* %2, i8** %not_tainted2, align 8, !dbg !52
+  ret i32 0, !dbg !57
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -109,4 +117,10 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !48 = !DILocation(line: 28, column: 29, scope: !7)
 !49 = !DILocation(line: 28, column: 31, scope: !7)
 !50 = !DILocation(line: 28, column: 25, scope: !7)
-!51 = !DILocation(line: 30, column: 5, scope: !7)
+!51 = !DILocalVariable(name: "not_tainted2", scope: !7, file: !1, line: 29, type: !18)
+!52 = !DILocation(line: 29, column: 11, scope: !7)
+!53 = !DILocation(line: 29, column: 28, scope: !7)
+!54 = !DILocation(line: 29, column: 30, scope: !7)
+!55 = !DILocation(line: 29, column: 32, scope: !7)
+!56 = !DILocation(line: 29, column: 26, scope: !7)
+!57 = !DILocation(line: 31, column: 5, scope: !7)

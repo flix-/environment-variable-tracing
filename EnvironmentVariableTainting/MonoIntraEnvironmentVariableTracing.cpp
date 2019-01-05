@@ -2,13 +2,14 @@
 
 #include "DataFlowFacts.h"
 #include "DataFlowUtils.h"
+#include "LineNumberStore.h"
 
 #include <algorithm>
 #include <fstream>
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/Instructions.h>
-#include "llvm/IR/IntrinsicInst.h"
+#include <llvm/IR/IntrinsicInst.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Constants.h>
 
@@ -22,7 +23,7 @@ namespace psr {
 static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
 static const char* TAINT_CALL = "getenv";
 
-static std::set<unsigned int> lineNumbers;
+static LineNumberStore lineNumberStore;
 
 
 static std::unique_ptr<IntraMonoProblemPlugin>
@@ -45,16 +46,15 @@ MonoIntraEnvironmentVariableTracing::join(const MonoSet<const llvm::Value*>& old
   MonoSet<const llvm::Value*> res;
   std::set_union(oldFacts.begin(), oldFacts.end(), newFacts.begin(), newFacts.end(), std::inserter(res, res.begin()));
 
-  for (const auto v : res) {
-    if (const auto instruction = llvm::dyn_cast<llvm::Instruction>(v)) {
-      const llvm::DebugLoc loc = instruction->getDebugLoc();
-      if (loc) {
-        unsigned int lineNumber = loc.getLine();
-        llvm::outs() << "Adding line number: " << lineNumber << "\n";
-        lineNumbers.insert(lineNumber);
+  for (const auto fact : res) {
+    if (const auto instruction = llvm::dyn_cast<llvm::Instruction>(fact)) {
+      long lineNumber = lineNumberStore.addLineNumber(instruction);
+      if (lineNumber != -1) {
+        llvm::outs() << "Added line number: " << lineNumber << "\n";
       }
     }
   }
+
   return res;
 }
 
@@ -258,7 +258,8 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
           const auto &terminatorInst = block->getTerminator();
 
           for (const auto &use : terminatorInst->operands()) {
-            bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get());
+            bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get()) ||
+                             DataFlowFacts::isMemoryLocationTainted(newFacts, use.get());
             if (isTainted) {
               llvm::outs() << "Adding phi node instruction fact (constant)" << "\n";
               newFacts.insert(phiNodeInst);
@@ -271,7 +272,8 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
        * If it's not a constant check whether value is tainted...
        */
       else {
-        bool isTainted = DataFlowFacts::isValueTainted(newFacts, incomingValue);
+        bool isTainted = DataFlowFacts::isValueTainted(newFacts, incomingValue) ||
+                         DataFlowFacts::isMemoryLocationTainted(newFacts, incomingValue);
         if (isTainted) {
           llvm::outs() << "Adding phi node instruction fact" << "\n";
           newFacts.insert(phiNodeInst);
@@ -306,6 +308,10 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got switch instruction" << "\n";
 
     const auto &condition = switchInst->getCondition();
+    /*
+     * No need to check memory locations here as it is forbidden to use
+     * a memory address as a condition in switch statement.
+     */
     bool isTainted = DataFlowFacts::isValueTainted(newFacts, condition);
     if (isTainted) {
       llvm::outs() << "Adding switch instruction fact" << "\n";
@@ -318,7 +324,8 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
     llvm::outs() << "Got operands checking instruction (" << instruction->getOpcodeName() << ")" << "\n";
 
     for (const auto &use : instruction->operands()) {
-      bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get());
+      bool isTainted = DataFlowFacts::isValueTainted(newFacts, use.get()) ||
+                       DataFlowFacts::isMemoryLocationTainted(newFacts, use.get());
       if (isTainted) {
         llvm::outs() << "Adding fact" << "\n";
         newFacts.insert(instruction);
@@ -339,7 +346,7 @@ MonoIntraEnvironmentVariableTracing::initialSeeds() {
 void
 MonoIntraEnvironmentVariableTracing::printReport() {
   std::ofstream writer(LINE_NUMBERS_OUTPUT_FILE);
-  for (const auto lineNumber : lineNumbers) {
+  for (const auto lineNumber : lineNumberStore.getLineNumbers()) {
     writer << lineNumber << "\n";
   }
 }
