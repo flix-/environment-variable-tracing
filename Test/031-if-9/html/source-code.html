@@ -1,0 +1,3230 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+extern int getenv(const char *name);
+extern int foo();
+extern int bar();
+
+int
+main()
+{
+    int rc;
+    int taint = getenv("gude");
+
+    if (foo()) {
+        if (taint) {
+            if (foo()) {
+                rc = 1;
+            } else {
+                rc = 1;
+            }
+            rc = 1;
+        } else {
+            rc = 1;
+        }
+        int a = 100;
+    } else {
+        if (foo()) {
+            rc = 1;
+        } else {
+            if (foo()) {
+                rc = 100;
+            }
+            else if (taint) {
+                int a = 100;
+                int b = 200;
+            } else {
+                int a = 100;
+            }
+            int a = 100;
+        }
+    }
+    int a = 1;
+
+    return rc;
+}
+
+</pre>
+<div>
+0 2019-Jan-05 22:32:22.279824 - [DEBUG] Set-up the command-line parameters<br>
+1 2019-Jan-05 22:32:22.280243 - [INFO] Chosen operation mode: 'phasarLLVM'<br>
+2 2019-Jan-05 22:32:22.280603 - [INFO] No configuration file is used.<br>
+3 2019-Jan-05 22:32:22.280680 - [INFO] Program options have been successfully parsed.<br>
+4 2019-Jan-05 22:32:22.280770 - [INFO] Check program options for logical errors.<br>
+5 2019-Jan-05 22:32:22.280859 - [INFO] Set-up IR database.<br>
+6 2019-Jan-05 22:32:22.290604 - [INFO] Constructed the analysis controller.<br>
+7 2019-Jan-05 22:32:22.290716 - [INFO] Found the following IR files for this project: <br>
+8 2019-Jan-05 22:32:22.290777 - [INFO] 	main.ll<br>
+9 2019-Jan-05 22:32:22.290836 - [INFO] Check for chosen entry points.<br>
+10 2019-Jan-05 22:32:22.290897 - [INFO] link all llvm modules into a single module for WPA ...<br>
+<br>
+11 2019-Jan-05 22:32:22.290955 - [INFO] link all llvm modules into a single module for WPA ended<br>
+<br>
+12 2019-Jan-05 22:32:22.291015 - [INFO] Preprocess module: main.ll<br>
+13 2019-Jan-05 22:32:22.291364 - [INFO] Running GeneralStatisticsPass<br>
+14 2019-Jan-05 22:32:22.291560 - [INFO] Running ValueAnnotationPass<br>
+15 2019-Jan-05 22:32:22.292296 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'<br>
+<br>
+16 2019-Jan-05 22:32:22.292360 - [INFO] Allocated Types    : 1<br>
+17 2019-Jan-05 22:32:22.292424 - [INFO] Allocation Sites   : 9<br>
+18 2019-Jan-05 22:32:22.292482 - [INFO] Basic Blocks       : 19<br>
+19 2019-Jan-05 22:32:22.292540 - [INFO] Calls Sites        : 13<br>
+20 2019-Jan-05 22:32:22.292597 - [INFO] Functions          : 4<br>
+21 2019-Jan-05 22:32:22.292654 - [INFO] Globals            : 1<br>
+22 2019-Jan-05 22:32:22.292712 - [INFO] Global Pointer     : 1<br>
+23 2019-Jan-05 22:32:22.292769 - [INFO] Instructions       : 64<br>
+24 2019-Jan-05 22:32:22.292826 - [INFO] Memory Intrinsics  : 0<br>
+25 2019-Jan-05 22:32:22.292884 - [INFO] Store Instructions : 14<br>
+26 2019-Jan-05 22:32:22.292941 - [INFO]  <br>
+27 2019-Jan-05 22:32:22.293016 - [INFO]   i32<br>
+28 2019-Jan-05 22:32:22.294087 - [DEBUG] Analyzing function: main<br>
+29 2019-Jan-05 22:32:22.294728 - [INFO] Reconstruct the class hierarchy.<br>
+30 2019-Jan-05 22:32:22.294800 - [INFO] Construct type hierarchy<br>
+31 2019-Jan-05 22:32:22.294861 - [DEBUG] Analyse types in module: main.ll<br>
+32 2019-Jan-05 22:32:22.295110 - [DEBUG] Reconstruct virtual function table for module: main.ll<br>
+33 2019-Jan-05 22:32:22.295179 - [INFO] Reconstruction of class hierarchy completed.<br>
+34 2019-Jan-05 22:32:22.295242 - [INFO] Starting CallGraphAnalysisType: OTF<br>
+35 2019-Jan-05 22:32:22.295363 - [DEBUG] Walking in function: main<br>
+36 2019-Jan-05 22:32:22.295451 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %rc, metadata !22, metadata !23), !dbg !24, !phasar.instruction.id !25, ID: 11<br>
+37 2019-Jan-05 22:32:22.296003 - [DEBUG] Found 1 possible target(s)<br>
+38 2019-Jan-05 22:32:22.296064 - [DEBUG] Target name: llvm.dbg.declare<br>
+39 2019-Jan-05 22:32:22.296151 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+40 2019-Jan-05 22:32:22.296215 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+41 2019-Jan-05 22:32:22.296278 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %taint, metadata !26, metadata !23), !dbg !27, !phasar.instruction.id !28, ID: 12<br>
+42 2019-Jan-05 22:32:22.296754 - [DEBUG] Found 1 possible target(s)<br>
+43 2019-Jan-05 22:32:22.296812 - [DEBUG] Target name: llvm.dbg.declare<br>
+44 2019-Jan-05 22:32:22.296886 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+45 2019-Jan-05 22:32:22.296948 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+46 2019-Jan-05 22:32:22.297012 - [DEBUG] Found static call-site: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+47 2019-Jan-05 22:32:22.297529 - [DEBUG] Found 1 possible target(s)<br>
+48 2019-Jan-05 22:32:22.297588 - [DEBUG] Target name: getenv<br>
+49 2019-Jan-05 22:32:22.297668 - [DEBUG] Walking in function: getenv<br>
+50 2019-Jan-05 22:32:22.297758 - [DEBUG] Function already visited or only declaration: getenv<br>
+51 2019-Jan-05 22:32:22.297822 - [DEBUG] Found static call-site: %call1 = call i32 (...) @foo(), !dbg !32, !phasar.instruction.id !34, ID: 15<br>
+52 2019-Jan-05 22:32:22.298308 - [DEBUG] Found 1 possible target(s)<br>
+53 2019-Jan-05 22:32:22.298367 - [DEBUG] Target name: foo<br>
+54 2019-Jan-05 22:32:22.298444 - [DEBUG] Walking in function: foo<br>
+55 2019-Jan-05 22:32:22.298506 - [DEBUG] Function already visited or only declaration: foo<br>
+56 2019-Jan-05 22:32:22.298570 - [DEBUG] Found static call-site: %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+57 2019-Jan-05 22:32:22.299037 - [DEBUG] Found 1 possible target(s)<br>
+58 2019-Jan-05 22:32:22.299096 - [DEBUG] Target name: foo<br>
+59 2019-Jan-05 22:32:22.299170 - [DEBUG] Walking in function: foo<br>
+60 2019-Jan-05 22:32:22.299232 - [DEBUG] Function already visited or only declaration: foo<br>
+61 2019-Jan-05 22:32:22.299297 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71, ID: 32<br>
+62 2019-Jan-05 22:32:22.299770 - [DEBUG] Found 1 possible target(s)<br>
+63 2019-Jan-05 22:32:22.299829 - [DEBUG] Target name: llvm.dbg.declare<br>
+64 2019-Jan-05 22:32:22.299904 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+65 2019-Jan-05 22:32:22.299966 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+66 2019-Jan-05 22:32:22.300030 - [DEBUG] Found static call-site: %call10 = call i32 (...) @foo(), !dbg !75, !phasar.instruction.id !78, ID: 35<br>
+67 2019-Jan-05 22:32:22.300497 - [DEBUG] Found 1 possible target(s)<br>
+68 2019-Jan-05 22:32:22.300556 - [DEBUG] Target name: foo<br>
+69 2019-Jan-05 22:32:22.300629 - [DEBUG] Walking in function: foo<br>
+70 2019-Jan-05 22:32:22.300691 - [DEBUG] Function already visited or only declaration: foo<br>
+71 2019-Jan-05 22:32:22.300756 - [DEBUG] Found static call-site: %call14 = call i32 (...) @foo(), !dbg !87, !phasar.instruction.id !90, ID: 40<br>
+72 2019-Jan-05 22:32:22.301243 - [DEBUG] Found 1 possible target(s)<br>
+73 2019-Jan-05 22:32:22.301302 - [DEBUG] Target name: foo<br>
+74 2019-Jan-05 22:32:22.301376 - [DEBUG] Walking in function: foo<br>
+75 2019-Jan-05 22:32:22.301437 - [DEBUG] Function already visited or only declaration: foo<br>
+76 2019-Jan-05 22:32:22.301502 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+77 2019-Jan-05 22:32:22.301974 - [DEBUG] Found 1 possible target(s)<br>
+78 2019-Jan-05 22:32:22.302033 - [DEBUG] Target name: llvm.dbg.declare<br>
+79 2019-Jan-05 22:32:22.302108 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+80 2019-Jan-05 22:32:22.302170 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+81 2019-Jan-05 22:32:22.302234 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+82 2019-Jan-05 22:32:22.302706 - [DEBUG] Found 1 possible target(s)<br>
+83 2019-Jan-05 22:32:22.302765 - [DEBUG] Target name: llvm.dbg.declare<br>
+84 2019-Jan-05 22:32:22.302840 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+85 2019-Jan-05 22:32:22.302902 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+86 2019-Jan-05 22:32:22.302966 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+87 2019-Jan-05 22:32:22.303438 - [DEBUG] Found 1 possible target(s)<br>
+88 2019-Jan-05 22:32:22.303497 - [DEBUG] Target name: llvm.dbg.declare<br>
+89 2019-Jan-05 22:32:22.303572 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+90 2019-Jan-05 22:32:22.303634 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+91 2019-Jan-05 22:32:22.303698 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125, ID: 57<br>
+92 2019-Jan-05 22:32:22.304170 - [DEBUG] Found 1 possible target(s)<br>
+93 2019-Jan-05 22:32:22.304229 - [DEBUG] Target name: llvm.dbg.declare<br>
+94 2019-Jan-05 22:32:22.304304 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+95 2019-Jan-05 22:32:22.304389 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+96 2019-Jan-05 22:32:22.304456 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131, ID: 61<br>
+97 2019-Jan-05 22:32:22.304931 - [DEBUG] Found 1 possible target(s)<br>
+98 2019-Jan-05 22:32:22.304991 - [DEBUG] Target name: llvm.dbg.declare<br>
+99 2019-Jan-05 22:32:22.305065 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+100 2019-Jan-05 22:32:22.305127 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+101 2019-Jan-05 22:32:22.305190 - [INFO] Call graph has been constructed<br>
+102 2019-Jan-05 22:32:22.305251 - [INFO] Performing analysis: plugin<br>
+103 2019-Jan-05 22:32:22.305317 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/MonoIntraEnvironmentVariableTracing/libMonoIntraEnvironmentVariableTracing.so'<br>
+104 2019-Jan-05 22:32:22.305816 - [INFO] Solving plugin: monoIntraEnvironmentVariableTracing<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/MonoIntraEnvironmentVariableTracing/libMonoIntraEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+init - MonoIntraEnvironmentVariableTracing<br>
+<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !12<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %rc = alloca i32, align 4, !phasar.instruction.id !13<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %a = alloca i32, align 4, !phasar.instruction.id !15<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %a20 = alloca i32, align 4, !phasar.instruction.id !16<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %b = alloca i32, align 4, !phasar.instruction.id !17<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %a22 = alloca i32, align 4, !phasar.instruction.id !18<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %a25 = alloca i32, align 4, !phasar.instruction.id !19<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %a28 = alloca i32, align 4, !phasar.instruction.id !20<br>
+Got operands checking instruction (alloca)<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !21<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !22, metadata !23), !dbg !24, !phasar.instruction.id !25<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %taint, metadata !26, metadata !23), !dbg !27, !phasar.instruction.id !28<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+=============<br>
+<br>
+<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+Got call instruction<br>
+Adding call instruction fact<br>
+Dumping facts<br>
+=============<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %call1 = call i32 (...) @foo(), !dbg !32, !phasar.instruction.id !34<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %tobool = icmp ne i32 %call1, 0, !dbg !32, !phasar.instruction.id !35<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  br label %if.end, !dbg !55, !phasar.instruction.id !56<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  br label %if.end, !phasar.instruction.id !60<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+<br>
+  br label %if.end8, !dbg !63, !phasar.instruction.id !64<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 20<br>
+<br>
+  br label %if.end8, !phasar.instruction.id !68<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+<br>
+  store i32 100, i32* %a, align 4, !dbg !70, !phasar.instruction.id !72<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+<br>
+  br label %if.end27, !dbg !73, !phasar.instruction.id !74<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+<br>
+  %call10 = call i32 (...) @foo(), !dbg !75, !phasar.instruction.id !78<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %tobool11 = icmp ne i32 %call10, 0, !dbg !75, !phasar.instruction.id !79<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !82, !phasar.instruction.id !84<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br label %if.end26, !dbg !85, !phasar.instruction.id !86<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %call14 = call i32 (...) @foo(), !dbg !87, !phasar.instruction.id !90<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %tobool15 = icmp ne i32 %call14, 0, !dbg !87, !phasar.instruction.id !91<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  store i32 100, i32* %rc, align 4, !dbg !94, !phasar.instruction.id !96<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  br label %if.end24, !dbg !97, !phasar.instruction.id !98<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+<br>
+  br label %if.end23, !dbg !114, !phasar.instruction.id !115<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 34<br>
+<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  br label %if.end23, !phasar.instruction.id !121<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  br label %if.end24, !phasar.instruction.id !122<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  store i32 100, i32* %a25, align 4, !dbg !124, !phasar.instruction.id !126<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  br label %if.end26, !phasar.instruction.id !127<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  br label %if.end27, !phasar.instruction.id !128<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  store i32 1, i32* %a28, align 4, !dbg !130, !phasar.instruction.id !132<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  %2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+Added line number: 16<br>
+Added line number: 14<br>
+Added line number: 9<br>
+Added line number: 9<br>
+Added line number: 12<br>
+Added line number: 12<br>
+Added line number: 41<br>
+Added line number: 13<br>
+Added line number: 13<br>
+Added line number: 18<br>
+Added line number: 20<br>
+Added line number: 30<br>
+Added line number: 30<br>
+Added line number: 31<br>
+Added line number: 31<br>
+Added line number: 32<br>
+Added line number: 32<br>
+Added line number: 34<br>
+Added line number: 34<br>
+<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %call1 = call i32 (...) @foo(), !dbg !32, !phasar.instruction.id !34<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %tobool = icmp ne i32 %call1, 0, !dbg !32, !phasar.instruction.id !35<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+=============<br>
+<br>
+<br>
+  %call10 = call i32 (...) @foo(), !dbg !75, !phasar.instruction.id !78<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+=============<br>
+<br>
+<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  br label %if.end, !dbg !55, !phasar.instruction.id !56<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+=============<br>
+<br>
+<br>
+  br label %if.end, !phasar.instruction.id !60<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+=============<br>
+<br>
+<br>
+  br label %if.end8, !dbg !63, !phasar.instruction.id !64<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  br label %if.end8, !phasar.instruction.id !68<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  store i32 100, i32* %a, align 4, !dbg !70, !phasar.instruction.id !72<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  br label %if.end27, !dbg !73, !phasar.instruction.id !74<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  %tobool11 = icmp ne i32 %call10, 0, !dbg !75, !phasar.instruction.id !79<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !82, !phasar.instruction.id !84<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %call14 = call i32 (...) @foo(), !dbg !87, !phasar.instruction.id !90<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br label %if.end26, !dbg !85, !phasar.instruction.id !86<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br label %if.end27, !phasar.instruction.id !128<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  %tobool15 = icmp ne i32 %call14, 0, !dbg !87, !phasar.instruction.id !91<br>
+Got operands checking instruction (icmp)<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  store i32 100, i32* %rc, align 4, !dbg !94, !phasar.instruction.id !96<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+=============<br>
+<br>
+<br>
+  br label %if.end24, !dbg !97, !phasar.instruction.id !98<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+=============<br>
+<br>
+<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+=============<br>
+<br>
+<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+=============<br>
+<br>
+<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+=============<br>
+<br>
+<br>
+  br label %if.end23, !dbg !114, !phasar.instruction.id !115<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+=============<br>
+<br>
+<br>
+  br label %if.end24, !phasar.instruction.id !122<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  br label %if.end23, !phasar.instruction.id !121<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  br label %if.end24, !phasar.instruction.id !122<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  store i32 100, i32* %a25, align 4, !dbg !124, !phasar.instruction.id !126<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  br label %if.end26, !phasar.instruction.id !127<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  br label %if.end27, !phasar.instruction.id !128<br>
+Got branch instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131<br>
+Got call instruction<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  store i32 1, i32* %a28, align 4, !dbg !130, !phasar.instruction.id !132<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  %2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+Dumping facts<br>
+=============<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+  %2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+=============<br>
+<br>
+<br>
+  %rc = alloca i32, align 4, !phasar.instruction.id !13<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !12<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %b = alloca i32, align 4, !phasar.instruction.id !17<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54<br>
+<br>
+  store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+Adding memory location (store)<br>
+<br>
+  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30<br>
+Got call instruction<br>
+Adding call instruction fact<br>
+<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !21<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  %a28 = alloca i32, align 4, !phasar.instruction.id !20<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %a25 = alloca i32, align 4, !phasar.instruction.id !19<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %a20 = alloca i32, align 4, !phasar.instruction.id !16<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %a22 = alloca i32, align 4, !phasar.instruction.id !18<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %call1 = call i32 (...) @foo(), !dbg !32, !phasar.instruction.id !34<br>
+Got call instruction<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %taint, metadata !26, metadata !23), !dbg !27, !phasar.instruction.id !28<br>
+Got call instruction<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !22, metadata !23), !dbg !24, !phasar.instruction.id !25<br>
+Got call instruction<br>
+<br>
+  %a = alloca i32, align 4, !phasar.instruction.id !15<br>
+Got operands checking instruction (alloca)<br>
+<br>
+  %tobool = icmp ne i32 %call1, 0, !dbg !32, !phasar.instruction.id !35<br>
+Got operands checking instruction (icmp)<br>
+<br>
+  %0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+<br>
+  br label %if.end27, !phasar.instruction.id !128<br>
+Got branch instruction<br>
+<br>
+  br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37<br>
+Got branch instruction<br>
+<br>
+  %tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+<br>
+  %2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+<br>
+  br label %if.end8, !phasar.instruction.id !68<br>
+<br>
+  br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+<br>
+  %call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48<br>
+<br>
+  %tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49<br>
+<br>
+  br label %if.end, !phasar.instruction.id !60<br>
+<br>
+  br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51<br>
+<br>
+  br label %if.end, !dbg !55, !phasar.instruction.id !56<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62<br>
+<br>
+  br label %if.end8, !dbg !63, !phasar.instruction.id !64<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71<br>
+Got call instruction<br>
+<br>
+  store i32 100, i32* %a, align 4, !dbg !70, !phasar.instruction.id !72<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  br label %if.end27, !dbg !73, !phasar.instruction.id !74<br>
+Got branch instruction<br>
+<br>
+  %call10 = call i32 (...) @foo(), !dbg !75, !phasar.instruction.id !78<br>
+Got call instruction<br>
+<br>
+  %tobool11 = icmp ne i32 %call10, 0, !dbg !75, !phasar.instruction.id !79<br>
+Got operands checking instruction (icmp)<br>
+<br>
+  br label %if.end26, !phasar.instruction.id !127<br>
+Got branch instruction<br>
+<br>
+  br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81<br>
+Got branch instruction<br>
+<br>
+  store i32 1, i32* %rc, align 4, !dbg !82, !phasar.instruction.id !84<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  br label %if.end26, !dbg !85, !phasar.instruction.id !86<br>
+Got branch instruction<br>
+<br>
+  %call14 = call i32 (...) @foo(), !dbg !87, !phasar.instruction.id !90<br>
+Got call instruction<br>
+<br>
+  %tobool15 = icmp ne i32 %call14, 0, !dbg !87, !phasar.instruction.id !91<br>
+Got operands checking instruction (icmp)<br>
+<br>
+  %1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101<br>
+Got load instruction<br>
+Adding load instruction fact<br>
+<br>
+  br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93<br>
+Got branch instruction<br>
+<br>
+  store i32 100, i32* %rc, align 4, !dbg !94, !phasar.instruction.id !96<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  br label %if.end24, !dbg !97, !phasar.instruction.id !98<br>
+Got branch instruction<br>
+<br>
+  %tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102<br>
+Got operands checking instruction (icmp)<br>
+Adding fact<br>
+<br>
+  br label %if.end24, !phasar.instruction.id !122<br>
+Got branch instruction<br>
+<br>
+  br label %if.end23, !phasar.instruction.id !121<br>
+<br>
+  br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104<br>
+Got branch instruction<br>
+Adding conditional branch instruction fact<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108<br>
+<br>
+  store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112<br>
+<br>
+  store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113<br>
+<br>
+  br label %if.end23, !dbg !114, !phasar.instruction.id !115<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119<br>
+<br>
+  store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125<br>
+Got call instruction<br>
+<br>
+  store i32 100, i32* %a25, align 4, !dbg !124, !phasar.instruction.id !126<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131<br>
+Got call instruction<br>
+<br>
+  store i32 1, i32* %a28, align 4, !dbg !130, !phasar.instruction.id !132<br>
+Got store instruction<br>
+Removed 0 memory locations from facts<br>
+<br>
+  ret i32 %2, !dbg !135, !phasar.instruction.id !136worklist size: 69<br>
+worklist size: 68<br>
+worklist size: 67<br>
+worklist size: 66<br>
+worklist size: 65<br>
+worklist size: 64<br>
+worklist size: 63<br>
+worklist size: 62<br>
+worklist size: 61<br>
+worklist size: 60<br>
+worklist size: 59<br>
+worklist size: 58<br>
+worklist size: 57<br>
+worklist size: 57<br>
+worklist size: 57<br>
+worklist size: 57<br>
+worklist size: 58<br>
+worklist size: 58<br>
+worklist size: 58<br>
+worklist size: 58<br>
+worklist size: 59<br>
+worklist size: 59<br>
+worklist size: 59<br>
+worklist size: 59<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 60<br>
+worklist size: 61<br>
+worklist size: 61<br>
+worklist size: 61<br>
+worklist size: 61<br>
+worklist size: 61<br>
+worklist size: 61<br>
+worklist size: 62<br>
+worklist size: 62<br>
+worklist size: 62<br>
+worklist size: 62<br>
+worklist size: 62<br>
+worklist size: 62<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 63<br>
+worklist size: 62<br>
+worklist size: 61<br>
+worklist size: 60<br>
+worklist size: 59<br>
+worklist size: 58<br>
+worklist size: 57<br>
+worklist size: 56<br>
+worklist size: 55<br>
+worklist size: 54<br>
+worklist size: 53<br>
+worklist size: 52<br>
+worklist size: 51<br>
+worklist size: 50<br>
+worklist size: 49<br>
+worklist size: 48<br>
+worklist size: 47<br>
+worklist size: 46<br>
+worklist size: 45<br>
+worklist size: 44<br>
+worklist size: 43<br>
+worklist size: 42<br>
+worklist size: 41<br>
+worklist size: 40<br>
+worklist size: 39<br>
+worklist size: 38<br>
+worklist size: 37<br>
+worklist size: 36<br>
+worklist size: 35<br>
+worklist size: 34<br>
+worklist size: 33<br>
+worklist size: 32<br>
+worklist size: 31<br>
+worklist size: 30<br>
+worklist size: 29<br>
+worklist size: 28<br>
+worklist size: 27<br>
+worklist size: 26<br>
+worklist size: 25<br>
+worklist size: 24<br>
+worklist size: 23<br>
+worklist size: 22<br>
+worklist size: 21<br>
+worklist size: 20<br>
+worklist size: 19<br>
+worklist size: 18<br>
+worklist size: 17<br>
+worklist size: 16<br>
+worklist size: 15<br>
+worklist size: 14<br>
+worklist size: 13<br>
+worklist size: 12<br>
+worklist size: 11<br>
+worklist size: 10<br>
+worklist size: 9<br>
+worklist size: 8<br>
+worklist size: 7<br>
+worklist size: 6<br>
+worklist size: 5<br>
+worklist size: 4<br>
+worklist size: 3<br>
+worklist size: 2<br>
+worklist size: 1<br>
+LLVM-Intra-Monotone solver results:<br>
+-----------------------------------<br>
+Instruction:<br>
+%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%taint = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%b = alloca i32, align 4, !phasar.instruction.id !17, ID: 6<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+Facts:<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+store i32 0, i32* %retval, align 4, !phasar.instruction.id !21, ID: 10<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%a28 = alloca i32, align 4, !phasar.instruction.id !20, ID: 9<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%a25 = alloca i32, align 4, !phasar.instruction.id !19, ID: 8<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%a20 = alloca i32, align 4, !phasar.instruction.id !16, ID: 5<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%a22 = alloca i32, align 4, !phasar.instruction.id !18, ID: 7<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%call1 = call i32 (...) @foo(), !dbg !32, !phasar.instruction.id !34, ID: 15<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %taint, metadata !26, metadata !23), !dbg !27, !phasar.instruction.id !28, ID: 12<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %rc, metadata !22, metadata !23), !dbg !24, !phasar.instruction.id !25, ID: 11<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
+Facts:<br>
+	EMPTY<br>
+<br>
+<br>
+Instruction:<br>
+%tobool = icmp ne i32 %call1, 0, !dbg !32, !phasar.instruction.id !35, ID: 16<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end27, !phasar.instruction.id !128, ID: 60<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool, label %if.then, label %if.else9, !dbg !36, !phasar.instruction.id !37, ID: 17<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+<br>
+<br>
+Instruction:<br>
+%2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134, ID: 63<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end8, !phasar.instruction.id !68, ID: 31<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+<br>
+<br>
+Instruction:<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+<br>
+<br>
+Instruction:<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end, !phasar.instruction.id !60, ID: 27<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool5, label %if.then6, label %if.else, !dbg !50, !phasar.instruction.id !51, ID: 23<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end, !dbg !55, !phasar.instruction.id !56, ID: 25<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end8, !dbg !63, !phasar.instruction.id !64, ID: 29<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %a, metadata !69, metadata !23), !dbg !70, !phasar.instruction.id !71, ID: 32<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+br i1 %tobool2, label %if.then3, label %if.else7, !dbg !43, !phasar.instruction.id !44, ID: 20<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+<br>
+<br>
+Instruction:<br>
+store i32 100, i32* %a, align 4, !dbg !70, !phasar.instruction.id !72, ID: 33<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end27, !dbg !73, !phasar.instruction.id !74, ID: 34<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+<br>
+<br>
+Instruction:<br>
+%call10 = call i32 (...) @foo(), !dbg !75, !phasar.instruction.id !78, ID: 35<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%tobool11 = icmp ne i32 %call10, 0, !dbg !75, !phasar.instruction.id !79, ID: 36<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end26, !phasar.instruction.id !127, ID: 59<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool11, label %if.then12, label %if.else13, !dbg !80, !phasar.instruction.id !81, ID: 37<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %rc, align 4, !dbg !82, !phasar.instruction.id !84, ID: 38<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end26, !dbg !85, !phasar.instruction.id !86, ID: 39<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%call14 = call i32 (...) @foo(), !dbg !87, !phasar.instruction.id !90, ID: 40<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%tobool15 = icmp ne i32 %call14, 0, !dbg !87, !phasar.instruction.id !91, ID: 41<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool15, label %if.then16, label %if.else17, !dbg !92, !phasar.instruction.id !93, ID: 42<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+store i32 100, i32* %rc, align 4, !dbg !94, !phasar.instruction.id !96, ID: 43<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end24, !dbg !97, !phasar.instruction.id !98, ID: 44<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+<br>
+<br>
+Instruction:<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end24, !phasar.instruction.id !122, ID: 56<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end23, !phasar.instruction.id !121, ID: 55<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+<br>
+<br>
+Instruction:<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+<br>
+<br>
+Instruction:<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+<br>
+<br>
+Instruction:<br>
+br label %if.end23, !dbg !114, !phasar.instruction.id !115, ID: 52<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+<br>
+<br>
+Instruction:<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+br i1 %tobool18, label %if.then19, label %if.else21, !dbg !103, !phasar.instruction.id !104, ID: 47<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %a25, metadata !123, metadata !23), !dbg !124, !phasar.instruction.id !125, ID: 57<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+store i32 100, i32* %a25, align 4, !dbg !124, !phasar.instruction.id !126, ID: 58<br>
+Facts:<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+call void @llvm.dbg.declare(metadata i32* %a28, metadata !129, metadata !23), !dbg !130, !phasar.instruction.id !131, ID: 61<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !105 2019-Jan-05 22:32:22.871504 - [INFO] Write results to file<br>
+106 2019-Jan-05 22:32:22.871710 - [INFO] Shutdown llvm and the analysis framework.<br>
+<br>
+111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+store i32 1, i32* %a28, align 4, !dbg !130, !phasar.instruction.id !132, ID: 62<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+Instruction:<br>
+ret i32 %2, !dbg !135, !phasar.instruction.id !136, ID: 64<br>
+Facts:<br>
+store i32 1, i32* %rc, align 4, !dbg !57, !phasar.instruction.id !59, ID: 26<br>
+store i32 1, i32* %rc, align 4, !dbg !52, !phasar.instruction.id !54, ID: 24<br>
+store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14<br>
+%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 13<br>
+%0 = load i32, i32* %taint, align 4, !dbg !38, !phasar.instruction.id !41, ID: 18<br>
+%tobool2 = icmp ne i32 %0, 0, !dbg !38, !phasar.instruction.id !42, ID: 19<br>
+%2 = load i32, i32* %rc, align 4, !dbg !133, !phasar.instruction.id !134, ID: 63<br>
+%call4 = call i32 (...) @foo(), !dbg !45, !phasar.instruction.id !48, ID: 21<br>
+%tobool5 = icmp ne i32 %call4, 0, !dbg !45, !phasar.instruction.id !49, ID: 22<br>
+store i32 1, i32* %rc, align 4, !dbg !61, !phasar.instruction.id !62, ID: 28<br>
+store i32 1, i32* %rc, align 4, !dbg !65, !phasar.instruction.id !67, ID: 30<br>
+%1 = load i32, i32* %taint, align 4, !dbg !99, !phasar.instruction.id !101, ID: 45<br>
+%tobool18 = icmp ne i32 %1, 0, !dbg !99, !phasar.instruction.id !102, ID: 46<br>
+call void @llvm.dbg.declare(metadata i32* %a20, metadata !105, metadata !23), !dbg !107, !phasar.instruction.id !108, ID: 48<br>
+store i32 100, i32* %a20, align 4, !dbg !107, !phasar.instruction.id !109, ID: 49<br>
+call void @llvm.dbg.declare(metadata i32* %b, metadata !110, metadata !23), !dbg !111, !phasar.instruction.id !112, ID: 50<br>
+store i32 200, i32* %b, align 4, !dbg !111, !phasar.instruction.id !113, ID: 51<br>
+call void @llvm.dbg.declare(metadata i32* %a22, metadata !116, metadata !23), !dbg !118, !phasar.instruction.id !119, ID: 53<br>
+store i32 100, i32* %a22, align 4, !dbg !118, !phasar.instruction.id !120, ID: 54<br>
+<br>
+<br>
+</div>
+</body>
+</html>
