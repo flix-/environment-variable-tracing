@@ -1,11 +1,14 @@
 #ifndef IFDSENVIRONMENTVARIABLETRACING_H
 #define IFDSENVIRONMENTVARIABLETRACING_H
 
+#include "LLVMIRDump.h"
+
 #include <phasar/PhasarLLVM/Plugins/Interfaces/IfdsIde/IFDSTabulationProblemPlugin.h>
 
 namespace psr {
 
-class IFDSEnvironmentVariableTracing : public IFDSTabulationProblemPlugin {
+class IFDSEnvironmentVariableTracing
+    : public IFDSTabulationProblemPlugin {
 public:
   IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                  std::vector<std::string> entryPoints);
@@ -36,6 +39,12 @@ public:
 
   std::map<const llvm::Instruction*, std::set<const llvm::Value*>>
   initialSeeds() override;
+
+  void
+  printReport() override;
+
+private:
+  LLVMIRDump llvmIRDump;
 };
 
 } // namespace

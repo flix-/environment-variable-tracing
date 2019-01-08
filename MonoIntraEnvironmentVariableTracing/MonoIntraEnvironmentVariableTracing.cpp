@@ -17,7 +17,6 @@
 
 #include <phasar/Utils/LLVMShorthands.h>
 
-
 namespace psr {
 
 static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
