@@ -1,7 +1,7 @@
 #ifndef IFDSENVIRONMENTVARIABLETRACING_H
 #define IFDSENVIRONMENTVARIABLETRACING_H
 
-#include "LLVMIRDump.h"
+#include "Utils/LLVMIRDump.h"
 
 #include <phasar/PhasarLLVM/Plugins/Interfaces/IfdsIde/IFDSTabulationProblemPlugin.h>
 

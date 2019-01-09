@@ -1,15 +1,16 @@
 add_library(IFDSEnvironmentVariableTracing MODULE
-  LLVMIRDump.h
-  LLVMIRDump.cpp
-
-  LineNumberStore.h
-  LineNumberStore.cpp
-  MapTaintedArgsToCallee.h
-  MapTaintedArgsToCallee.cpp
-  DataFlowUtils.h
-  DataFlowFacts.cpp
-  DataFlowFacts.h
-  DataFlowFacts.cpp
   IFDSEnvironmentVariableTracing.h
   IFDSEnvironmentVariableTracing.cpp
+  LineNumberStore.h
+  LineNumberStore.cpp
+
+  FlowFunctions/FlowFunctionWrapper.h
+  FlowFunctions/FlowFunctionWrapper.cpp
+  FlowFunctions/MapTaintedArgsToCallee.h
+  FlowFunctions/MapTaintedArgsToCallee.cpp
+
+  Utils/DataFlowUtils.h
+  Utils/DataFlowUtils.cpp
+  Utils/LLVMIRDump.h
+  Utils/LLVMIRDump.cpp
 )

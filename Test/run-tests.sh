@@ -5,7 +5,7 @@ CFLAGS='-g -S -emit-llvm'
 SRC_IN='main.c'
 IR_OUT='main.ll'
 
-HTML_DIR='/home/sebastian/.qt-creator-workspace/Phasar/test/.google-code-prettify'
+HTML_DIR='/home/sebastian/.qt-creator-workspace/Phasar/Test/.google-code-prettify'
 LINES_FILE='line-numbers.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'
@@ -14,7 +14,8 @@ OUT_HTML="html/source-code.html"
 OUT_CSS="html/css/mark-lines.css"
 
 PHASAR_BIN='/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar'
-PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/MonoIntraEnvironmentVariableTracing/libMonoIntraEnvironmentVariableTracing.so'
+#PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/MonoIntraEnvironmentVariableTracing/libMonoIntraEnvironmentVariableTracing.so'
+PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so'
 PHASAR_RESULTS_FILE='results.json'
 
 SUMMARY_FILE='test-result-index.html'

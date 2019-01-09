@@ -289,6 +289,7 @@ MonoIntraEnvironmentVariableTracing::flow(const llvm::Instruction* instruction, 
         }
       }
     }
+    return newFacts;
   }
   // Branch instruction
   /*

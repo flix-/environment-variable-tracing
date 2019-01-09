@@ -7,8 +7,7 @@
 
 namespace psr {
 
-class LineNumberStore
-{
+class LineNumberStore {
 public:
   LineNumberStore();
 
