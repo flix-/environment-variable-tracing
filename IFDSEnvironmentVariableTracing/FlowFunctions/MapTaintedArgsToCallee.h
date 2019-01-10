@@ -13,8 +13,13 @@ class MapTaintedArgsToCallee : public FlowFunction<const llvm::Value *> {
 public:
   MapTaintedArgsToCallee(const llvm::CallInst* _callInst,
                          const llvm::Function* _destMthd,
-                         const llvm::Value* _zeroValue);
-  virtual ~MapTaintedArgsToCallee() override = default;
+                         std::map<const llvm::Value*, const llvm::Value*>& _argumentMappings,
+                         const llvm::Value* _zeroValue)
+    : callInst(_callInst),
+      destMthd(_destMthd),
+      argumentMappings(_argumentMappings),
+      zeroValue(_zeroValue) {}
+  ~MapTaintedArgsToCallee() override = default;
 
   std::set<const llvm::Value*>
   computeTargets(const llvm::Value *fact) override;
@@ -22,6 +27,7 @@ public:
 private:
   const llvm::CallInst* callInst;
   const llvm::Function* destMthd;
+  std::map<const llvm::Value*, const llvm::Value*>& argumentMappings;
   const llvm::Value* zeroValue;
 };
 

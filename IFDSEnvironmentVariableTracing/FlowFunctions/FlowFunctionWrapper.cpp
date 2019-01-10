@@ -28,7 +28,7 @@ FlowFunctionWrapper::computeTargets(const llvm::Value* fact) {
     }
     return { fact };
   }
-  return computeTargetsExt(currentInst, fact, lineNumberStore, zeroValue);
+  return computeTargetsExt(currentInst, fact, argumentMappings, lineNumberStore, zeroValue);
 }
 
 } // namespace

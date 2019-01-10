@@ -1,31 +1,35 @@
 #include "MapTaintedArgsToCallee.h"
 
+#include "../Utils/DataFlowUtils.h"
+
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
 
 namespace psr {
 
-MapTaintedArgsToCallee::MapTaintedArgsToCallee(const llvm::CallInst* _callInst,
-                                               const llvm::Function* _destMthd,
-                                               const llvm::Value* _zeroValue) : callInst(_callInst), destMthd(_destMthd), zeroValue(_zeroValue) {}
-
 std::set<const llvm::Value*>
 MapTaintedArgsToCallee::computeTargets(const llvm::Value *fact) {
-  std::set<const llvm::Value*> mappedFormalParameters;
+  std::set<const llvm::Value*> mappedFormals;
 
-  bool isZeroFact = fact == zeroValue;
-  if (isZeroFact) {
-    for (unsigned i = 0; i < callInst->getNumArgOperands(); i++) {
-      const auto actualArgument = callInst->getOperand(i);
-      bool isTainted = actualArgument != nullptr;
-      if (isTainted) {
-        const auto formalParameter = getNthFunctionArgument(destMthd, i);
-        mappedFormalParameters.insert(formalParameter);
-      }
+  for (unsigned i = 0; i < callInst->getNumArgOperands(); i++) {
+    const auto actualArgument = callInst->getOperand(i);
+    /*
+     * If actual argument ends in the same memory location frame as
+     * fact map store instruction to formal argument.
+     */
+    bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument);
+    if (isSameMemLocationFrame) {
+      const auto formalParameter = getNthFunctionArgument(destMthd, i);
+      std::pair<const llvm::Value*, const llvm::Value*> argumentMapping(fact, formalParameter);
+      argumentMappings.insert(argumentMapping);
+
+      llvm::outs() << "Mapped" << "\n"; fact->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; formalParameter->print(llvm::outs()); llvm::outs() << "\n";
+
+      mappedFormals.insert(fact);
     }
   }
-  return mappedFormalParameters;
+  return { mappedFormals };
 }
 
 } // namespace

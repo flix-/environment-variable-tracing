@@ -3,6 +3,7 @@
 #include "LineNumberStore.h"
 
 #include "FlowFunctions/FlowFunctionWrapper.h"
+#include "FlowFunctions/Identity.h"
 #include "FlowFunctions/MapTaintedArgsToCallee.h"
 
 #include "Utils/DataFlowUtils.h"
@@ -22,7 +23,6 @@ namespace psr {
 static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
 static const char* GETENV_CALL = "getenv";
 
-static LineNumberStore lineNumberStore;
 
 std::unique_ptr<IFDSTabulationProblemPlugin>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
@@ -41,7 +41,10 @@ __attribute__((destructor)) void fini() {
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPlugin(icfg, entryPoints) {}
+    : IFDSTabulationProblemPlugin(icfg, entryPoints) {
+
+  pushArgumentMappingFrame();
+}
 
 std::shared_ptr<FlowFunction<const llvm::Value*>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
@@ -49,10 +52,10 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
   llvm::outs() << "getNormalFlowFunction()" << "\n";
   currentInst->print(llvm::outs()); llvm::outs() << "\n\n";
 
-  bool isCheckOperandsInst  = llvm::isa<llvm::UnaryInstruction>(currentInst) ||
-                              llvm::isa<llvm::BinaryOperator>(currentInst) ||
-                              llvm::isa<llvm::CmpInst>(currentInst) ||
-                              llvm::isa<llvm::SelectInst>(currentInst);
+  bool isCheckOperandsInst = llvm::isa<llvm::UnaryInstruction>(currentInst) ||
+                             llvm::isa<llvm::BinaryOperator>(currentInst) ||
+                             llvm::isa<llvm::CmpInst>(currentInst) ||
+                             llvm::isa<llvm::SelectInst>(currentInst);
   /*
    * Load instruction
    */
@@ -61,14 +64,16 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction loadFlowFunction = [](const llvm::Instruction* currentInst,
                                                     const llvm::Value* fact,
+                                                    std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                     LineNumberStore& lineNumberStore,
                                                     const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
+
       const auto loadInst = llvm::cast<llvm::LoadInst>(currentInst);
 
       const auto memLocation = loadInst->getPointerOperand();
 
       bool isLoadTainted = DataFlowUtils::isValueEqual(fact, memLocation) ||
-                           DataFlowUtils::isMemoryLocationEqual(fact, memLocation);
+                           DataFlowUtils::isMemoryLocationEqual(fact, memLocation, argumentMappings);
 
       if (isLoadTainted) {
         lineNumberStore.addLineNumber(loadInst);
@@ -77,7 +82,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, loadFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, loadFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Store instruction
@@ -87,6 +92,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction storeFlowFunction = [](const llvm::Instruction* currentInst,
                                                      const llvm::Value* fact,
+                                                     std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                      LineNumberStore& lineNumberStore,
                                                      const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
@@ -96,19 +102,19 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
       // Taint memory location if value is tainted
       bool isValueTainted = DataFlowUtils::isValueEqual(fact, value) ||
-                            DataFlowUtils::isMemoryLocationEqual(fact, value);
+                            DataFlowUtils::isMemoryLocationEqual(fact, value, argumentMappings);
       if (isValueTainted) {
         lineNumberStore.addLineNumber(storeInst);
         return { fact, storeInst };
       }
 
       // Kill memory location if value is not tainted but memory location
-      bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, memLocation);
+      bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, memLocation, argumentMappings);
       if (isMemLocationTainted) return { };
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Phi node instruction
@@ -118,6 +124,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction phiNodeFlowFunction = [](const llvm::Instruction* currentInst,
                                                        const llvm::Value* fact,
+                                                       std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                        LineNumberStore& lineNumberStore,
                                                        const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto phiNodeInst = llvm::cast<llvm::PHINode>(currentInst);
@@ -148,7 +155,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
             for (const auto &use : terminatorInst->operands()) {
               bool isTainted = DataFlowUtils::isValueEqual(fact, use.get()) ||
-                               DataFlowUtils::isMemoryLocationEqual(fact, use.get());
+                               DataFlowUtils::isMemoryLocationEqual(fact, use.get(), argumentMappings);
               if (isTainted) {
                 lineNumberStore.addLineNumber(phiNodeInst);
                 return { fact, phiNodeInst };
@@ -161,7 +168,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
          */
         else {
           bool isTainted = DataFlowUtils::isValueEqual(fact, incomingValue) ||
-                           DataFlowUtils::isMemoryLocationEqual(fact, incomingValue);
+                           DataFlowUtils::isMemoryLocationEqual(fact, incomingValue, argumentMappings);
           if (isTainted) {
             lineNumberStore.addLineNumber(phiNodeInst);
             return { fact, phiNodeInst };
@@ -171,7 +178,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, phiNodeFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, phiNodeFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Branch instruction
@@ -181,6 +188,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction branchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
+                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto branchInst = llvm::cast<llvm::BranchInst>(currentInst);
@@ -198,7 +206,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, branchFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, branchFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Switch instruction
@@ -208,6 +216,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction switchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
+                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto switchInst = llvm::cast<llvm::SwitchInst>(currentInst);
@@ -225,7 +234,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, switchFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, switchFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Operands checking instruction
@@ -235,11 +244,12 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction checkOperandsFlowFunction = [](const llvm::Instruction* currentInst,
                                                              const llvm::Value* fact,
+                                                             std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                              LineNumberStore& lineNumberStore,
                                                              const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       for (const auto &use : currentInst->operands()) {
         bool isOperandTainted = DataFlowUtils::isValueEqual(fact, use.get()) ||
-                                DataFlowUtils::isMemoryLocationEqual(fact, use.get());
+                                DataFlowUtils::isMemoryLocationEqual(fact, use.get(), argumentMappings);
         if (isOperandTainted) {
           lineNumberStore.addLineNumber(currentInst);
           return { fact, currentInst };
@@ -248,30 +258,29 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(currentInst, checkOperandsFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(currentInst, checkOperandsFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
 
   /*
    * Default: Identity
    */
-  ComputeTargetsExtFunction identityFlowFunction = [](const llvm::Instruction* currentInst,
-                                                      const llvm::Value* fact,
-                                                      LineNumberStore& lineNumberStore,
-                                                      const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
-    return { fact };
-  };
-  return std::make_shared<FlowFunctionWrapper>(currentInst, identityFlowFunction, lineNumberStore, zeroValue());
+  return Identity::getInstance(currentInst, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
 }
 
+/*
+ * This functions MUST only be called when we are following a function. This is crucial
+ * to keep the pushes and pops to the argument mapping stack aligned. Disable calls of
+ * this function through getSummaryFlowFunction().
+ */
 std::shared_ptr<FlowFunction<const llvm::Value*>>
 IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* callStmt,
                                                     const llvm::Function* destMthd) {
   llvm::outs() << "getCallFlowFunction()" << "\n";
   callStmt->print(llvm::outs()); llvm::outs() << "\n\n";
 
-  const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
+  pushArgumentMappingFrame();
 
-  return std::make_shared<MapTaintedArgsToCallee>(callInst, destMthd, zeroValue());
+  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt), destMthd, getCurrentArgumentMappingFrame(), zeroValue());
 }
 
 std::shared_ptr<FlowFunction<const llvm::Value*>>
@@ -281,14 +290,9 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
                                                    const llvm::Instruction* retSite) {
   llvm::outs() << "getRetFlowFunction()" << "\n";
 
-  ComputeTargetsExtFunction getRetFlowFunction = [](const llvm::Instruction* currentInst,
-                                                    const llvm::Value* fact,
-                                                    LineNumberStore& lineNumberStore,
-                                                    const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
-    return { fact };
-  };
+  popArgumentMappingFrame();
 
-  return std::make_shared<FlowFunctionWrapper>(callSite, getRetFlowFunction, lineNumberStore, zeroValue());
+  return Identity::getInstance(callSite, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
 }
 
 /*
@@ -321,6 +325,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
    */
   ComputeTargetsExtFunction getCallToRetFlowFunction = [](const llvm::Instruction* currentInst,
                                                           const llvm::Value* fact,
+                                                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
                                                           const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
     /*
@@ -338,7 +343,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
     return { fact };
   };
 
-  return std::make_shared<FlowFunctionWrapper>(callSite, getCallToRetFlowFunction, lineNumberStore, zeroValue());
+  return std::make_shared<FlowFunctionWrapper>(callSite, getCallToRetFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
 }
 
 /*
@@ -359,6 +364,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
     ComputeTargetsExtFunction memTransferFlowFunction = [](const llvm::Instruction* currentInst,
                                                            const llvm::Value* fact,
+                                                           std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                            LineNumberStore& lineNumberStore,
                                                            const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
@@ -368,19 +374,19 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       // Taint memory location if src is tainted
       bool isSrcMemLocationTainted = DataFlowUtils::isValueEqual(fact, srcMemLocation) ||
-                                     DataFlowUtils::isMemoryLocationEqual(fact, srcMemLocation);
+                                     DataFlowUtils::isMemoryLocationEqual(fact, srcMemLocation, argumentMappings);
       if (isSrcMemLocationTainted) {
         lineNumberStore.addLineNumber(memTransferInst);
         return { fact, memTransferInst };
       }
 
       // Kill memory location if src is not tainted but dst
-      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation);
+      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation, argumentMappings);
       if (isDstMemLocationTainted) return { };
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(callStmt, memTransferFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(callStmt, memTransferFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
   /*
    * Memset instruction
@@ -390,13 +396,14 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
     ComputeTargetsExtFunction memSetFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
+                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto memSetInst = llvm::cast<const llvm::MemSetInst>(currentInst);
 
       const auto dstMemLocation = memSetInst->getRawDest();
 
-      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation);
+      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation, argumentMappings);
       if (isDstMemLocationTainted) {
         // Kill memory location
         return { };
@@ -404,7 +411,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
 
   /*
@@ -414,14 +421,22 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   if (isGetenvCall) {
     ComputeTargetsExtFunction getenvCallFlowFunction = [](const llvm::Instruction* currentInst,
                                                           const llvm::Value* fact,
+                                                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
                                                           const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       lineNumberStore.addLineNumber(currentInst);
       if (fact == zeroValue) return { zeroValue, currentInst };
       return { fact };
     };
-    return std::make_shared<FlowFunctionWrapper>(callStmt, getenvCallFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(callStmt, getenvCallFlowFunction, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
   }
+
+  /*
+   * Skip all declarations
+   */
+  bool isDeclaration = destMthd->isDeclaration();
+  if (isDeclaration) return Identity::getInstance(callStmt, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
+
   /*
    * Follow call -> getCallFlowFunction()
    */

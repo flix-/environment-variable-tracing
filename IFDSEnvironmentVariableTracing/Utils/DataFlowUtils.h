@@ -11,10 +11,17 @@ class DataFlowUtils {
 public:
   DataFlowUtils() = delete;
 
-  static bool isValueEqual(const llvm::Value* fact, const llvm::Value* value);
-  static bool isMemoryLocationEqual(const llvm::Value* fact, const llvm::Value* memLocation);
-  static bool isEndOfBranchOrSwitchInst(const llvm::Value* branchOrSwitchInst, const llvm::Instruction* inst);
+  static bool isValueEqual(const llvm::Value* fact,
+                           const llvm::Value* inst);
+  static bool isMemoryLocationEqual(const llvm::Value* fact,
+                                    const llvm::Value* memLocationInst,
+                                    std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
+  static bool isMemoryLocationFrameEqual(const llvm::Value* fact,
+                                         const llvm::Value* memLocationInst);
+  static bool isEndOfBranchOrSwitchInst(const llvm::Value* branchOrSwitchInst,
+                                        const llvm::Instruction* inst);
   static void dumpFacts(const MonoSet<const llvm::Value*>& facts);
+  static void logToFile(const char*);
 };
 
 } // namespace
