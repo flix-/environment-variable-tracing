@@ -64,7 +64,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction loadFlowFunction = [](const llvm::Instruction* currentInst,
                                                     const llvm::Value* fact,
-                                                    std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                    const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                     LineNumberStore& lineNumberStore,
                                                     const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
 
@@ -92,7 +92,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction storeFlowFunction = [](const llvm::Instruction* currentInst,
                                                      const llvm::Value* fact,
-                                                     std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                     const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                      LineNumberStore& lineNumberStore,
                                                      const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
@@ -124,7 +124,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction phiNodeFlowFunction = [](const llvm::Instruction* currentInst,
                                                        const llvm::Value* fact,
-                                                       std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                       const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                        LineNumberStore& lineNumberStore,
                                                        const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto phiNodeInst = llvm::cast<llvm::PHINode>(currentInst);
@@ -188,7 +188,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction branchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
-                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                      const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto branchInst = llvm::cast<llvm::BranchInst>(currentInst);
@@ -216,7 +216,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction switchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
-                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                      const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto switchInst = llvm::cast<llvm::SwitchInst>(currentInst);
@@ -244,7 +244,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     ComputeTargetsExtFunction checkOperandsFlowFunction = [](const llvm::Instruction* currentInst,
                                                              const llvm::Value* fact,
-                                                             std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                             const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                              LineNumberStore& lineNumberStore,
                                                              const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       for (const auto &use : currentInst->operands()) {
@@ -278,9 +278,13 @@ IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* cal
   llvm::outs() << "getCallFlowFunction()" << "\n";
   callStmt->print(llvm::outs()); llvm::outs() << "\n\n";
 
+  auto& callerArgumentMappings = getCurrentArgumentMappingFrame();
+
   pushArgumentMappingFrame();
 
-  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt), destMthd, getCurrentArgumentMappingFrame(), zeroValue());
+  auto& calleeArgumentMappings = getCurrentArgumentMappingFrame();
+
+  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt), destMthd, callerArgumentMappings, calleeArgumentMappings, zeroValue());
 }
 
 std::shared_ptr<FlowFunction<const llvm::Value*>>
@@ -325,7 +329,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
    */
   ComputeTargetsExtFunction getCallToRetFlowFunction = [](const llvm::Instruction* currentInst,
                                                           const llvm::Value* fact,
-                                                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
                                                           const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
     /*
@@ -364,7 +368,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
     ComputeTargetsExtFunction memTransferFlowFunction = [](const llvm::Instruction* currentInst,
                                                            const llvm::Value* fact,
-                                                           std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                           const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                            LineNumberStore& lineNumberStore,
                                                            const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
@@ -396,7 +400,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
     ComputeTargetsExtFunction memSetFlowFunction = [](const llvm::Instruction* currentInst,
                                                       const llvm::Value* fact,
-                                                      std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                      const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                       LineNumberStore& lineNumberStore,
                                                       const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       const auto memSetInst = llvm::cast<const llvm::MemSetInst>(currentInst);
@@ -421,7 +425,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   if (isGetenvCall) {
     ComputeTargetsExtFunction getenvCallFlowFunction = [](const llvm::Instruction* currentInst,
                                                           const llvm::Value* fact,
-                                                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
                                                           const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       lineNumberStore.addLineNumber(currentInst);

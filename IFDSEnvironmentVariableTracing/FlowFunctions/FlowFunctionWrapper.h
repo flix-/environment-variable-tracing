@@ -14,7 +14,7 @@ namespace psr {
 
 using ComputeTargetsExtFunction = std::function<std::set<const llvm::Value*> (const llvm::Instruction* currentInst,
                                                                               const llvm::Value* fact,
-                                                                              std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                                              const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                                               LineNumberStore& lineNumberStore,
                                                                               const llvm::Value* zeroValue)>;
 
@@ -22,7 +22,7 @@ class FlowFunctionWrapper : public FlowFunction<const llvm::Value*> {
 public:
   FlowFunctionWrapper(const llvm::Instruction* _currentInst,
                       ComputeTargetsExtFunction _computeTargetsExt,
-                      std::map<const llvm::Value*, const llvm::Value*>& _argumentMappings,
+                      const std::map<const llvm::Value*, const llvm::Value*>& _argumentMappings,
                       LineNumberStore& _lineNumberStore,
                       const llvm::Value* _zeroValue)
     : currentInst(_currentInst),
@@ -37,7 +37,7 @@ public:
 private:
   const llvm::Instruction* currentInst;
   ComputeTargetsExtFunction computeTargetsExt;
-  std::map<const llvm::Value*, const llvm::Value*>& argumentMappings;
+  const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings;
   LineNumberStore& lineNumberStore;
   const llvm::Value* zeroValue;
 };

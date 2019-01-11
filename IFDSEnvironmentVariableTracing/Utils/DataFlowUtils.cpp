@@ -111,7 +111,7 @@ static bool
 isSameMemoryLocationFrame(const llvm::Value* fact,
                           const llvm::Value* memLocationFrameFact,
                           const llvm::Value* memLocationFrameInst,
-                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
+                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
   /*
    * If we call a function we push every tainted memory location to the callee (e.g. store()).
    * The store instruction however finally points to an memory location frame of the caller.
@@ -122,10 +122,13 @@ isSameMemoryLocationFrame(const llvm::Value* fact,
    * to facts as instructions itself are never patched.
    */
   const auto patchedMemLocationFrameFactPair = argumentMappings.find(fact);
-  if (patchedMemLocationFrameFactPair != argumentMappings.end()) {
+  bool havePatchedMemLocationFrame = patchedMemLocationFrameFactPair != argumentMappings.end();
+
+  if (havePatchedMemLocationFrame) {
     const auto patchedMemLocationFrameFact = patchedMemLocationFrameFactPair->second;
     return patchedMemLocationFrameFact == memLocationFrameInst;
   }
+
   return memLocationFrameFact == memLocationFrameInst;
 }
 
@@ -143,7 +146,7 @@ getMemoryLocationFromFact(const llvm::Value* value) {
 static bool
 isMemoryLocationLazilyEqual(const llvm::Value* fact,
                             const llvm::Value* memLocationInst,
-                            std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
+                            const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
 
   if (const auto memLocationFact = getMemoryLocationFromFact(fact)) {
 
@@ -274,32 +277,39 @@ isMemoryLocationStrictlyEqual(const llvm::Value* memLocationFact, const llvm::Va
 }
 
 bool
-DataFlowUtils::isMemoryLocationEqual(const llvm::Value* fact,
-                                     const llvm::Value* memLocationInst,
-                                     std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
-
-  return isMemoryLocationLazilyEqual(fact, memLocationInst, argumentMappings);
-}
-
-bool
 DataFlowUtils::isValueEqual(const llvm::Value* fact, const llvm::Value* inst) {
   return fact == inst;
 }
 
 bool
-DataFlowUtils::isMemoryLocationFrameEqual(const llvm::Value* fact, const llvm::Value* memLocationInst) {
+DataFlowUtils::isMemoryLocationEqual(const llvm::Value* fact,
+                                     const llvm::Value* memLocationInst,
+                                     const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
+
+  return isMemoryLocationLazilyEqual(fact, memLocationInst, argumentMappings);
+}
+
+
+bool
+DataFlowUtils::isMemoryLocationFrameEqual(const llvm::Value* fact,
+                                          const llvm::Value* memLocationInst,
+                                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
+
   const auto memLocationFact = getMemoryLocationFromFact(fact);
   if (memLocationFact == nullptr) return false;
 
   std::queue<const llvm::Value*> memLocationFactQueue = getAllocaGEPQueueFromMemoryLocation(memLocationFact);
   std::queue<const llvm::Value*> memLocationInstQueue = getAllocaGEPQueueFromMemoryLocation(memLocationInst);
 
-  bool gotAlloca = llvm::isa<llvm::AllocaInst>(memLocationFactQueue.front()) &&
-                   llvm::isa<llvm::AllocaInst>(memLocationInstQueue.front());
-  if (!gotAlloca) return false;
+  bool gotMemLocationFrame = isMemoryLocationFrame(memLocationFactQueue.front()) &&
+                             isMemoryLocationFrame(memLocationInstQueue.front());
+  if (!gotMemLocationFrame) return false;
 
-  bool isSameAlloca = memLocationFactQueue.front() == memLocationInstQueue.front();
-  if (isSameAlloca) return true;
+  bool isSameMemLocationFrame = isSameMemoryLocationFrame(fact,
+                                                          memLocationFactQueue.front(),
+                                                          memLocationInstQueue.front(),
+                                                          argumentMappings);
+  if (isSameMemLocationFrame) return true;
 
   return false;
 }

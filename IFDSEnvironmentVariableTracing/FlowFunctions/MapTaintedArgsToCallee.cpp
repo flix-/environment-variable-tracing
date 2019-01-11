@@ -18,11 +18,11 @@ MapTaintedArgsToCallee::computeTargets(const llvm::Value *fact) {
      * If actual argument ends in the same memory location frame as
      * fact map store instruction to formal argument.
      */
-    bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument);
+    bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument, callerArgumentMappings);
     if (isSameMemLocationFrame) {
       const auto formalParameter = getNthFunctionArgument(destMthd, i);
       std::pair<const llvm::Value*, const llvm::Value*> argumentMapping(fact, formalParameter);
-      argumentMappings.insert(argumentMapping);
+      calleeArgumentMappings.insert(argumentMapping);
 
       llvm::outs() << "Mapped" << "\n"; fact->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; formalParameter->print(llvm::outs()); llvm::outs() << "\n";
 

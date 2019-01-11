@@ -13,11 +13,13 @@ class MapTaintedArgsToCallee : public FlowFunction<const llvm::Value *> {
 public:
   MapTaintedArgsToCallee(const llvm::CallInst* _callInst,
                          const llvm::Function* _destMthd,
-                         std::map<const llvm::Value*, const llvm::Value*>& _argumentMappings,
+                         const std::map<const llvm::Value*, const llvm::Value*>& _callerArgumentMappings,
+                         std::map<const llvm::Value*, const llvm::Value*>& _calleeArgumentMappings,
                          const llvm::Value* _zeroValue)
     : callInst(_callInst),
       destMthd(_destMthd),
-      argumentMappings(_argumentMappings),
+      callerArgumentMappings(_callerArgumentMappings),
+      calleeArgumentMappings(_calleeArgumentMappings),
       zeroValue(_zeroValue) {}
   ~MapTaintedArgsToCallee() override = default;
 
@@ -27,7 +29,8 @@ public:
 private:
   const llvm::CallInst* callInst;
   const llvm::Function* destMthd;
-  std::map<const llvm::Value*, const llvm::Value*>& argumentMappings;
+  const std::map<const llvm::Value*, const llvm::Value*>& callerArgumentMappings;
+  std::map<const llvm::Value*, const llvm::Value*>& calleeArgumentMappings;
   const llvm::Value* zeroValue;
 };
 

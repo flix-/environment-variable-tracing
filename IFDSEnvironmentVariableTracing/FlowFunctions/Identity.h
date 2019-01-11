@@ -12,13 +12,13 @@ public:
   Identity() = delete;
 
   static std::shared_ptr<FlowFunctionWrapper> getInstance(const llvm::Instruction* currentInst,
-                                                          std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
                                                           const llvm::Value* zeroValue) {
 
     ComputeTargetsExtFunction identityFlowFunction = [](const llvm::Instruction* currentInst,
                                                         const llvm::Value* fact,
-                                                        std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
+                                                        const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                         LineNumberStore& lineNumberStore,
                                                         const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
       return { fact };

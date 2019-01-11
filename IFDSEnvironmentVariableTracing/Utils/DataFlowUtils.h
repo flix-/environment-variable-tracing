@@ -15,9 +15,10 @@ public:
                            const llvm::Value* inst);
   static bool isMemoryLocationEqual(const llvm::Value* fact,
                                     const llvm::Value* memLocationInst,
-                                    std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
+                                    const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
   static bool isMemoryLocationFrameEqual(const llvm::Value* fact,
-                                         const llvm::Value* memLocationInst);
+                                         const llvm::Value* memLocationInst,
+                                         const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
   static bool isEndOfBranchOrSwitchInst(const llvm::Value* branchOrSwitchInst,
                                         const llvm::Instruction* inst);
   static void dumpFacts(const MonoSet<const llvm::Value*>& facts);
