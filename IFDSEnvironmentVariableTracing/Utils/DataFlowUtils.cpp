@@ -314,6 +314,20 @@ DataFlowUtils::isMemoryLocationFrameEqual(const llvm::Value* fact,
   return false;
 }
 
+void
+DataFlowUtils::patchMemoryLocationFrame(const llvm::Value* oldValue,
+                                        const llvm::Value* newValue,
+                                        std::map<const llvm::Value*, const llvm::Value*>& argumentMappings) {
+
+  for (auto& argumentMapping : argumentMappings) {
+    bool patchMemoryLocationFrame = oldValue == argumentMapping.second;
+    if (patchMemoryLocationFrame) {
+      argumentMapping.second = newValue;
+      llvm::outs() << "Patched" << "\n"; oldValue->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; newValue->print(llvm::outs()); llvm::outs() << "\n";
+    }
+  }
+}
+
 static bool
 isEndOfTaintedBranch(const llvm::BranchInst *branchInst, const llvm::Instruction *instruction) {
   const auto bbInst = instruction->getParent();
@@ -449,10 +463,4 @@ DataFlowUtils::dumpFacts(const MonoSet<const llvm::Value*>& facts) {
   }
   llvm::outs() << "=============" << "\n";
   llvm::outs() << "\n";
-}
-
-void
-DataFlowUtils::logToFile(const char *s) {
-  std::ofstream writer(DEBUG_OUTPUT_FILE, std::ios_base::app);
-  writer << s << "\n";
 }

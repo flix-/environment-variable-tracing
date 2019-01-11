@@ -19,10 +19,12 @@ public:
   static bool isMemoryLocationFrameEqual(const llvm::Value* fact,
                                          const llvm::Value* memLocationInst,
                                          const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
+  static void patchMemoryLocationFrame(const llvm::Value* oldValue,
+                                       const llvm::Value* newValue,
+                                       std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
   static bool isEndOfBranchOrSwitchInst(const llvm::Value* branchOrSwitchInst,
                                         const llvm::Instruction* inst);
   static void dumpFacts(const MonoSet<const llvm::Value*>& facts);
-  static void logToFile(const char*);
 };
 
 } // namespace

@@ -95,10 +95,18 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                      const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                      LineNumberStore& lineNumberStore,
                                                      const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
+
       const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
 
       const auto value = storeInst->getValueOperand();
       const auto memLocation = storeInst->getPointerOperand();
+
+      // Patch memory location frame
+      bool isValueFunctionArgument = llvm::isa<llvm::Argument>(value);
+      if (isValueFunctionArgument) {
+        DataFlowUtils::patchMemoryLocationFrame(value, memLocation, const_cast<std::map<const llvm::Value*, const llvm::Value*>&>(argumentMappings));
+        return { fact };
+      }
 
       // Taint memory location if value is tainted
       bool isValueTainted = DataFlowUtils::isValueEqual(fact, value) ||
@@ -284,7 +292,12 @@ IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* cal
 
   auto& calleeArgumentMappings = getCurrentArgumentMappingFrame();
 
-  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt), destMthd, callerArgumentMappings, calleeArgumentMappings, zeroValue());
+  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt),
+                                                  destMthd,
+                                                  callerArgumentMappings,
+                                                  calleeArgumentMappings,
+                                                  lineNumberStore,
+                                                  zeroValue());
 }
 
 std::shared_ptr<FlowFunction<const llvm::Value*>>
@@ -294,7 +307,7 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
                                                    const llvm::Instruction* retSite) {
   llvm::outs() << "getRetFlowFunction()" << "\n";
 
-  popArgumentMappingFrame();
+  //popArgumentMappingFrame();
 
   return Identity::getInstance(callSite, getCurrentArgumentMappingFrame(), lineNumberStore, zeroValue());
 }
