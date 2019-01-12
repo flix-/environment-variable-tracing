@@ -1,6 +1,5 @@
 #include "DataFlowUtils.h"
 
-#include <fstream>
 #include <stack>
 #include <queue>
 
@@ -10,10 +9,7 @@
 
 using namespace psr;
 
-static const char* DEBUG_OUTPUT_FILE = "out-debug";
-
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("ALL I NEED IS A UNIQUE PTR");
-
 
 //static bool
 //isLoadInstEqual(const llvm::LoadInst* loadInst1,
