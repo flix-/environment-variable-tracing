@@ -4,17 +4,16 @@
 
 namespace psr {
 
-std::set<const llvm::Value*>
-FlowFunctionWrapper::computeTargets(const llvm::Value* fact) {
+std::set<ExtendedValue>
+FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact) ||
                               llvm::isa<llvm::SwitchInst>(fact);
   if (isBranchOrSwitchFact) {
-    const auto branchOrSwitchFact = fact;
     /*
      * We are inside a tainted block... If we get an instruction that ends
      * it, kill branch fact.
      */
-    bool isEndOfTaintedBlock = DataFlowUtils::isEndOfBranchOrSwitchInst(branchOrSwitchFact, currentInst);
+    bool isEndOfTaintedBlock = DataFlowUtils::isEndOfBranchOrSwitchInst(fact, currentInst);
     if (isEndOfTaintedBlock) return { };
 
     /*

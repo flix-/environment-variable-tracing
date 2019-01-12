@@ -24,15 +24,15 @@ static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
 static const char* GETENV_CALL = "getenv";
 
 
-std::unique_ptr<IFDSTabulationProblemPlugin>
+std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                    std::vector<std::string> entryPoints) {
-  return std::unique_ptr<IFDSTabulationProblemPlugin>(new IFDSEnvironmentVariableTracing(icfg, entryPoints));
+  return std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>(new IFDSEnvironmentVariableTracing(icfg, entryPoints));
 }
 
 __attribute__((constructor)) void init() {
   llvm::outs() << "init - makeIFDSEnvironmentVariableTracing" << "\n";
-  IFDSTabulationProblemPluginFactory["IFDSEnvironmentVariableTracing"] = &makeIFDSEnvironmentVariableTracing;
+  IFDSTabulationProblemPluginExtendedValueFactory["IFDSEnvironmentVariableTracing"] = &makeIFDSEnvironmentVariableTracing;
 }
 
 __attribute__((destructor)) void fini() {
@@ -41,12 +41,12 @@ __attribute__((destructor)) void fini() {
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPlugin(icfg, entryPoints) {
+    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
 
   pushArgumentMappingFrame();
 }
 
-std::shared_ptr<FlowFunction<const llvm::Value*>>
+std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
   llvm::outs() << "getNormalFlowFunction()" << "\n";
@@ -280,7 +280,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
  * to keep the pushes and pops to the argument mapping stack aligned. Disable calls of
  * this function through getSummaryFlowFunction().
  */
-std::shared_ptr<FlowFunction<const llvm::Value*>>
+std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* callStmt,
                                                     const llvm::Function* destMthd) {
   llvm::outs() << "getCallFlowFunction()" << "\n";
@@ -300,7 +300,7 @@ IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* cal
                                                   zeroValue());
 }
 
-std::shared_ptr<FlowFunction<const llvm::Value*>>
+std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* callSite,
                                                    const llvm::Function* calleeMthd,
                                                    const llvm::Instruction* exitStmt,
@@ -318,7 +318,7 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
  * previously generated facts. Facts from the returning functions are
  * handled in getRetFlowFunction.
  */
-std::shared_ptr<FlowFunction<const llvm::Value*>>
+std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction* callSite,
                                                          const llvm::Instruction* retSite,
                                                          std::set<const llvm::Function*> callees) {
@@ -367,7 +367,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
  * If we return sth. different than a nullptr the callee will not be traversed. Instead
  * facts according to the defined flow function will be taken into account.
  */
-std::shared_ptr<FlowFunction<const llvm::Value*>>
+std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* callStmt,
                                                        const llvm::Function* destMthd) {
   llvm::outs() << "getSummaryFlowFunction()" << "\n";
@@ -460,13 +460,13 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   return nullptr;
 }
 
-std::map<const llvm::Instruction*, std::set<const llvm::Value*>>
+std::map<const llvm::Instruction*, std::set<ExtendedValue>>
 IFDSEnvironmentVariableTracing::initialSeeds() {
   llvm::outs() << "initialSeeds()" << "\n";
 
-  std::map<const llvm::Instruction*, std::set<const llvm::Value*>> seedMap;
+  std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
   for (auto &entryPoint : this->EntryPoints) {
-    seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(), std::set<const llvm::Value*>({ zeroValue() })));
+    seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(), std::set<ExtendedValue>({ zeroValue() })));
   }
   return seedMap;
 }

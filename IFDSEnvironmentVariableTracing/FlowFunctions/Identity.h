@@ -14,13 +14,13 @@ public:
   static std::shared_ptr<FlowFunctionWrapper> getInstance(const llvm::Instruction* currentInst,
                                                           const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                           LineNumberStore& lineNumberStore,
-                                                          const llvm::Value* zeroValue) {
+                                                          ExtendedValue& zeroValue) {
 
     ComputeTargetsExtFunction identityFlowFunction = [](const llvm::Instruction* currentInst,
-                                                        const llvm::Value* fact,
+                                                        ExtendedValue& fact,
                                                         const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings,
                                                         LineNumberStore& lineNumberStore,
-                                                        const llvm::Value* zeroValue) -> std::set<const llvm::Value*> {
+                                                        ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
       return { fact };
     };
 

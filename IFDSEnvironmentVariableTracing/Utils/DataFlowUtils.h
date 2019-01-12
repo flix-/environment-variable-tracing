@@ -3,7 +3,7 @@
 
 #include <llvm/IR/Instructions.h>
 
-#include <phasar/Config/ContainerConfiguration.h>
+#include <phasar/PhasarLLVM/Domain/ExtendedValue.h>
 
 namespace psr {
 
@@ -11,20 +11,11 @@ class DataFlowUtils {
 public:
   DataFlowUtils() = delete;
 
-  static bool isValueEqual(const llvm::Value* fact,
-                           const llvm::Value* inst);
-  static bool isMemoryLocationEqual(const llvm::Value* fact,
-                                    const llvm::Value* memLocationInst,
-                                    const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
-  static bool isMemoryLocationFrameEqual(const llvm::Value* fact,
-                                         const llvm::Value* memLocationInst,
-                                         const std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
-  static void patchMemoryLocationFrame(const llvm::Value* oldValue,
-                                       const llvm::Value* newValue,
-                                       std::map<const llvm::Value*, const llvm::Value*>& argumentMappings);
-  static bool isEndOfBranchOrSwitchInst(const llvm::Value* branchOrSwitchInst,
-                                        const llvm::Instruction* inst);
-  static void dumpFacts(const MonoSet<const llvm::Value*>& facts);
+  static bool isValueEqual(const ExtendedValue& fact, const llvm::Value* instruction);
+  static bool isMemoryLocationEqual(const ExtendedValue& fact, const llvm::Value* memLocationInst);
+  static bool isMemoryLocationFrameEqual(const ExtendedValue& fact, const llvm::Value* memLocationInst);
+  static bool isEndOfBranchOrSwitchInst(const ExtendedValue& fact, const llvm::Instruction* instruction);
+
 };
 
 } // namespace
