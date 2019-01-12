@@ -6,8 +6,8 @@ namespace psr {
 
 std::set<ExtendedValue>
 FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
-  bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact) ||
-                              llvm::isa<llvm::SwitchInst>(fact);
+  bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
+                              llvm::isa<llvm::SwitchInst>(fact.getValue());
   if (isBranchOrSwitchFact) {
     /*
      * We are inside a tainted block... If we get an instruction that ends
@@ -28,7 +28,7 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
     return { fact };
   }
 
-  return computeTargetsExt(currentInst, fact, argumentMappings, lineNumberStore, zeroValue);
+  return computeTargetsExt(currentInst, fact, lineNumberStore, zeroValue);
 }
 
 } // namespace

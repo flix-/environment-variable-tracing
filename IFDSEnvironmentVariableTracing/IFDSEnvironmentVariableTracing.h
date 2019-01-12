@@ -2,17 +2,12 @@
 #define IFDSENVIRONMENTVARIABLETRACING_H
 
 #include "LineNumberStore.h"
-//#include "Utils/LLVMIRDump.h"
-
-#include <stack>
-#include <map>
 
 #include <phasar/PhasarLLVM/Plugins/Interfaces/IfdsIde/IFDSTabulationProblemPluginExtendedValue.h>
 
 namespace psr {
 
-class IFDSEnvironmentVariableTracing
-    : public IFDSTabulationProblemPluginExtendedValue {
+class IFDSEnvironmentVariableTracing : public IFDSTabulationProblemPluginExtendedValue {
 public:
   IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                  std::vector<std::string> entryPoints);
@@ -49,23 +44,6 @@ public:
 
 private:
   LineNumberStore lineNumberStore;
-  std::stack<std::map<const llvm::Value*, const llvm::Value*>> argumentMappingFrames;
-  //LLVMIRDump llvmIRDump;
-
-  std::map<const llvm::Value*, const llvm::Value*>&
-  getCurrentArgumentMappingFrame() {
-    return argumentMappingFrames.top();
-  }
-
-  void
-  pushArgumentMappingFrame() {
-    argumentMappingFrames.push(std::map<const llvm::Value*, const llvm::Value*>());
-  }
-
-  void
-  popArgumentMappingFrame() {
-    argumentMappingFrames.pop();
-  }
 };
 
 } // namespace
