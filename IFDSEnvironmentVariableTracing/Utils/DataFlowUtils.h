@@ -14,6 +14,7 @@ public:
   static bool isValueEqual(const ExtendedValue& fact, const llvm::Value* instruction);
   static bool isMemoryLocationEqual(const ExtendedValue& fact, const llvm::Value* memLocationInst);
   static bool isMemoryLocationFrameEqual(const ExtendedValue& fact, const llvm::Value* memLocationInst);
+  static const llvm::Value* getMemoryLocationFrame(const llvm::Value* memLocationInst);
   static bool isEndOfBranchOrSwitchInst(const ExtendedValue& fact, const llvm::Instruction* instruction);
 
 };

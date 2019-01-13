@@ -22,14 +22,17 @@ MapTaintedArgsToCallee::computeTargets(ExtendedValue fact) {
     bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument);
     if (isSameMemLocationFrame) {
       const auto formalParameter = getNthFunctionArgument(destMthd, i);
-      fact.setPatchedMemLocationFrame(formalParameter);
-      mappedFormals.insert(fact);
+
+      ExtendedValue patchedFact = fact;
+      patchedFact.setPatchedMemLocationFrame(formalParameter);
+      mappedFormals.insert(patchedFact);
 
       lineNumberStore.addLineNumber(callInst);
 
-      llvm::outs() << "Mapped" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; formalParameter->print(llvm::outs()); llvm::outs() << "\n";
+      llvm::outs() << "Mapped" << "\n"; patchedFact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedFact.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
     }
   }
+
   return { mappedFormals };
 }
 

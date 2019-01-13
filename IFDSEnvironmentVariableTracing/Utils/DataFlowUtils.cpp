@@ -25,7 +25,7 @@ isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
   bool hasSameNumOfOperands = memLocationFactGEP->getNumOperands() == memLocationInstGEP->getNumOperands();
   if (!hasSameNumOfOperands) return false;
 
-  // Compare Pointer Type
+  // Compare Pointer Type (only constants supported right now)
   const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
   const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
   if (gepFactOperandType != gepInstOperandType) return false;
@@ -185,6 +185,8 @@ getMemLocationFrameGEPQueue(const llvm::Value* memLocationValue) {
     queue = getMemLocationFrameGEPQueue(bitCastInst->getOperand(0));
   }
   else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationValue)) {
+    // TODO: Ignore loads completely?
+    //return getMemLocationFrameGEPQueue(loadInst->getOperand(0));
     queue = getMemLocationFrameGEPQueue(loadInst->getOperand(0));
   }
   else if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationValue)) {
@@ -303,19 +305,31 @@ DataFlowUtils::isMemoryLocationFrameEqual(const ExtendedValue& fact,
   const auto memLocationFact = getMemoryLocationFromFact(fact.getValue());
   if (memLocationFact == nullptr) return false;
 
-  std::queue<const llvm::Value*> memLocationFactQueue = getMemLocationFrameGEPQueue(memLocationFact);
-  std::queue<const llvm::Value*> memLocationInstQueue = getMemLocationFrameGEPQueue(memLocationInst);
+  const llvm::Value* memLocationFrameFact = getMemoryLocationFrame(memLocationFact);
+  const llvm::Value* memLocationFrameInst = getMemoryLocationFrame(memLocationInst);
 
-  bool gotMemLocationFrame = isMemoryLocationFrame(memLocationFactQueue.front()) &&
-                             isMemoryLocationFrame(memLocationInstQueue.front());
-  if (!gotMemLocationFrame) return false;
+  bool gotMemLocationFrames = memLocationFrameFact != nullptr &&
+                              memLocationFrameInst != nullptr;
+  if (!gotMemLocationFrames) return false;
 
   bool isSameMemLocationFrame = isSameMemoryLocationFrame(fact,
-                                                          memLocationFactQueue.front(),
-                                                          memLocationInstQueue.front());
+                                                          memLocationFrameFact,
+                                                          memLocationFrameInst);
   if (isSameMemLocationFrame) return true;
 
   return false;
+}
+
+
+const llvm::Value*
+DataFlowUtils::getMemoryLocationFrame(const llvm::Value* memLocationInst) {
+
+  std::queue<const llvm::Value*> memLocationInstQueue = getMemLocationFrameGEPQueue(memLocationInst);
+
+  bool isMemLocationFrame = isMemoryLocationFrame(memLocationInstQueue.front());
+  if (isMemLocationFrame) return memLocationInstQueue.front();
+
+  return nullptr;
 }
 
 static bool

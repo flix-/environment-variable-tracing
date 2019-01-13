@@ -101,7 +101,24 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto memLocation = storeInst->getPointerOperand();
 
       /*
+       * Patch memory location frame if value is an argument
+       */
+      if (const auto valueArgument = llvm::dyn_cast<llvm::Argument>(value)) {
+        bool patchMemLocationFrame = fact.getPatchedMemLocationFrame() == valueArgument;
+        if (patchMemLocationFrame) {
+          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrame(memLocation);
+          fact.setPatchedMemLocationFrame(patchedMemLocationFrame);
+          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+        }
+        return { fact };
+      }
+
+      /*
+       * If we haven't got an argument as value proceed with usual store instruction
+       * processing...
+       *
        * Rules
+       * -----
        *
        * (1) If a value is tainted GEN store instruction fact
        * (2) If destination is tainted KILL old memory location fact
