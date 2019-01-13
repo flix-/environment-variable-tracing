@@ -185,9 +185,9 @@ getMemLocationFrameGEPQueue(const llvm::Value* memLocationValue) {
     queue = getMemLocationFrameGEPQueue(bitCastInst->getOperand(0));
   }
   else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationValue)) {
-    // TODO: Ignore loads completely?
-    //return getMemLocationFrameGEPQueue(loadInst->getOperand(0));
-    queue = getMemLocationFrameGEPQueue(loadInst->getOperand(0));
+    // TODO: Ignore Load / Not ignore Load?!
+    return getMemLocationFrameGEPQueue(loadInst->getOperand(0));
+    //queue = getMemLocationFrameGEPQueue(loadInst->getOperand(0));
   }
   else if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationValue)) {
     queue = getMemLocationFrameGEPQueue(gepInst->getPointerOperand());
