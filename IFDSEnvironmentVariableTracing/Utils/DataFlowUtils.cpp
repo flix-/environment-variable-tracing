@@ -209,16 +209,15 @@ isSameMemoryLocationFrame(const ExtendedValue& fact,
 
   /*
    * If we call a function we push every tainted memory location to the callee (e.g. store()).
-   * The store instruction however finally points to an memory location frame of the caller.
-   * A mapping to the patched memory location frame can be found in the argumentsMapping which
-   * consist of <memLocationInst, patchedMemoryLocationFrame> pairs where memLocationInst e.g.
-   * is a pointer to a store instruction. If such a mapping can be found we use the patched
-   * memory location frame instead of the original one for comparison. Note that this only applies
-   * to facts as instructions itself are never patched.
+   * The store instruction however finally points to a memory location frame of the caller.
+   * A mapping to the patched memory location frame can be found in the ExtendedValue. If
+   * such a mapping can be found we use the patched memory location frame instead of the
+   * original one for comparison. Note that this only applies to facts as instructions itself
+   * are never patched.
    */
-  const auto patchedMemLocationFrame = fact.getPatchedMemLocationFrame();
-  if (patchedMemLocationFrame != nullptr) {
-    return patchedMemLocationFrame == memLocationFrameInst;
+  const auto patchedMemLocationFrameFact = fact.getPatchedMemLocationFrame();
+  if (patchedMemLocationFrameFact != nullptr) {
+    return patchedMemLocationFrameFact == memLocationFrameInst;
   }
 
   return memLocationFrameFact == memLocationFrameInst;

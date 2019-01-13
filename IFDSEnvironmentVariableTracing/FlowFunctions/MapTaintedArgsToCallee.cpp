@@ -17,7 +17,7 @@ MapTaintedArgsToCallee::computeTargets(ExtendedValue fact) {
     const auto actualArgument = callInst->getOperand(i);
     /*
      * If actual argument ends in the same memory location frame as
-     * fact map store instruction to formal argument.
+     * fact add fact and map store instruction to formal argument.
      */
     bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument);
     if (isSameMemLocationFrame) {
