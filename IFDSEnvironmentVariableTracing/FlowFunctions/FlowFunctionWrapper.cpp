@@ -23,7 +23,7 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
                                 llvm::isa<llvm::SwitchInst>(currentInst);
     if (!isBranchOrSwitchInst) {
       lineNumberStore.addLineNumber(currentInst);
-      return { fact, currentInst };
+      return { fact, ExtendedValue(currentInst) };
     }
     return { fact };
   }

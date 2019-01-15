@@ -4,7 +4,8 @@
 
 #include "FlowFunctions/FlowFunctionWrapper.h"
 #include "FlowFunctions/Identity.h"
-#include "FlowFunctions/MapTaintedArgsToCallee.h"
+#include "FlowFunctions/MapTaintedValuesToCallee.h"
+#include "FlowFunctions/MapTaintedValuesToCaller.h"
 
 #include "Utils/DataFlowUtils.h"
 
@@ -103,8 +104,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       /*
        * Patch memory location frame if value is an argument
        */
-      if (const auto valueArgument = llvm::dyn_cast<llvm::Argument>(value)) {
-        bool patchMemLocationFrame = fact.getPatchedMemLocationFrame() == valueArgument;
+      bool isValueArgument = llvm::isa<llvm::Argument>(value);
+      if (isValueArgument) {
+        bool patchMemLocationFrame = fact.getPatchedMemLocationFrame() == value;
         if (patchMemLocationFrame) {
           const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrame(memLocation);
           fact.setPatchedMemLocationFrame(patchedMemLocationFrame);
@@ -125,6 +127,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        * (3) If a value is a temporary (call, load, ...) KILL temporary fact
        * (4) Keep all other facts
        */
+
       bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, memLocation);
       bool isValueTaintedByTemporary = DataFlowUtils::isValueEqual(fact, value);
       bool isValueTaintedByMemLocation = DataFlowUtils::isMemoryLocationEqual(fact, value);
@@ -132,15 +135,15 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       bool genStoreInst = isValueTaintedByTemporary || isValueTaintedByMemLocation;
       bool idFact = !isMemLocationTainted && !isValueTaintedByTemporary;
 
-      std::set<ExtendedValue> ret;
+      std::set<ExtendedValue> targetFacts;
 
       if (genStoreInst) {
-        ret.insert(ExtendedValue(storeInst));
+        targetFacts.insert(ExtendedValue(storeInst));
         lineNumberStore.addLineNumber(storeInst);
       }
-      if (idFact) ret.insert(fact);
+      if (idFact) targetFacts.insert(fact);
 
-      return ret;
+      return targetFacts;
     };
 
     return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, lineNumberStore, zeroValue());
@@ -303,10 +306,10 @@ IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* cal
   llvm::outs() << "getCallFlowFunction()" << "\n";
   callStmt->print(llvm::outs()); llvm::outs() << "\n\n";
 
-  return std::make_shared<MapTaintedArgsToCallee>(llvm::cast<llvm::CallInst>(callStmt),
-                                                  destMthd,
-                                                  lineNumberStore,
-                                                  zeroValue());
+  return std::make_shared<MapTaintedValuesToCallee>(llvm::cast<llvm::CallInst>(callStmt),
+                                                    destMthd,
+                                                    lineNumberStore,
+                                                    zeroValue());
 }
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
@@ -314,9 +317,13 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
                                                    const llvm::Function* calleeMthd,
                                                    const llvm::Instruction* exitStmt,
                                                    const llvm::Instruction* retSite) {
+
   llvm::outs() << "getRetFlowFunction()" << "\n";
 
-  return Identity::getInstance(callSite, lineNumberStore, zeroValue());
+  return std::make_shared<MapTaintedValuesToCaller>(llvm::cast<llvm::CallInst>(callSite),
+                                                    llvm::cast<llvm::ReturnInst>(exitStmt),
+                                                    lineNumberStore,
+                                                    zeroValue());
 }
 
 /*
@@ -354,7 +361,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
                                                           ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
     /*
-     * For functions that kill facts and are  handled in getSummaryFlowFunction()
+     * For functions that kill facts and are handled in getSummaryFlowFunction()
      * we kill all facts here and just use what they have returned. This is
      * important e.g. if memset removes a store fact then it is not readded here
      * through the identity function.
@@ -398,22 +405,28 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocation = memTransferInst->getRawSource();
       const auto dstMemLocation = memTransferInst->getRawDest();
 
-      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation);
-      bool isSrcMemLocationTaintedByTemporary = DataFlowUtils::isValueEqual(fact, srcMemLocation);
-      bool isSrcMemLocationTaintedByMemLocation = DataFlowUtils::isMemoryLocationEqual(fact, srcMemLocation);
+      bool isSrcMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, srcMemLocation);
+      bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
 
-      bool genStoreInst = isSrcMemLocationTaintedByTemporary || isSrcMemLocationTaintedByMemLocation;
-      bool idFact = !isDstMemLocationTainted && !isSrcMemLocationTaintedByTemporary;
+      bool genStoreInst = isSrcMemLocationFrameTainted;
+      bool idFact = !isDstMemLocationFrameTainted;
 
-      std::set<ExtendedValue> ret;
+      std::set<ExtendedValue> targetFacts;
 
       if (genStoreInst) {
-        ret.insert(ExtendedValue(memTransferInst));
-        lineNumberStore.addLineNumber(memTransferInst);
-      }
-      if (idFact) ret.insert(fact);
+        const auto patchedMemoryLocationFrame = DataFlowUtils::getMemoryLocationFrame(dstMemLocation);
 
-      return ret;
+        ExtendedValue patchedMemoryLocation = fact;
+        patchedMemoryLocation.setPatchedMemLocationFrame(patchedMemoryLocationFrame);
+        targetFacts.insert(patchedMemoryLocation);
+
+        lineNumberStore.addLineNumber(memTransferInst);
+
+        llvm::outs() << "Patched" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+      }
+      if (idFact) targetFacts.insert(fact);
+
+      return targetFacts;
     };
 
     return std::make_shared<FlowFunctionWrapper>(callStmt, memTransferFlowFunction, lineNumberStore, zeroValue());
@@ -433,7 +446,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto dstMemLocation = memSetInst->getRawDest();
 
-      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocation);
+      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
       if (isDstMemLocationTainted) return { };
 
       return { fact };

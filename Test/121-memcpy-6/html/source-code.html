@@ -1,0 +1,1189 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <string.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+struct s2 {
+    char *tainted;
+    char *untainted;
+};
+
+struct s1 {
+    int a;
+    struct s2 s;
+    char *tainted;
+};
+
+int
+main()
+{
+    struct s1 s;
+    struct s2 ss;
+    s.s.tainted = getenv("hi");
+
+    memcpy(&ss, &s.s, 1024);
+
+    return 0;
+}
+
+</pre>
+<div>
+0 2019-Jan-15 20:38:01.902255 - [DEBUG] Set-up the command-line parameters<br>
+1 2019-Jan-15 20:38:01.902529 - [INFO] Chosen operation mode: 'phasarLLVM'<br>
+2 2019-Jan-15 20:38:01.902738 - [INFO] No configuration file is used.<br>
+3 2019-Jan-15 20:38:01.902777 - [INFO] Program options have been successfully parsed.<br>
+4 2019-Jan-15 20:38:01.902817 - [INFO] Check program options for logical errors.<br>
+5 2019-Jan-15 20:38:01.902859 - [INFO] Set-up IR database.<br>
+6 2019-Jan-15 20:38:01.908169 - [INFO] Constructed the analysis controller.<br>
+7 2019-Jan-15 20:38:01.908236 - [INFO] Found the following IR files for this project: <br>
+8 2019-Jan-15 20:38:01.908262 - [INFO] 	main.ll<br>
+9 2019-Jan-15 20:38:01.908287 - [INFO] Check for chosen entry points.<br>
+10 2019-Jan-15 20:38:01.908312 - [INFO] link all llvm modules into a single module for WPA ...<br>
+<br>
+11 2019-Jan-15 20:38:01.908336 - [INFO] link all llvm modules into a single module for WPA ended<br>
+<br>
+12 2019-Jan-15 20:38:01.908360 - [INFO] Preprocess module: main.ll<br>
+13 2019-Jan-15 20:38:01.908677 - [INFO] Running GeneralStatisticsPass<br>
+14 2019-Jan-15 20:38:01.908728 - [INFO] Running ValueAnnotationPass<br>
+15 2019-Jan-15 20:38:01.908981 - [INFO] GeneralStatisticsPass summary for module: 'main.ll'<br>
+<br>
+16 2019-Jan-15 20:38:01.909011 - [INFO] Allocated Types    : 3<br>
+17 2019-Jan-15 20:38:01.909041 - [INFO] Allocation Sites   : 3<br>
+18 2019-Jan-15 20:38:01.909065 - [INFO] Basic Blocks       : 1<br>
+19 2019-Jan-15 20:38:01.909089 - [INFO] Calls Sites        : 4<br>
+20 2019-Jan-15 20:38:01.909112 - [INFO] Functions          : 4<br>
+21 2019-Jan-15 20:38:01.909135 - [INFO] Globals            : 1<br>
+22 2019-Jan-15 20:38:01.909159 - [INFO] Global Pointer     : 1<br>
+23 2019-Jan-15 20:38:01.909182 - [INFO] Instructions       : 15<br>
+24 2019-Jan-15 20:38:01.909206 - [INFO] Memory Intrinsics  : 1<br>
+25 2019-Jan-15 20:38:01.909229 - [INFO] Store Instructions : 2<br>
+26 2019-Jan-15 20:38:01.909252 - [INFO]  <br>
+27 2019-Jan-15 20:38:01.909291 - [INFO]   i32<br>
+28 2019-Jan-15 20:38:01.909326 - [INFO]   %struct.s1 = type { i32, %struct.s2, i8* }<br>
+29 2019-Jan-15 20:38:01.909355 - [INFO]   %struct.s2 = type { i8*, i8* }<br>
+30 2019-Jan-15 20:38:01.909769 - [DEBUG] Analyzing function: main<br>
+31 2019-Jan-15 20:38:01.911187 - [INFO] Reconstruct the class hierarchy.<br>
+32 2019-Jan-15 20:38:01.911226 - [INFO] Construct type hierarchy<br>
+33 2019-Jan-15 20:38:01.911251 - [DEBUG] Analyse types in module: main.ll<br>
+34 2019-Jan-15 20:38:01.911412 - [DEBUG] Reconstruct virtual function table for module: main.ll<br>
+35 2019-Jan-15 20:38:01.911454 - [INFO] Reconstruction of class hierarchy completed.<br>
+36 2019-Jan-15 20:38:01.911481 - [INFO] Starting CallGraphAnalysisType: OTF<br>
+37 2019-Jan-15 20:38:01.911532 - [DEBUG] Walking in function: main<br>
+38 2019-Jan-15 20:38:01.911564 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5<br>
+39 2019-Jan-15 20:38:01.911864 - [DEBUG] Found 1 possible target(s)<br>
+40 2019-Jan-15 20:38:01.911889 - [DEBUG] Target name: llvm.dbg.declare<br>
+41 2019-Jan-15 20:38:01.911927 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+42 2019-Jan-15 20:38:01.911954 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+43 2019-Jan-15 20:38:01.911979 - [DEBUG] Found static call-site: call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+44 2019-Jan-15 20:38:01.912214 - [DEBUG] Found 1 possible target(s)<br>
+45 2019-Jan-15 20:38:01.912239 - [DEBUG] Target name: llvm.dbg.declare<br>
+46 2019-Jan-15 20:38:01.912271 - [DEBUG] Walking in function: llvm.dbg.declare<br>
+47 2019-Jan-15 20:38:01.912298 - [DEBUG] Function already visited or only declaration: llvm.dbg.declare<br>
+48 2019-Jan-15 20:38:01.912324 - [DEBUG] Found static call-site: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+49 2019-Jan-15 20:38:01.912595 - [DEBUG] Found 1 possible target(s)<br>
+50 2019-Jan-15 20:38:01.912620 - [DEBUG] Target name: getenv<br>
+51 2019-Jan-15 20:38:01.912653 - [DEBUG] Walking in function: getenv<br>
+52 2019-Jan-15 20:38:01.912699 - [DEBUG] Function already visited or only declaration: getenv<br>
+53 2019-Jan-15 20:38:01.912725 - [DEBUG] Found static call-site: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+54 2019-Jan-15 20:38:01.912973 - [DEBUG] Found 1 possible target(s)<br>
+55 2019-Jan-15 20:38:01.912997 - [DEBUG] Target name: llvm.memcpy.p0i8.p0i8.i64<br>
+56 2019-Jan-15 20:38:01.913031 - [DEBUG] Walking in function: llvm.memcpy.p0i8.p0i8.i64<br>
+57 2019-Jan-15 20:38:01.913058 - [DEBUG] Function already visited or only declaration: llvm.memcpy.p0i8.p0i8.i64<br>
+58 2019-Jan-15 20:38:01.913084 - [INFO] Call graph has been constructed<br>
+59 2019-Jan-15 20:38:01.913108 - [INFO] Performing analysis: plugin<br>
+60 2019-Jan-15 20:38:01.913136 - [DEBUG] Loading shared object library: '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so'<br>
+61 2019-Jan-15 20:38:01.913720 - [INFO] Solving plugin: IFDSEnvironmentVariableTracing<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+62 2019-Jan-15 20:38:01.914048 - [INFO] IDE solver is solving the specified problem<br>
+63 2019-Jan-15 20:38:01.914078 - [INFO] Submit initial seeds, construct exploded super graph<br>
+64 2019-Jan-15 20:38:01.914102 - [DEBUG] Start point: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+65 2019-Jan-15 20:38:01.914358 - [DEBUG]       Value: @zero_value = constant i2 0, align 4, ID: -1<br>
+66 2019-Jan-15 20:38:01.914421 - [DEBUG]  <br>
+67 2019-Jan-15 20:38:01.914457 - [DEBUG] Propagate flow<br>
+68 2019-Jan-15 20:38:01.914481 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+69 2019-Jan-15 20:38:01.914536 - [DEBUG] Target        : %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+70 2019-Jan-15 20:38:01.914762 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+71 2019-Jan-15 20:38:01.914818 - [DEBUG] Edge function : EdgeIdentity (result of previous compose)<br>
+72 2019-Jan-15 20:38:01.914843 - [DEBUG]  <br>
+73 2019-Jan-15 20:38:01.914868 - [DEBUG] Join: AllTop & EdgeIdentity <br>
+74 2019-Jan-15 20:38:01.914895 - [DEBUG]     = EdgeIdentity (new jump func)<br>
+75 2019-Jan-15 20:38:01.914919 - [DEBUG]  <br>
+76 2019-Jan-15 20:38:01.914943 - [DEBUG] Start adding new jump function<br>
+77 2019-Jan-15 20:38:01.914966 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+78 2019-Jan-15 20:38:01.915022 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+79 2019-Jan-15 20:38:01.915076 - [DEBUG] Destination    : %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+80 2019-Jan-15 20:38:01.915300 - [DEBUG] Edge Function  : EdgeIdentity<br>
+81 2019-Jan-15 20:38:01.915337 - [DEBUG] End adding new jump function<br>
+82 2019-Jan-15 20:38:01.915362 - [DEBUG]  <br>
+83 2019-Jan-15 20:38:01.915385 - [DEBUG] -------------------------------------------- 1. Path Edge --------------------------------------------<br>
+84 2019-Jan-15 20:38:01.915410 - [DEBUG]  <br>
+85 2019-Jan-15 20:38:01.915433 - [DEBUG] Process 1. path edge:<br>
+86 2019-Jan-15 20:38:01.915457 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+87 2019-Jan-15 20:38:01.915513 - [DEBUG]   N target: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 ;<br>
+88 2019-Jan-15 20:38:01.915736 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+89 2019-Jan-15 20:38:01.915792 - [DEBUG]  <br>
+90 2019-Jan-15 20:38:01.915817 - [DEBUG] Process normal at target: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+init - makeIFDSEnvironmentVariableTracing<br>
+initialSeeds()<br>
+getNormalFlowFunction()<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !1291 2019-Jan-15 20:38:01.916505 - [DEBUG] Compose: AllBottom * EdgeIdentity<br>
+92 2019-Jan-15 20:38:01.916537 - [DEBUG]  <br>
+93 2019-Jan-15 20:38:01.916561 - [DEBUG] Propagate flow<br>
+94 2019-Jan-15 20:38:01.916585 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+95 2019-Jan-15 20:38:01.916642 - [DEBUG] Target        : %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2<br>
+96 2019-Jan-15 20:38:01.916869 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+97 2019-Jan-15 20:38:01.916925 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+98 2019-Jan-15 20:38:01.916950 - [DEBUG]  <br>
+99 2019-Jan-15 20:38:01.916974 - [DEBUG] Join: AllTop & AllBottom <br>
+100 2019-Jan-15 20:38:01.917000 - [DEBUG]     = AllBottom (new jump func)<br>
+101 2019-Jan-15 20:38:01.917025 - [DEBUG]  <br>
+102 2019-Jan-15 20:38:01.917048 - [DEBUG] Start adding new jump function<br>
+103 2019-Jan-15 20:38:01.917071 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+104 2019-Jan-15 20:38:01.917126 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+105 2019-Jan-15 20:38:01.917181 - [DEBUG] Destination    : %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2<br>
+106 2019-Jan-15 20:38:01.917439 - [DEBUG] Edge Function  : AllBottom<br>
+107 2019-Jan-15 20:38:01.917467 - [DEBUG] End adding new jump function<br>
+108 2019-Jan-15 20:38:01.917491 - [DEBUG]  <br>
+109 2019-Jan-15 20:38:01.917515 - [DEBUG] -------------------------------------------- 2. Path Edge --------------------------------------------<br>
+110 2019-Jan-15 20:38:01.917539 - [DEBUG]  <br>
+111 2019-Jan-15 20:38:01.917562 - [DEBUG] Process 2. path edge:<br>
+112 2019-Jan-15 20:38:01.917586 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+113 2019-Jan-15 20:38:01.917643 - [DEBUG]   N target: %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2 ;<br>
+114 2019-Jan-15 20:38:01.917866 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+115 2019-Jan-15 20:38:01.917923 - [DEBUG]  <br>
+116 2019-Jan-15 20:38:01.917947 - [DEBUG] Process normal at target: %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2<br>
+<br>
+<br>
+Got operands checking instruction (alloca)<br>
+getNormalFlowFunction()<br>
+  %s = alloca %struct.s1, align 8, !phasar.instruction.id !13117 2019-Jan-15 20:38:01.918385 - [DEBUG] Compose: AllBottom * AllBottom<br>
+118 2019-Jan-15 20:38:01.918414 - [DEBUG]  <br>
+119 2019-Jan-15 20:38:01.918437 - [DEBUG] Propagate flow<br>
+120 2019-Jan-15 20:38:01.918461 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+121 2019-Jan-15 20:38:01.918517 - [DEBUG] Target        : %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3<br>
+122 2019-Jan-15 20:38:01.918741 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+123 2019-Jan-15 20:38:01.918797 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+124 2019-Jan-15 20:38:01.918822 - [DEBUG]  <br>
+125 2019-Jan-15 20:38:01.918846 - [DEBUG] Join: AllTop & AllBottom <br>
+126 2019-Jan-15 20:38:01.918872 - [DEBUG]     = AllBottom (new jump func)<br>
+127 2019-Jan-15 20:38:01.918896 - [DEBUG]  <br>
+128 2019-Jan-15 20:38:01.918920 - [DEBUG] Start adding new jump function<br>
+129 2019-Jan-15 20:38:01.918943 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+130 2019-Jan-15 20:38:01.918997 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+131 2019-Jan-15 20:38:01.919052 - [DEBUG] Destination    : %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3<br>
+132 2019-Jan-15 20:38:01.919275 - [DEBUG] Edge Function  : AllBottom<br>
+133 2019-Jan-15 20:38:01.919303 - [DEBUG] End adding new jump function<br>
+134 2019-Jan-15 20:38:01.919327 - [DEBUG]  <br>
+135 2019-Jan-15 20:38:01.919351 - [DEBUG] -------------------------------------------- 3. Path Edge --------------------------------------------<br>
+136 2019-Jan-15 20:38:01.919375 - [DEBUG]  <br>
+137 2019-Jan-15 20:38:01.919398 - [DEBUG] Process 3. path edge:<br>
+138 2019-Jan-15 20:38:01.919422 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+139 2019-Jan-15 20:38:01.919486 - [DEBUG]   N target: %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3 ;<br>
+140 2019-Jan-15 20:38:01.919711 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+141 2019-Jan-15 20:38:01.919767 - [DEBUG]  <br>
+142 2019-Jan-15 20:38:01.919791 - [DEBUG] Process normal at target: %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3<br>
+<br>
+<br>
+Got operands checking instruction (alloca)<br>
+getNormalFlowFunction()<br>
+  %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14143 2019-Jan-15 20:38:01.920228 - [DEBUG] Compose: AllBottom * AllBottom<br>
+144 2019-Jan-15 20:38:01.920257 - [DEBUG]  <br>
+145 2019-Jan-15 20:38:01.920280 - [DEBUG] Propagate flow<br>
+146 2019-Jan-15 20:38:01.920304 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+147 2019-Jan-15 20:38:01.920361 - [DEBUG] Target        : store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4<br>
+148 2019-Jan-15 20:38:01.920586 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+149 2019-Jan-15 20:38:01.920665 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+150 2019-Jan-15 20:38:01.920691 - [DEBUG]  <br>
+151 2019-Jan-15 20:38:01.920715 - [DEBUG] Join: AllTop & AllBottom <br>
+152 2019-Jan-15 20:38:01.920740 - [DEBUG]     = AllBottom (new jump func)<br>
+153 2019-Jan-15 20:38:01.920765 - [DEBUG]  <br>
+154 2019-Jan-15 20:38:01.920788 - [DEBUG] Start adding new jump function<br>
+155 2019-Jan-15 20:38:01.920811 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+156 2019-Jan-15 20:38:01.920866 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+157 2019-Jan-15 20:38:01.920921 - [DEBUG] Destination    : store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4<br>
+158 2019-Jan-15 20:38:01.921146 - [DEBUG] Edge Function  : AllBottom<br>
+159 2019-Jan-15 20:38:01.921174 - [DEBUG] End adding new jump function<br>
+160 2019-Jan-15 20:38:01.921198 - [DEBUG]  <br>
+161 2019-Jan-15 20:38:01.921222 - [DEBUG] -------------------------------------------- 4. Path Edge --------------------------------------------<br>
+162 2019-Jan-15 20:38:01.921246 - [DEBUG]  <br>
+163 2019-Jan-15 20:38:01.921269 - [DEBUG] Process 4. path edge:<br>
+164 2019-Jan-15 20:38:01.921293 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+165 2019-Jan-15 20:38:01.921350 - [DEBUG]   N target: store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4 ;<br>
+166 2019-Jan-15 20:38:01.921574 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+167 2019-Jan-15 20:38:01.921630 - [DEBUG]  <br>
+168 2019-Jan-15 20:38:01.921655 - [DEBUG] Process normal at target: store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4<br>
+<br>
+<br>
+Got operands checking instruction (alloca)<br>
+getNormalFlowFunction()<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15169 2019-Jan-15 20:38:01.922162 - [DEBUG] Compose: AllBottom * AllBottom<br>
+170 2019-Jan-15 20:38:01.922192 - [DEBUG]  <br>
+171 2019-Jan-15 20:38:01.922215 - [DEBUG] Propagate flow<br>
+172 2019-Jan-15 20:38:01.922239 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+173 2019-Jan-15 20:38:01.922295 - [DEBUG] Target        : call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5<br>
+174 2019-Jan-15 20:38:01.922530 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+175 2019-Jan-15 20:38:01.922586 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+176 2019-Jan-15 20:38:01.922611 - [DEBUG]  <br>
+177 2019-Jan-15 20:38:01.922635 - [DEBUG] Join: AllTop & AllBottom <br>
+178 2019-Jan-15 20:38:01.922661 - [DEBUG]     = AllBottom (new jump func)<br>
+179 2019-Jan-15 20:38:01.922685 - [DEBUG]  <br>
+180 2019-Jan-15 20:38:01.922708 - [DEBUG] Start adding new jump function<br>
+181 2019-Jan-15 20:38:01.922731 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+182 2019-Jan-15 20:38:01.922786 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+183 2019-Jan-15 20:38:01.922848 - [DEBUG] Destination    : call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5<br>
+184 2019-Jan-15 20:38:01.923081 - [DEBUG] Edge Function  : AllBottom<br>
+185 2019-Jan-15 20:38:01.923109 - [DEBUG] End adding new jump function<br>
+186 2019-Jan-15 20:38:01.923134 - [DEBUG]  <br>
+187 2019-Jan-15 20:38:01.923158 - [DEBUG] -------------------------------------------- 5. Path Edge --------------------------------------------<br>
+188 2019-Jan-15 20:38:01.923182 - [DEBUG]  <br>
+189 2019-Jan-15 20:38:01.923205 - [DEBUG] Process 5. path edge:<br>
+190 2019-Jan-15 20:38:01.923229 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+191 2019-Jan-15 20:38:01.923285 - [DEBUG]   N target: call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5 ;<br>
+192 2019-Jan-15 20:38:01.923519 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+193 2019-Jan-15 20:38:01.923575 - [DEBUG]  <br>
+194 2019-Jan-15 20:38:01.923599 - [DEBUG] Process call at target: call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5<br>
+195 2019-Jan-15 20:38:01.923836 - [DEBUG] Possible callees:<br>
+196 2019-Jan-15 20:38:01.923861 - [DEBUG]   llvm.dbg.declare<br>
+197 2019-Jan-15 20:38:01.923886 - [DEBUG] Possible return sites:<br>
+198 2019-Jan-15 20:38:01.923909 - [DEBUG]   call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+<br>
+<br>
+Got store instruction<br>
+getSummaryFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30199 2019-Jan-15 20:38:01.924479 - [DEBUG] Found and process special summary<br>
+200 2019-Jan-15 20:38:01.924518 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+201 2019-Jan-15 20:38:01.924545 - [DEBUG]  <br>
+202 2019-Jan-15 20:38:01.924569 - [DEBUG] Propagate flow<br>
+203 2019-Jan-15 20:38:01.924592 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+204 2019-Jan-15 20:38:01.924649 - [DEBUG] Target        : call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+205 2019-Jan-15 20:38:01.924883 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+206 2019-Jan-15 20:38:01.924939 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+207 2019-Jan-15 20:38:01.924964 - [DEBUG]  <br>
+208 2019-Jan-15 20:38:01.924988 - [DEBUG] Join: AllTop & AllBottom <br>
+209 2019-Jan-15 20:38:01.925014 - [DEBUG]     = AllBottom (new jump func)<br>
+210 2019-Jan-15 20:38:01.925039 - [DEBUG]  <br>
+211 2019-Jan-15 20:38:01.925062 - [DEBUG] Start adding new jump function<br>
+212 2019-Jan-15 20:38:01.925085 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+213 2019-Jan-15 20:38:01.925140 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+214 2019-Jan-15 20:38:01.925195 - [DEBUG] Destination    : call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+215 2019-Jan-15 20:38:01.925428 - [DEBUG] Edge Function  : AllBottom<br>
+216 2019-Jan-15 20:38:01.925456 - [DEBUG] End adding new jump function<br>
+217 2019-Jan-15 20:38:01.925480 - [DEBUG]  <br>
+218 2019-Jan-15 20:38:01.925504 - [DEBUG] -------------------------------------------- 6. Path Edge --------------------------------------------<br>
+219 2019-Jan-15 20:38:01.925528 - [DEBUG]  <br>
+220 2019-Jan-15 20:38:01.925552 - [DEBUG] Process 6. path edge:<br>
+221 2019-Jan-15 20:38:01.925575 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+222 2019-Jan-15 20:38:01.925632 - [DEBUG]   N target: call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6 ;<br>
+223 2019-Jan-15 20:38:01.925864 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+224 2019-Jan-15 20:38:01.925920 - [DEBUG]  <br>
+225 2019-Jan-15 20:38:01.925944 - [DEBUG] Process call at target: call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+226 2019-Jan-15 20:38:01.926188 - [DEBUG] Possible callees:<br>
+227 2019-Jan-15 20:38:01.926214 - [DEBUG]   llvm.dbg.declare<br>
+228 2019-Jan-15 20:38:01.926239 - [DEBUG] Possible return sites:<br>
+229 2019-Jan-15 20:38:01.926263 - [DEBUG]   %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+<br>
+<br>
+getSummaryFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33230 2019-Jan-15 20:38:01.926725 - [DEBUG] Found and process special summary<br>
+231 2019-Jan-15 20:38:01.926757 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+232 2019-Jan-15 20:38:01.926784 - [DEBUG]  <br>
+233 2019-Jan-15 20:38:01.926808 - [DEBUG] Propagate flow<br>
+234 2019-Jan-15 20:38:01.926831 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+235 2019-Jan-15 20:38:01.926887 - [DEBUG] Target        : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+236 2019-Jan-15 20:38:01.927126 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+237 2019-Jan-15 20:38:01.927182 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+238 2019-Jan-15 20:38:01.927207 - [DEBUG]  <br>
+239 2019-Jan-15 20:38:01.927231 - [DEBUG] Join: AllTop & AllBottom <br>
+240 2019-Jan-15 20:38:01.927257 - [DEBUG]     = AllBottom (new jump func)<br>
+241 2019-Jan-15 20:38:01.927304 - [DEBUG]  <br>
+242 2019-Jan-15 20:38:01.927328 - [DEBUG] Start adding new jump function<br>
+243 2019-Jan-15 20:38:01.927351 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+244 2019-Jan-15 20:38:01.927407 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+245 2019-Jan-15 20:38:01.927462 - [DEBUG] Destination    : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+246 2019-Jan-15 20:38:01.927701 - [DEBUG] Edge Function  : AllBottom<br>
+247 2019-Jan-15 20:38:01.927731 - [DEBUG] End adding new jump function<br>
+248 2019-Jan-15 20:38:01.927755 - [DEBUG]  <br>
+249 2019-Jan-15 20:38:01.927778 - [DEBUG] -------------------------------------------- 7. Path Edge --------------------------------------------<br>
+250 2019-Jan-15 20:38:01.927802 - [DEBUG]  <br>
+251 2019-Jan-15 20:38:01.927825 - [DEBUG] Process 7. path edge:<br>
+252 2019-Jan-15 20:38:01.927849 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+253 2019-Jan-15 20:38:01.927905 - [DEBUG]   N target: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 ;<br>
+254 2019-Jan-15 20:38:01.928144 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+255 2019-Jan-15 20:38:01.928200 - [DEBUG]  <br>
+256 2019-Jan-15 20:38:01.928224 - [DEBUG] Process call at target: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+257 2019-Jan-15 20:38:01.928464 - [DEBUG] Possible callees:<br>
+258 2019-Jan-15 20:38:01.928490 - [DEBUG]   getenv<br>
+259 2019-Jan-15 20:38:01.928514 - [DEBUG] Possible return sites:<br>
+260 2019-Jan-15 20:38:01.928538 - [DEBUG]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+<br>
+<br>
+getSummaryFlowFunction()<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35261 2019-Jan-15 20:38:01.928991 - [DEBUG] Found and process special summary<br>
+262 2019-Jan-15 20:38:01.929090 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+263 2019-Jan-15 20:38:01.929118 - [DEBUG]  <br>
+264 2019-Jan-15 20:38:01.929142 - [DEBUG] Propagate flow<br>
+265 2019-Jan-15 20:38:01.929165 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+266 2019-Jan-15 20:38:01.929222 - [DEBUG] Target        : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+267 2019-Jan-15 20:38:01.929462 - [DEBUG] Target value  : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+268 2019-Jan-15 20:38:01.929700 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+269 2019-Jan-15 20:38:01.929726 - [DEBUG]  <br>
+270 2019-Jan-15 20:38:01.929750 - [DEBUG] Join: AllTop & AllBottom <br>
+271 2019-Jan-15 20:38:01.929775 - [DEBUG]     = AllBottom (new jump func)<br>
+272 2019-Jan-15 20:38:01.929800 - [DEBUG]  <br>
+273 2019-Jan-15 20:38:01.929823 - [DEBUG] Start adding new jump function<br>
+274 2019-Jan-15 20:38:01.929846 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+275 2019-Jan-15 20:38:01.929902 - [DEBUG] Fact at target : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+276 2019-Jan-15 20:38:01.930140 - [DEBUG] Destination    : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+277 2019-Jan-15 20:38:01.930369 - [DEBUG] Edge Function  : AllBottom<br>
+278 2019-Jan-15 20:38:01.930397 - [DEBUG] End adding new jump function<br>
+279 2019-Jan-15 20:38:01.930421 - [DEBUG]  <br>
+280 2019-Jan-15 20:38:01.930444 - [DEBUG] -------------------------------------------- 8. Path Edge --------------------------------------------<br>
+281 2019-Jan-15 20:38:01.930469 - [DEBUG]  <br>
+282 2019-Jan-15 20:38:01.930492 - [DEBUG] Process 8. path edge:<br>
+283 2019-Jan-15 20:38:01.930516 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+284 2019-Jan-15 20:38:01.930572 - [DEBUG]   N target: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8 ;<br>
+285 2019-Jan-15 20:38:01.930818 - [DEBUG]   D target: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 ><br>
+286 2019-Jan-15 20:38:01.931056 - [DEBUG]  <br>
+287 2019-Jan-15 20:38:01.931081 - [DEBUG] Process normal at target: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+<br>
+<br>
+getNormalFlowFunction()<br>
+  %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37288 2019-Jan-15 20:38:01.931529 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+289 2019-Jan-15 20:38:01.931559 - [DEBUG]  <br>
+290 2019-Jan-15 20:38:01.931583 - [DEBUG] Propagate flow<br>
+291 2019-Jan-15 20:38:01.931606 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+292 2019-Jan-15 20:38:01.931662 - [DEBUG] Target        : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+293 2019-Jan-15 20:38:01.931892 - [DEBUG] Target value  : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+294 2019-Jan-15 20:38:01.932129 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+295 2019-Jan-15 20:38:01.932155 - [DEBUG]  <br>
+296 2019-Jan-15 20:38:01.932179 - [DEBUG] Join: AllTop & AllBottom <br>
+297 2019-Jan-15 20:38:01.932204 - [DEBUG]     = AllBottom (new jump func)<br>
+298 2019-Jan-15 20:38:01.932229 - [DEBUG]  <br>
+299 2019-Jan-15 20:38:01.932252 - [DEBUG] Start adding new jump function<br>
+300 2019-Jan-15 20:38:01.932275 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+301 2019-Jan-15 20:38:01.932331 - [DEBUG] Fact at target : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+302 2019-Jan-15 20:38:01.932569 - [DEBUG] Destination    : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+303 2019-Jan-15 20:38:01.932798 - [DEBUG] Edge Function  : AllBottom<br>
+304 2019-Jan-15 20:38:01.932833 - [DEBUG] End adding new jump function<br>
+305 2019-Jan-15 20:38:01.932858 - [DEBUG]  <br>
+306 2019-Jan-15 20:38:01.932882 - [DEBUG] -------------------------------------------- 9. Path Edge --------------------------------------------<br>
+307 2019-Jan-15 20:38:01.932906 - [DEBUG]  <br>
+308 2019-Jan-15 20:38:01.932929 - [DEBUG] Process 9. path edge:<br>
+309 2019-Jan-15 20:38:01.932953 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+310 2019-Jan-15 20:38:01.933009 - [DEBUG]   N target: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9 ;<br>
+311 2019-Jan-15 20:38:01.933239 - [DEBUG]   D target: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 ><br>
+312 2019-Jan-15 20:38:01.933477 - [DEBUG]  <br>
+313 2019-Jan-15 20:38:01.933501 - [DEBUG] Process normal at target: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+<br>
+<br>
+getNormalFlowFunction()<br>
+  %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39314 2019-Jan-15 20:38:01.933960 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+315 2019-Jan-15 20:38:01.933990 - [DEBUG]  <br>
+316 2019-Jan-15 20:38:01.934014 - [DEBUG] Propagate flow<br>
+317 2019-Jan-15 20:38:01.934037 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+318 2019-Jan-15 20:38:01.934093 - [DEBUG] Target        : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+319 2019-Jan-15 20:38:01.934320 - [DEBUG] Target value  : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+320 2019-Jan-15 20:38:01.934558 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+321 2019-Jan-15 20:38:01.934583 - [DEBUG]  <br>
+322 2019-Jan-15 20:38:01.934607 - [DEBUG] Join: AllTop & AllBottom <br>
+323 2019-Jan-15 20:38:01.934632 - [DEBUG]     = AllBottom (new jump func)<br>
+324 2019-Jan-15 20:38:01.934657 - [DEBUG]  <br>
+325 2019-Jan-15 20:38:01.934680 - [DEBUG] Start adding new jump function<br>
+326 2019-Jan-15 20:38:01.934703 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+327 2019-Jan-15 20:38:01.934759 - [DEBUG] Fact at target : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+328 2019-Jan-15 20:38:01.934996 - [DEBUG] Destination    : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+329 2019-Jan-15 20:38:01.935221 - [DEBUG] Edge Function  : AllBottom<br>
+330 2019-Jan-15 20:38:01.935248 - [DEBUG] End adding new jump function<br>
+331 2019-Jan-15 20:38:01.935272 - [DEBUG]  <br>
+332 2019-Jan-15 20:38:01.935296 - [DEBUG] -------------------------------------------- 10. Path Edge --------------------------------------------<br>
+333 2019-Jan-15 20:38:01.935319 - [DEBUG]  <br>
+334 2019-Jan-15 20:38:01.935343 - [DEBUG] Process 10. path edge:<br>
+335 2019-Jan-15 20:38:01.935366 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+336 2019-Jan-15 20:38:01.935423 - [DEBUG]   N target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ;<br>
+337 2019-Jan-15 20:38:01.935649 - [DEBUG]   D target: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 ><br>
+338 2019-Jan-15 20:38:01.935886 - [DEBUG]  <br>
+339 2019-Jan-15 20:38:01.935911 - [DEBUG] Process normal at target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+<br>
+<br>
+getNormalFlowFunction()<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41340 2019-Jan-15 20:38:01.936375 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+341 2019-Jan-15 20:38:01.936405 - [DEBUG]  <br>
+342 2019-Jan-15 20:38:01.936429 - [DEBUG] Propagate flow<br>
+343 2019-Jan-15 20:38:01.936452 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+344 2019-Jan-15 20:38:01.936517 - [DEBUG] Target        : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+345 2019-Jan-15 20:38:01.936744 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+346 2019-Jan-15 20:38:01.936969 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+347 2019-Jan-15 20:38:01.936994 - [DEBUG]  <br>
+348 2019-Jan-15 20:38:01.937019 - [DEBUG] Join: AllTop & AllBottom <br>
+349 2019-Jan-15 20:38:01.937044 - [DEBUG]     = AllBottom (new jump func)<br>
+350 2019-Jan-15 20:38:01.937069 - [DEBUG]  <br>
+351 2019-Jan-15 20:38:01.937092 - [DEBUG] Start adding new jump function<br>
+352 2019-Jan-15 20:38:01.937116 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+353 2019-Jan-15 20:38:01.937172 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+354 2019-Jan-15 20:38:01.937423 - [DEBUG] Destination    : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+355 2019-Jan-15 20:38:01.937648 - [DEBUG] Edge Function  : AllBottom<br>
+356 2019-Jan-15 20:38:01.937677 - [DEBUG] End adding new jump function<br>
+357 2019-Jan-15 20:38:01.937701 - [DEBUG]  <br>
+358 2019-Jan-15 20:38:01.937724 - [DEBUG] -------------------------------------------- 11. Path Edge --------------------------------------------<br>
+359 2019-Jan-15 20:38:01.937748 - [DEBUG]  <br>
+360 2019-Jan-15 20:38:01.937772 - [DEBUG] Process 11. path edge:<br>
+361 2019-Jan-15 20:38:01.937795 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+362 2019-Jan-15 20:38:01.937852 - [DEBUG]   N target: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11 ;<br>
+363 2019-Jan-15 20:38:01.938077 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+364 2019-Jan-15 20:38:01.938302 - [DEBUG]  <br>
+365 2019-Jan-15 20:38:01.938326 - [DEBUG] Process normal at target: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+<br>
+<br>
+Got store instruction<br>
+getNormalFlowFunction()<br>
+  %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43366 2019-Jan-15 20:38:01.938983 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+367 2019-Jan-15 20:38:01.939014 - [DEBUG]  <br>
+368 2019-Jan-15 20:38:01.939038 - [DEBUG] Propagate flow<br>
+369 2019-Jan-15 20:38:01.939062 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+370 2019-Jan-15 20:38:01.939120 - [DEBUG] Target        : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+371 2019-Jan-15 20:38:01.939352 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+372 2019-Jan-15 20:38:01.939578 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+373 2019-Jan-15 20:38:01.939603 - [DEBUG]  <br>
+374 2019-Jan-15 20:38:01.939627 - [DEBUG] Join: AllTop & AllBottom <br>
+375 2019-Jan-15 20:38:01.939653 - [DEBUG]     = AllBottom (new jump func)<br>
+376 2019-Jan-15 20:38:01.939678 - [DEBUG]  <br>
+377 2019-Jan-15 20:38:01.939701 - [DEBUG] Start adding new jump function<br>
+378 2019-Jan-15 20:38:01.939724 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+379 2019-Jan-15 20:38:01.939780 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+380 2019-Jan-15 20:38:01.940006 - [DEBUG] Destination    : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+381 2019-Jan-15 20:38:01.940235 - [DEBUG] Edge Function  : AllBottom<br>
+382 2019-Jan-15 20:38:01.940263 - [DEBUG] End adding new jump function<br>
+383 2019-Jan-15 20:38:01.940287 - [DEBUG]  <br>
+384 2019-Jan-15 20:38:01.940311 - [DEBUG] -------------------------------------------- 12. Path Edge --------------------------------------------<br>
+385 2019-Jan-15 20:38:01.940335 - [DEBUG]  <br>
+386 2019-Jan-15 20:38:01.940358 - [DEBUG] Process 12. path edge:<br>
+387 2019-Jan-15 20:38:01.940391 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+388 2019-Jan-15 20:38:01.940448 - [DEBUG]   N target: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12 ;<br>
+389 2019-Jan-15 20:38:01.940697 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+390 2019-Jan-15 20:38:01.940923 - [DEBUG]  <br>
+391 2019-Jan-15 20:38:01.940948 - [DEBUG] Process normal at target: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+<br>
+<br>
+Got operands checking instruction (bitcast)<br>
+getNormalFlowFunction()<br>
+  %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45392 2019-Jan-15 20:38:01.941395 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+393 2019-Jan-15 20:38:01.941424 - [DEBUG]  <br>
+394 2019-Jan-15 20:38:01.941447 - [DEBUG] Propagate flow<br>
+395 2019-Jan-15 20:38:01.941471 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+396 2019-Jan-15 20:38:01.941527 - [DEBUG] Target        : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+397 2019-Jan-15 20:38:01.941753 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+398 2019-Jan-15 20:38:01.941977 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+399 2019-Jan-15 20:38:01.942003 - [DEBUG]  <br>
+400 2019-Jan-15 20:38:01.942027 - [DEBUG] Join: AllTop & AllBottom <br>
+401 2019-Jan-15 20:38:01.942052 - [DEBUG]     = AllBottom (new jump func)<br>
+402 2019-Jan-15 20:38:01.942077 - [DEBUG]  <br>
+403 2019-Jan-15 20:38:01.942100 - [DEBUG] Start adding new jump function<br>
+404 2019-Jan-15 20:38:01.942123 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+405 2019-Jan-15 20:38:01.942179 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+406 2019-Jan-15 20:38:01.942404 - [DEBUG] Destination    : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+407 2019-Jan-15 20:38:01.942627 - [DEBUG] Edge Function  : AllBottom<br>
+408 2019-Jan-15 20:38:01.942655 - [DEBUG] End adding new jump function<br>
+409 2019-Jan-15 20:38:01.942679 - [DEBUG]  <br>
+410 2019-Jan-15 20:38:01.942703 - [DEBUG] -------------------------------------------- 13. Path Edge --------------------------------------------<br>
+411 2019-Jan-15 20:38:01.942727 - [DEBUG]  <br>
+412 2019-Jan-15 20:38:01.942750 - [DEBUG] Process 13. path edge:<br>
+413 2019-Jan-15 20:38:01.942774 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+414 2019-Jan-15 20:38:01.942831 - [DEBUG]   N target: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13 ;<br>
+415 2019-Jan-15 20:38:01.943055 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+416 2019-Jan-15 20:38:01.943279 - [DEBUG]  <br>
+417 2019-Jan-15 20:38:01.943304 - [DEBUG] Process normal at target: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+<br>
+<br>
+getNormalFlowFunction()<br>
+  %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46418 2019-Jan-15 20:38:01.943753 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+419 2019-Jan-15 20:38:01.943782 - [DEBUG]  <br>
+420 2019-Jan-15 20:38:01.943805 - [DEBUG] Propagate flow<br>
+421 2019-Jan-15 20:38:01.943829 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+422 2019-Jan-15 20:38:01.943885 - [DEBUG] Target        : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+423 2019-Jan-15 20:38:01.944139 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+424 2019-Jan-15 20:38:01.944365 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+425 2019-Jan-15 20:38:01.944390 - [DEBUG]  <br>
+426 2019-Jan-15 20:38:01.944414 - [DEBUG] Join: AllTop & AllBottom <br>
+427 2019-Jan-15 20:38:01.944447 - [DEBUG]     = AllBottom (new jump func)<br>
+428 2019-Jan-15 20:38:01.944472 - [DEBUG]  <br>
+429 2019-Jan-15 20:38:01.944496 - [DEBUG] Start adding new jump function<br>
+430 2019-Jan-15 20:38:01.944519 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+431 2019-Jan-15 20:38:01.944575 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+432 2019-Jan-15 20:38:01.944800 - [DEBUG] Destination    : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+433 2019-Jan-15 20:38:01.945035 - [DEBUG] Edge Function  : AllBottom<br>
+434 2019-Jan-15 20:38:01.945063 - [DEBUG] End adding new jump function<br>
+435 2019-Jan-15 20:38:01.945087 - [DEBUG]  <br>
+436 2019-Jan-15 20:38:01.945111 - [DEBUG] -------------------------------------------- 14. Path Edge --------------------------------------------<br>
+437 2019-Jan-15 20:38:01.945135 - [DEBUG]  <br>
+438 2019-Jan-15 20:38:01.945158 - [DEBUG] Process 14. path edge:<br>
+439 2019-Jan-15 20:38:01.945181 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+440 2019-Jan-15 20:38:01.945238 - [DEBUG]   N target: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14 ;<br>
+441 2019-Jan-15 20:38:01.945473 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+442 2019-Jan-15 20:38:01.945698 - [DEBUG]  <br>
+443 2019-Jan-15 20:38:01.945722 - [DEBUG] Process call at target: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+444 2019-Jan-15 20:38:01.945962 - [DEBUG] Possible callees:<br>
+445 2019-Jan-15 20:38:01.945987 - [DEBUG]   llvm.memcpy.p0i8.p0i8.i64<br>
+446 2019-Jan-15 20:38:01.946012 - [DEBUG] Possible return sites:<br>
+447 2019-Jan-15 20:38:01.946036 - [DEBUG]   ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+<br>
+<br>
+Got operands checking instruction (bitcast)<br>
+getSummaryFlowFunction()<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47448 2019-Jan-15 20:38:01.946480 - [DEBUG] Found and process special summary<br>
+<br>
+<br>
+Got memcpy/memmove instruction<br>
+Patched<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41<br>
+to<br>
+  %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14449 2019-Jan-15 20:38:01.947051 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+450 2019-Jan-15 20:38:01.947081 - [DEBUG]  <br>
+451 2019-Jan-15 20:38:01.947105 - [DEBUG] Propagate flow<br>
+452 2019-Jan-15 20:38:01.947129 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+453 2019-Jan-15 20:38:01.947186 - [DEBUG] Target        : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+454 2019-Jan-15 20:38:01.947430 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+455 2019-Jan-15 20:38:01.947656 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+456 2019-Jan-15 20:38:01.947681 - [DEBUG]  <br>
+457 2019-Jan-15 20:38:01.947705 - [DEBUG] Join: AllTop & AllBottom <br>
+458 2019-Jan-15 20:38:01.947731 - [DEBUG]     = AllBottom (new jump func)<br>
+459 2019-Jan-15 20:38:01.947755 - [DEBUG]  <br>
+460 2019-Jan-15 20:38:01.947778 - [DEBUG] Start adding new jump function<br>
+461 2019-Jan-15 20:38:01.947802 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+462 2019-Jan-15 20:38:01.947858 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+463 2019-Jan-15 20:38:01.948083 - [DEBUG] Destination    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+464 2019-Jan-15 20:38:01.948307 - [DEBUG] Edge Function  : AllBottom<br>
+465 2019-Jan-15 20:38:01.948334 - [DEBUG] End adding new jump function<br>
+466 2019-Jan-15 20:38:01.948359 - [DEBUG]  <br>
+467 2019-Jan-15 20:38:01.948382 - [DEBUG] -------------------------------------------- 15. Path Edge --------------------------------------------<br>
+468 2019-Jan-15 20:38:01.948414 - [DEBUG]  <br>
+469 2019-Jan-15 20:38:01.948438 - [DEBUG] Process 15. path edge:<br>
+470 2019-Jan-15 20:38:01.948462 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+471 2019-Jan-15 20:38:01.948519 - [DEBUG]   N target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15 ;<br>
+472 2019-Jan-15 20:38:01.948743 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+473 2019-Jan-15 20:38:01.948968 - [DEBUG]  <br>
+474 2019-Jan-15 20:38:01.948992 - [DEBUG] Process exit at target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+475 2019-Jan-15 20:38:01.949221 - [DEBUG] Start of endsummarytab entry<br>
+476 2019-Jan-15 20:38:01.949249 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+477 2019-Jan-15 20:38:01.949474 - [DEBUG] d1: @zero_value = constant i2 0, align 4, ID: -1<br>
+478 2019-Jan-15 20:38:01.949531 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+479 2019-Jan-15 20:38:01.949755 - [DEBUG]   d2: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+480 2019-Jan-15 20:38:01.949980 - [DEBUG]   EF: AllBottom<br>
+481 2019-Jan-15 20:38:01.950005 - [DEBUG]  <br>
+482 2019-Jan-15 20:38:01.950028 - [DEBUG] ---------------<br>
+483 2019-Jan-15 20:38:01.950052 - [DEBUG]  <br>
+484 2019-Jan-15 20:38:01.950076 - [DEBUG] End of endsummarytab entry<br>
+485 2019-Jan-15 20:38:01.950099 - [DEBUG]  <br>
+486 2019-Jan-15 20:38:01.950123 - [DEBUG] Start of incomingtab entry<br>
+487 2019-Jan-15 20:38:01.950147 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+488 2019-Jan-15 20:38:01.950369 - [DEBUG] d3: @zero_value = constant i2 0, align 4, ID: -1<br>
+489 2019-Jan-15 20:38:01.950426 - [DEBUG] ---------------<br>
+490 2019-Jan-15 20:38:01.950450 - [DEBUG] End of incomingtab entry<br>
+491 2019-Jan-15 20:38:01.950474 - [DEBUG]  <br>
+492 2019-Jan-15 20:38:01.950498 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+493 2019-Jan-15 20:38:01.950555 - [DEBUG]  ---> <N: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15,<br>
+494 2019-Jan-15 20:38:01.950795 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+495 2019-Jan-15 20:38:01.951020 - [DEBUG]  <br>
+496 2019-Jan-15 20:38:01.951046 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+497 2019-Jan-15 20:38:01.951071 - [DEBUG]  <br>
+498 2019-Jan-15 20:38:01.951095 - [DEBUG] Propagate flow<br>
+499 2019-Jan-15 20:38:01.951118 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+500 2019-Jan-15 20:38:01.951174 - [DEBUG] Target        : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+501 2019-Jan-15 20:38:01.951398 - [DEBUG] Target value  : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+502 2019-Jan-15 20:38:01.951623 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+503 2019-Jan-15 20:38:01.951648 - [DEBUG]  <br>
+504 2019-Jan-15 20:38:01.951672 - [DEBUG] Join: AllTop & AllBottom <br>
+505 2019-Jan-15 20:38:01.951698 - [DEBUG]     = AllBottom (new jump func)<br>
+506 2019-Jan-15 20:38:01.951722 - [DEBUG]  <br>
+507 2019-Jan-15 20:38:01.951745 - [DEBUG] Start adding new jump function<br>
+508 2019-Jan-15 20:38:01.951769 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+509 2019-Jan-15 20:38:01.951824 - [DEBUG] Fact at target : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+510 2019-Jan-15 20:38:01.952050 - [DEBUG] Destination    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+511 2019-Jan-15 20:38:01.952273 - [DEBUG] Edge Function  : AllBottom<br>
+512 2019-Jan-15 20:38:01.952299 - [DEBUG] End adding new jump function<br>
+513 2019-Jan-15 20:38:01.952323 - [DEBUG]  <br>
+514 2019-Jan-15 20:38:01.952347 - [DEBUG] -------------------------------------------- 16. Path Edge --------------------------------------------<br>
+515 2019-Jan-15 20:38:01.952371 - [DEBUG]  <br>
+516 2019-Jan-15 20:38:01.952394 - [DEBUG] Process 16. path edge:<br>
+517 2019-Jan-15 20:38:01.952430 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+518 2019-Jan-15 20:38:01.952487 - [DEBUG]   N target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15 ;<br>
+519 2019-Jan-15 20:38:01.952712 - [DEBUG]   D target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ><br>
+520 2019-Jan-15 20:38:01.952937 - [DEBUG]  <br>
+521 2019-Jan-15 20:38:01.952961 - [DEBUG] Process exit at target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+522 2019-Jan-15 20:38:01.953188 - [DEBUG] Start of endsummarytab entry<br>
+523 2019-Jan-15 20:38:01.953214 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+524 2019-Jan-15 20:38:01.953437 - [DEBUG] d1: @zero_value = constant i2 0, align 4, ID: -1<br>
+525 2019-Jan-15 20:38:01.953494 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+526 2019-Jan-15 20:38:01.953717 - [DEBUG]   d2: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+527 2019-Jan-15 20:38:01.953955 - [DEBUG]   EF: AllBottom<br>
+528 2019-Jan-15 20:38:01.953981 - [DEBUG]  <br>
+529 2019-Jan-15 20:38:01.954004 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+530 2019-Jan-15 20:38:01.954228 - [DEBUG]   d2: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+531 2019-Jan-15 20:38:01.954453 - [DEBUG]   EF: AllBottom<br>
+532 2019-Jan-15 20:38:01.954478 - [DEBUG]  <br>
+533 2019-Jan-15 20:38:01.954501 - [DEBUG] ---------------<br>
+534 2019-Jan-15 20:38:01.954525 - [DEBUG]  <br>
+535 2019-Jan-15 20:38:01.954549 - [DEBUG] End of endsummarytab entry<br>
+536 2019-Jan-15 20:38:01.954572 - [DEBUG]  <br>
+537 2019-Jan-15 20:38:01.954596 - [DEBUG] Start of incomingtab entry<br>
+538 2019-Jan-15 20:38:01.954619 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+539 2019-Jan-15 20:38:01.954842 - [DEBUG] d3: @zero_value = constant i2 0, align 4, ID: -1<br>
+540 2019-Jan-15 20:38:01.954898 - [DEBUG] ---------------<br>
+541 2019-Jan-15 20:38:01.954922 - [DEBUG] End of incomingtab entry<br>
+542 2019-Jan-15 20:38:01.954945 - [DEBUG]  <br>
+543 2019-Jan-15 20:38:01.954969 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+544 2019-Jan-15 20:38:01.955025 - [DEBUG]  ---> <N: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15,<br>
+545 2019-Jan-15 20:38:01.955248 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+546 2019-Jan-15 20:38:01.955473 - [DEBUG]  <br>
+547 2019-Jan-15 20:38:01.955531 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+548 2019-Jan-15 20:38:01.955590 - [DEBUG]  ---> <N: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14,<br>
+549 2019-Jan-15 20:38:01.955827 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+550 2019-Jan-15 20:38:01.956051 - [DEBUG]  <br>
+551 2019-Jan-15 20:38:01.956076 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+552 2019-Jan-15 20:38:01.956133 - [DEBUG]  ---> <N: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13,<br>
+553 2019-Jan-15 20:38:01.956357 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+554 2019-Jan-15 20:38:01.956582 - [DEBUG]  <br>
+555 2019-Jan-15 20:38:01.956607 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+556 2019-Jan-15 20:38:01.956664 - [DEBUG]  ---> <N: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12,<br>
+557 2019-Jan-15 20:38:01.956894 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+558 2019-Jan-15 20:38:01.957118 - [DEBUG]  <br>
+559 2019-Jan-15 20:38:01.957143 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+560 2019-Jan-15 20:38:01.957200 - [DEBUG]  ---> <N: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11,<br>
+561 2019-Jan-15 20:38:01.957448 - [DEBUG]        D: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10><br>
+562 2019-Jan-15 20:38:01.957674 - [DEBUG]  <br>
+563 2019-Jan-15 20:38:01.957700 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+564 2019-Jan-15 20:38:01.957757 - [DEBUG]  ---> <N: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10,<br>
+565 2019-Jan-15 20:38:01.957982 - [DEBUG]        D: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7><br>
+566 2019-Jan-15 20:38:01.958221 - [DEBUG]  <br>
+567 2019-Jan-15 20:38:01.958247 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+568 2019-Jan-15 20:38:01.958305 - [DEBUG]  ---> <N: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9,<br>
+569 2019-Jan-15 20:38:01.958534 - [DEBUG]        D: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7><br>
+570 2019-Jan-15 20:38:01.958770 - [DEBUG]  <br>
+571 2019-Jan-15 20:38:01.958796 - [DEBUG] EDGE: <F: main, D: @zero_value = constant i2 0, align 4, ID: -1><br>
+572 2019-Jan-15 20:38:01.958853 - [DEBUG]  ---> <N: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8,<br>
+573 2019-Jan-15 20:38:01.959083 - [DEBUG]        D: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7><br>
+574 2019-Jan-15 20:38:01.959319 - [DEBUG]  <br>
+575 2019-Jan-15 20:38:01.959355 - [DEBUG] Compose: AllBottom * AllBottom<br>
+576 2019-Jan-15 20:38:01.959382 - [DEBUG]  <br>
+577 2019-Jan-15 20:38:01.959407 - [DEBUG] Propagate flow<br>
+578 2019-Jan-15 20:38:01.959430 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+579 2019-Jan-15 20:38:01.959486 - [DEBUG] Target        : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+580 2019-Jan-15 20:38:01.959715 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+581 2019-Jan-15 20:38:01.959771 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+582 2019-Jan-15 20:38:01.959797 - [DEBUG]  <br>
+583 2019-Jan-15 20:38:01.959821 - [DEBUG] Join: AllTop & AllBottom <br>
+584 2019-Jan-15 20:38:01.959846 - [DEBUG]     = AllBottom (new jump func)<br>
+585 2019-Jan-15 20:38:01.959871 - [DEBUG]  <br>
+586 2019-Jan-15 20:38:01.959894 - [DEBUG] Start adding new jump function<br>
+587 2019-Jan-15 20:38:01.959917 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+588 2019-Jan-15 20:38:01.959972 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+589 2019-Jan-15 20:38:01.960027 - [DEBUG] Destination    : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+590 2019-Jan-15 20:38:01.960256 - [DEBUG] Edge Function  : AllBottom<br>
+591 2019-Jan-15 20:38:01.960283 - [DEBUG] End adding new jump function<br>
+592 2019-Jan-15 20:38:01.960307 - [DEBUG]  <br>
+593 2019-Jan-15 20:38:01.960330 - [DEBUG] -------------------------------------------- 17. Path Edge --------------------------------------------<br>
+594 2019-Jan-15 20:38:01.960354 - [DEBUG]  <br>
+595 2019-Jan-15 20:38:01.960378 - [DEBUG] Process 17. path edge:<br>
+596 2019-Jan-15 20:38:01.960401 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+597 2019-Jan-15 20:38:01.960457 - [DEBUG]   N target: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8 ;<br>
+598 2019-Jan-15 20:38:01.960702 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+599 2019-Jan-15 20:38:01.960758 - [DEBUG]  <br>
+600 2019-Jan-15 20:38:01.960782 - [DEBUG] Process normal at target: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+601 2019-Jan-15 20:38:01.961027 - [DEBUG] Compose: AllBottom * AllBottom<br>
+602 2019-Jan-15 20:38:01.961055 - [DEBUG]  <br>
+603 2019-Jan-15 20:38:01.961078 - [DEBUG] Propagate flow<br>
+604 2019-Jan-15 20:38:01.961101 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+605 2019-Jan-15 20:38:01.961157 - [DEBUG] Target        : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+606 2019-Jan-15 20:38:01.961387 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+607 2019-Jan-15 20:38:01.961443 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+608 2019-Jan-15 20:38:01.961468 - [DEBUG]  <br>
+609 2019-Jan-15 20:38:01.961492 - [DEBUG] Join: AllTop & AllBottom <br>
+610 2019-Jan-15 20:38:01.961517 - [DEBUG]     = AllBottom (new jump func)<br>
+611 2019-Jan-15 20:38:01.961542 - [DEBUG]  <br>
+612 2019-Jan-15 20:38:01.961565 - [DEBUG] Start adding new jump function<br>
+613 2019-Jan-15 20:38:01.961588 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+614 2019-Jan-15 20:38:01.961643 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+615 2019-Jan-15 20:38:01.961697 - [DEBUG] Destination    : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+616 2019-Jan-15 20:38:01.961927 - [DEBUG] Edge Function  : AllBottom<br>
+617 2019-Jan-15 20:38:01.961953 - [DEBUG] End adding new jump function<br>
+618 2019-Jan-15 20:38:01.961977 - [DEBUG]  <br>
+619 2019-Jan-15 20:38:01.962000 - [DEBUG] -------------------------------------------- 18. Path Edge --------------------------------------------<br>
+620 2019-Jan-15 20:38:01.962025 - [DEBUG]  <br>
+621 2019-Jan-15 20:38:01.962048 - [DEBUG] Process 18. path edge:<br>
+622 2019-Jan-15 20:38:01.962072 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+623 2019-Jan-15 20:38:01.962128 - [DEBUG]   N target: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9 ;<br>
+624 2019-Jan-15 20:38:01.962357 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+625 2019-Jan-15 20:38:01.962413 - [DEBUG]  <br>
+626 2019-Jan-15 20:38:01.962437 - [DEBUG] Process normal at target: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+627 2019-Jan-15 20:38:01.962674 - [DEBUG] Compose: AllBottom * AllBottom<br>
+628 2019-Jan-15 20:38:01.962701 - [DEBUG]  <br>
+629 2019-Jan-15 20:38:01.962724 - [DEBUG] Propagate flow<br>
+630 2019-Jan-15 20:38:01.962748 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+631 2019-Jan-15 20:38:01.962804 - [DEBUG] Target        : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+632 2019-Jan-15 20:38:01.963030 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+633 2019-Jan-15 20:38:01.963085 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+634 2019-Jan-15 20:38:01.963111 - [DEBUG]  <br>
+635 2019-Jan-15 20:38:01.963135 - [DEBUG] Join: AllTop & AllBottom <br>
+636 2019-Jan-15 20:38:01.963160 - [DEBUG]     = AllBottom (new jump func)<br>
+637 2019-Jan-15 20:38:01.963185 - [DEBUG]  <br>
+638 2019-Jan-15 20:38:01.963208 - [DEBUG] Start adding new jump function<br>
+639 2019-Jan-15 20:38:01.963231 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+640 2019-Jan-15 20:38:01.963286 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+641 2019-Jan-15 20:38:01.963340 - [DEBUG] Destination    : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+642 2019-Jan-15 20:38:01.963566 - [DEBUG] Edge Function  : AllBottom<br>
+643 2019-Jan-15 20:38:01.963593 - [DEBUG] End adding new jump function<br>
+644 2019-Jan-15 20:38:01.963617 - [DEBUG]  <br>
+645 2019-Jan-15 20:38:01.963640 - [DEBUG] -------------------------------------------- 19. Path Edge --------------------------------------------<br>
+646 2019-Jan-15 20:38:01.963664 - [DEBUG]  <br>
+647 2019-Jan-15 20:38:01.963687 - [DEBUG] Process 19. path edge:<br>
+648 2019-Jan-15 20:38:01.963719 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+649 2019-Jan-15 20:38:01.963775 - [DEBUG]   N target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 ;<br>
+650 2019-Jan-15 20:38:01.964016 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+651 2019-Jan-15 20:38:01.964072 - [DEBUG]  <br>
+652 2019-Jan-15 20:38:01.964096 - [DEBUG] Process normal at target: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+653 2019-Jan-15 20:38:01.964330 - [DEBUG] Compose: AllBottom * AllBottom<br>
+654 2019-Jan-15 20:38:01.964358 - [DEBUG]  <br>
+655 2019-Jan-15 20:38:01.964382 - [DEBUG] Propagate flow<br>
+656 2019-Jan-15 20:38:01.964405 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+657 2019-Jan-15 20:38:01.964461 - [DEBUG] Target        : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+658 2019-Jan-15 20:38:01.964685 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+659 2019-Jan-15 20:38:01.964741 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+660 2019-Jan-15 20:38:01.964766 - [DEBUG]  <br>
+661 2019-Jan-15 20:38:01.964790 - [DEBUG] Join: AllTop & AllBottom <br>
+662 2019-Jan-15 20:38:01.964816 - [DEBUG]     = AllBottom (new jump func)<br>
+663 2019-Jan-15 20:38:01.964840 - [DEBUG]  <br>
+664 2019-Jan-15 20:38:01.964864 - [DEBUG] Start adding new jump function<br>
+665 2019-Jan-15 20:38:01.964887 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+666 2019-Jan-15 20:38:01.964942 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+667 2019-Jan-15 20:38:01.964996 - [DEBUG] Destination    : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+668 2019-Jan-15 20:38:01.965222 - [DEBUG] Edge Function  : AllBottom<br>
+669 2019-Jan-15 20:38:01.965248 - [DEBUG] End adding new jump function<br>
+670 2019-Jan-15 20:38:01.965272 - [DEBUG]  <br>
+671 2019-Jan-15 20:38:01.965296 - [DEBUG] -------------------------------------------- 20. Path Edge --------------------------------------------<br>
+672 2019-Jan-15 20:38:01.965320 - [DEBUG]  <br>
+673 2019-Jan-15 20:38:01.965343 - [DEBUG] Process 20. path edge:<br>
+674 2019-Jan-15 20:38:01.965367 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+675 2019-Jan-15 20:38:01.965423 - [DEBUG]   N target: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11 ;<br>
+676 2019-Jan-15 20:38:01.965647 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+677 2019-Jan-15 20:38:01.965703 - [DEBUG]  <br>
+678 2019-Jan-15 20:38:01.965727 - [DEBUG] Process normal at target: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+679 2019-Jan-15 20:38:01.965959 - [DEBUG] Compose: AllBottom * AllBottom<br>
+680 2019-Jan-15 20:38:01.965987 - [DEBUG]  <br>
+681 2019-Jan-15 20:38:01.966010 - [DEBUG] Propagate flow<br>
+682 2019-Jan-15 20:38:01.966034 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+683 2019-Jan-15 20:38:01.966089 - [DEBUG] Target        : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+684 2019-Jan-15 20:38:01.966320 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+685 2019-Jan-15 20:38:01.966376 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+686 2019-Jan-15 20:38:01.966401 - [DEBUG]  <br>
+687 2019-Jan-15 20:38:01.966425 - [DEBUG] Join: AllTop & AllBottom <br>
+688 2019-Jan-15 20:38:01.966451 - [DEBUG]     = AllBottom (new jump func)<br>
+689 2019-Jan-15 20:38:01.966475 - [DEBUG]  <br>
+690 2019-Jan-15 20:38:01.966498 - [DEBUG] Start adding new jump function<br>
+691 2019-Jan-15 20:38:01.966521 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+692 2019-Jan-15 20:38:01.966576 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+693 2019-Jan-15 20:38:01.966631 - [DEBUG] Destination    : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+694 2019-Jan-15 20:38:01.966869 - [DEBUG] Edge Function  : AllBottom<br>
+695 2019-Jan-15 20:38:01.966896 - [DEBUG] End adding new jump function<br>
+696 2019-Jan-15 20:38:01.966920 - [DEBUG]  <br>
+697 2019-Jan-15 20:38:01.966944 - [DEBUG] -------------------------------------------- 21. Path Edge --------------------------------------------<br>
+698 2019-Jan-15 20:38:01.966968 - [DEBUG]  <br>
+699 2019-Jan-15 20:38:01.966991 - [DEBUG] Process 21. path edge:<br>
+700 2019-Jan-15 20:38:01.967015 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+701 2019-Jan-15 20:38:01.967071 - [DEBUG]   N target: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12 ;<br>
+702 2019-Jan-15 20:38:01.967315 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+703 2019-Jan-15 20:38:01.967372 - [DEBUG]  <br>
+704 2019-Jan-15 20:38:01.967396 - [DEBUG] Process normal at target: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+705 2019-Jan-15 20:38:01.967633 - [DEBUG] Compose: AllBottom * AllBottom<br>
+706 2019-Jan-15 20:38:01.967660 - [DEBUG]  <br>
+707 2019-Jan-15 20:38:01.967684 - [DEBUG] Propagate flow<br>
+708 2019-Jan-15 20:38:01.967707 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+709 2019-Jan-15 20:38:01.967763 - [DEBUG] Target        : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+710 2019-Jan-15 20:38:01.967988 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+711 2019-Jan-15 20:38:01.968044 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+712 2019-Jan-15 20:38:01.968069 - [DEBUG]  <br>
+713 2019-Jan-15 20:38:01.968093 - [DEBUG] Join: AllTop & AllBottom <br>
+714 2019-Jan-15 20:38:01.968118 - [DEBUG]     = AllBottom (new jump func)<br>
+715 2019-Jan-15 20:38:01.968143 - [DEBUG]  <br>
+716 2019-Jan-15 20:38:01.968166 - [DEBUG] Start adding new jump function<br>
+717 2019-Jan-15 20:38:01.968189 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+718 2019-Jan-15 20:38:01.968244 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+719 2019-Jan-15 20:38:01.968299 - [DEBUG] Destination    : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+720 2019-Jan-15 20:38:01.968523 - [DEBUG] Edge Function  : AllBottom<br>
+721 2019-Jan-15 20:38:01.968549 - [DEBUG] End adding new jump function<br>
+722 2019-Jan-15 20:38:01.968574 - [DEBUG]  <br>
+723 2019-Jan-15 20:38:01.968597 - [DEBUG] -------------------------------------------- 22. Path Edge --------------------------------------------<br>
+724 2019-Jan-15 20:38:01.968621 - [DEBUG]  <br>
+725 2019-Jan-15 20:38:01.968644 - [DEBUG] Process 22. path edge:<br>
+726 2019-Jan-15 20:38:01.968668 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+727 2019-Jan-15 20:38:01.968723 - [DEBUG]   N target: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13 ;<br>
+728 2019-Jan-15 20:38:01.968948 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+729 2019-Jan-15 20:38:01.969004 - [DEBUG]  <br>
+730 2019-Jan-15 20:38:01.969027 - [DEBUG] Process normal at target: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+731 2019-Jan-15 20:38:01.969260 - [DEBUG] Compose: AllBottom * AllBottom<br>
+732 2019-Jan-15 20:38:01.969288 - [DEBUG]  <br>
+733 2019-Jan-15 20:38:01.969311 - [DEBUG] Propagate flow<br>
+734 2019-Jan-15 20:38:01.969335 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+735 2019-Jan-15 20:38:01.969390 - [DEBUG] Target        : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+736 2019-Jan-15 20:38:01.969627 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+737 2019-Jan-15 20:38:01.969684 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+738 2019-Jan-15 20:38:01.969709 - [DEBUG]  <br>
+739 2019-Jan-15 20:38:01.969732 - [DEBUG] Join: AllTop & AllBottom <br>
+740 2019-Jan-15 20:38:01.969766 - [DEBUG]     = AllBottom (new jump func)<br>
+741 2019-Jan-15 20:38:01.969791 - [DEBUG]  <br>
+742 2019-Jan-15 20:38:01.969814 - [DEBUG] Start adding new jump function<br>
+743 2019-Jan-15 20:38:01.969837 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+744 2019-Jan-15 20:38:01.969892 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+745 2019-Jan-15 20:38:01.969947 - [DEBUG] Destination    : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+746 2019-Jan-15 20:38:01.970184 - [DEBUG] Edge Function  : AllBottom<br>
+747 2019-Jan-15 20:38:01.970210 - [DEBUG] End adding new jump function<br>
+748 2019-Jan-15 20:38:01.970234 - [DEBUG]  <br>
+749 2019-Jan-15 20:38:01.970258 - [DEBUG] -------------------------------------------- 23. Path Edge --------------------------------------------<br>
+750 2019-Jan-15 20:38:01.970282 - [DEBUG]  <br>
+751 2019-Jan-15 20:38:01.970306 - [DEBUG] Process 23. path edge:<br>
+752 2019-Jan-15 20:38:01.970330 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+753 2019-Jan-15 20:38:01.970385 - [DEBUG]   N target: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14 ;<br>
+754 2019-Jan-15 20:38:01.970634 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+755 2019-Jan-15 20:38:01.970691 - [DEBUG]  <br>
+756 2019-Jan-15 20:38:01.970715 - [DEBUG] Process call at target: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+757 2019-Jan-15 20:38:01.970954 - [DEBUG] Possible callees:<br>
+758 2019-Jan-15 20:38:01.970979 - [DEBUG]   llvm.memcpy.p0i8.p0i8.i64<br>
+759 2019-Jan-15 20:38:01.971004 - [DEBUG] Possible return sites:<br>
+760 2019-Jan-15 20:38:01.971027 - [DEBUG]   ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+<br>
+getCallToRetFlowFunction()<br>
+getCallToRetFlowFunction()<br>
+getSummaryFlowFunction()<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47761 2019-Jan-15 20:38:01.971470 - [DEBUG] Found and process special summary<br>
+762 2019-Jan-15 20:38:01.971504 - [DEBUG] Compose: EdgeIdentity * AllBottom<br>
+763 2019-Jan-15 20:38:01.971531 - [DEBUG]  <br>
+764 2019-Jan-15 20:38:01.971555 - [DEBUG] Propagate flow<br>
+765 2019-Jan-15 20:38:01.971578 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+766 2019-Jan-15 20:38:01.971634 - [DEBUG] Target        : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+767 2019-Jan-15 20:38:01.971859 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+768 2019-Jan-15 20:38:01.971915 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+769 2019-Jan-15 20:38:01.971940 - [DEBUG]  <br>
+770 2019-Jan-15 20:38:01.971964 - [DEBUG] Join: AllTop & AllBottom <br>
+771 2019-Jan-15 20:38:01.971989 - [DEBUG]     = AllBottom (new jump func)<br>
+772 2019-Jan-15 20:38:01.972014 - [DEBUG]  <br>
+773 2019-Jan-15 20:38:01.972037 - [DEBUG] Start adding new jump function<br>
+774 2019-Jan-15 20:38:01.972060 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+775 2019-Jan-15 20:38:01.972115 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+776 2019-Jan-15 20:38:01.972170 - [DEBUG] Destination    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+777 2019-Jan-15 20:38:01.972394 - [DEBUG] Edge Function  : AllBottom<br>
+778 2019-Jan-15 20:38:01.972421 - [DEBUG] End adding new jump function<br>
+779 2019-Jan-15 20:38:01.972445 - [DEBUG]  <br>
+780 2019-Jan-15 20:38:01.972469 - [DEBUG] -------------------------------------------- 24. Path Edge --------------------------------------------<br>
+781 2019-Jan-15 20:38:01.972493 - [DEBUG]  <br>
+782 2019-Jan-15 20:38:01.972517 - [DEBUG] Process 24. path edge:<br>
+783 2019-Jan-15 20:38:01.972540 - [DEBUG] < D source: @zero_value = constant i2 0, align 4, ID: -1 ;<br>
+784 2019-Jan-15 20:38:01.972596 - [DEBUG]   N target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15 ;<br>
+785 2019-Jan-15 20:38:01.972827 - [DEBUG]   D target: @zero_value = constant i2 0, align 4, ID: -1 ><br>
+786 2019-Jan-15 20:38:01.972884 - [DEBUG]  <br>
+787 2019-Jan-15 20:38:01.972908 - [DEBUG] Process exit at target: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+788 2019-Jan-15 20:38:01.973135 - [DEBUG] Start of endsummarytab entry<br>
+789 2019-Jan-15 20:38:01.973162 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+790 2019-Jan-15 20:38:01.973386 - [DEBUG] d1: @zero_value = constant i2 0, align 4, ID: -1<br>
+791 2019-Jan-15 20:38:01.973444 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+792 2019-Jan-15 20:38:01.973667 - [DEBUG]   d2: @zero_value = constant i2 0, align 4, ID: -1<br>
+793 2019-Jan-15 20:38:01.973723 - [DEBUG]   EF: AllBottom<br>
+794 2019-Jan-15 20:38:01.973748 - [DEBUG]  <br>
+795 2019-Jan-15 20:38:01.973771 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+796 2019-Jan-15 20:38:01.974010 - [DEBUG]   d2: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+797 2019-Jan-15 20:38:01.974235 - [DEBUG]   EF: AllBottom<br>
+798 2019-Jan-15 20:38:01.974260 - [DEBUG]  <br>
+799 2019-Jan-15 20:38:01.974284 - [DEBUG]   eP: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+800 2019-Jan-15 20:38:01.974507 - [DEBUG]   d2: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+801 2019-Jan-15 20:38:01.974731 - [DEBUG]   EF: AllBottom<br>
+802 2019-Jan-15 20:38:01.974756 - [DEBUG]  <br>
+803 2019-Jan-15 20:38:01.974779 - [DEBUG] ---------------<br>
+804 2019-Jan-15 20:38:01.974802 - [DEBUG]  <br>
+805 2019-Jan-15 20:38:01.974826 - [DEBUG] End of endsummarytab entry<br>
+806 2019-Jan-15 20:38:01.974850 - [DEBUG]  <br>
+807 2019-Jan-15 20:38:01.974873 - [DEBUG] Start of incomingtab entry<br>
+808 2019-Jan-15 20:38:01.974897 - [DEBUG] sP: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+809 2019-Jan-15 20:38:01.975120 - [DEBUG] d3: @zero_value = constant i2 0, align 4, ID: -1<br>
+810 2019-Jan-15 20:38:01.975176 - [DEBUG] ---------------<br>
+811 2019-Jan-15 20:38:01.975200 - [DEBUG] End of incomingtab entry<br>
+812 2019-Jan-15 20:38:01.975223 - [DEBUG]  <br>
+813 2019-Jan-15 20:38:01.975255 - [DEBUG] Compose: AllBottom * AllBottom<br>
+814 2019-Jan-15 20:38:01.975281 - [DEBUG]  <br>
+815 2019-Jan-15 20:38:01.975305 - [DEBUG] Propagate flow<br>
+816 2019-Jan-15 20:38:01.975328 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+817 2019-Jan-15 20:38:01.975383 - [DEBUG] Target        : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+818 2019-Jan-15 20:38:01.975608 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+819 2019-Jan-15 20:38:01.975664 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+820 2019-Jan-15 20:38:01.975689 - [DEBUG]  <br>
+821 2019-Jan-15 20:38:01.975713 - [DEBUG] Join: AllBottom & AllBottom (EF's are equal)<br>
+822 2019-Jan-15 20:38:01.975738 - [DEBUG]     = AllBottom <br>
+823 2019-Jan-15 20:38:01.975762 - [DEBUG]  <br>
+824 2019-Jan-15 20:38:01.975786 - [DEBUG] PROPAGATE: No new function!<br>
+825 2019-Jan-15 20:38:01.975828 - [DEBUG] Compose: AllBottom * AllBottom<br>
+826 2019-Jan-15 20:38:01.975855 - [DEBUG]  <br>
+827 2019-Jan-15 20:38:01.975879 - [DEBUG] Propagate flow<br>
+828 2019-Jan-15 20:38:01.975903 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+829 2019-Jan-15 20:38:01.975959 - [DEBUG] Target        : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+830 2019-Jan-15 20:38:01.976197 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+831 2019-Jan-15 20:38:01.976253 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+832 2019-Jan-15 20:38:01.976278 - [DEBUG]  <br>
+833 2019-Jan-15 20:38:01.976302 - [DEBUG] Join: AllBottom & AllBottom (EF's are equal)<br>
+834 2019-Jan-15 20:38:01.976328 - [DEBUG]     = AllBottom <br>
+835 2019-Jan-15 20:38:01.976352 - [DEBUG]  <br>
+836 2019-Jan-15 20:38:01.976375 - [DEBUG] PROPAGATE: No new function!<br>
+837 2019-Jan-15 20:38:01.976413 - [DEBUG] Compose: AllBottom * AllBottom<br>
+838 2019-Jan-15 20:38:01.976448 - [DEBUG]  <br>
+839 2019-Jan-15 20:38:01.976473 - [DEBUG] Propagate flow<br>
+840 2019-Jan-15 20:38:01.976496 - [DEBUG] Source value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+841 2019-Jan-15 20:38:01.976552 - [DEBUG] Target        : call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+842 2019-Jan-15 20:38:01.976787 - [DEBUG] Target value  : @zero_value = constant i2 0, align 4, ID: -1<br>
+843 2019-Jan-15 20:38:01.976842 - [DEBUG] Edge function : AllBottom (result of previous compose)<br>
+844 2019-Jan-15 20:38:01.976867 - [DEBUG]  <br>
+845 2019-Jan-15 20:38:01.976892 - [DEBUG] Join: AllBottom & AllBottom (EF's are equal)<br>
+846 2019-Jan-15 20:38:01.976917 - [DEBUG]     = AllBottom <br>
+847 2019-Jan-15 20:38:01.976942 - [DEBUG]  <br>
+848 2019-Jan-15 20:38:01.976965 - [DEBUG] PROPAGATE: No new function!<br>
+849 2019-Jan-15 20:38:01.976995 - [DEBUG] Start adding new jump function<br>
+850 2019-Jan-15 20:38:01.977018 - [DEBUG] Fact at source : @zero_value = constant i2 0, align 4, ID: -1<br>
+851 2019-Jan-15 20:38:01.977074 - [DEBUG] Fact at target : @zero_value = constant i2 0, align 4, ID: -1<br>
+852 2019-Jan-15 20:38:01.977128 - [DEBUG] Destination    : %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+853 2019-Jan-15 20:38:01.977367 - [DEBUG] Edge Function  : EdgeIdentity<br>
+854 2019-Jan-15 20:38:01.977393 - [DEBUG] End adding new jump function<br>
+855 2019-Jan-15 20:38:01.977417 - [DEBUG]  <br>
+856 2019-Jan-15 20:38:01.977440 - [INFO] Compute the final values according to the edge functions<br>
+857 2019-Jan-15 20:38:01.977464 - [DEBUG] Start computing values<br>
+858 2019-Jan-15 20:38:01.977489 - [DEBUG] Function : main<br>
+859 2019-Jan-15 20:38:01.977514 - [DEBUG] Inst.    : %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1<br>
+860 2019-Jan-15 20:38:01.977737 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+861 2019-Jan-15 20:38:01.977793 - [DEBUG] Value    : BOTTOM<br>
+862 2019-Jan-15 20:38:01.977819 - [DEBUG]  <br>
+863 2019-Jan-15 20:38:01.977846 - [DEBUG] Function : main<br>
+864 2019-Jan-15 20:38:01.977872 - [DEBUG] Inst.    : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+865 2019-Jan-15 20:38:01.978108 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+866 2019-Jan-15 20:38:01.978333 - [DEBUG] Value    : BOTTOM<br>
+867 2019-Jan-15 20:38:01.978359 - [DEBUG]  <br>
+<br>
+<br>
+Got memcpy/memmove instruction<br>
+getCallToRetFlowFunction()<br>
+getCallToRetFlowFunction()<br>
+getCallFlowFunction()<br>
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47<br>
+<br>
+Mapped<br>
+  store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41<br>
+to<br>
+i8* %1868 2019-Jan-15 20:38:01.979120 - [DEBUG] Could not get starting points of 'llvm.memcpy.p0i8.p0i8.i64' because it is a declaration<br>
+869 2019-Jan-15 20:38:01.979152 - [DEBUG] Function : main<br>
+870 2019-Jan-15 20:38:01.979177 - [DEBUG] Inst.    : call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14<br>
+871 2019-Jan-15 20:38:01.979415 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+872 2019-Jan-15 20:38:01.979471 - [DEBUG] Value    : BOTTOM<br>
+873 2019-Jan-15 20:38:01.979496 - [DEBUG]  <br>
+874 2019-Jan-15 20:38:01.979528 - [DEBUG] Could not get starting points of 'llvm.memcpy.p0i8.p0i8.i64' because it is a declaration<br>
+875 2019-Jan-15 20:38:01.979557 - [DEBUG] Function : main<br>
+876 2019-Jan-15 20:38:01.979582 - [DEBUG] Inst.    : call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5<br>
+877 2019-Jan-15 20:38:01.979816 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+878 2019-Jan-15 20:38:01.979872 - [DEBUG] Value    : BOTTOM<br>
+879 2019-Jan-15 20:38:01.979898 - [DEBUG]  <br>
+<br>
+getCallFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30880 2019-Jan-15 20:38:01.980152 - [DEBUG] Could not get starting points of 'llvm.dbg.declare' because it is a declaration<br>
+881 2019-Jan-15 20:38:01.980182 - [DEBUG] Function : main<br>
+882 2019-Jan-15 20:38:01.980208 - [DEBUG] Inst.    : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+883 2019-Jan-15 20:38:01.980449 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+884 2019-Jan-15 20:38:01.980505 - [DEBUG] Value    : BOTTOM<br>
+885 2019-Jan-15 20:38:01.980531 - [DEBUG]  <br>
+<br>
+<br>
+getCallFlowFunction()<br>
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35886 2019-Jan-15 20:38:01.980799 - [DEBUG] Could not get starting points of 'getenv' because it is a declaration<br>
+887 2019-Jan-15 20:38:01.980829 - [DEBUG] Function : main<br>
+888 2019-Jan-15 20:38:01.980855 - [DEBUG] Inst.    : call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6<br>
+889 2019-Jan-15 20:38:01.981089 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+890 2019-Jan-15 20:38:01.981145 - [DEBUG] Value    : BOTTOM<br>
+891 2019-Jan-15 20:38:01.981171 - [DEBUG]  <br>
+<br>
+<br>
+getCallFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33892 2019-Jan-15 20:38:01.981416 - [DEBUG] Could not get starting points of 'llvm.dbg.declare' because it is a declaration<br>
+893 2019-Jan-15 20:38:01.981452 - [DEBUG] Function : main<br>
+894 2019-Jan-15 20:38:01.981479 - [DEBUG] Inst.    : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+895 2019-Jan-15 20:38:01.981706 - [DEBUG] Fact     : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+896 2019-Jan-15 20:38:01.981944 - [DEBUG] Value    : BOTTOM<br>
+897 2019-Jan-15 20:38:01.981970 - [DEBUG]  <br>
+898 2019-Jan-15 20:38:01.981994 - [DEBUG] Function : main<br>
+899 2019-Jan-15 20:38:01.982020 - [DEBUG] Inst.    : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+900 2019-Jan-15 20:38:01.982246 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+901 2019-Jan-15 20:38:01.982302 - [DEBUG] Value    : BOTTOM<br>
+902 2019-Jan-15 20:38:01.982328 - [DEBUG]  <br>
+903 2019-Jan-15 20:38:01.982356 - [DEBUG] Function : main<br>
+904 2019-Jan-15 20:38:01.982382 - [DEBUG] Inst.    : store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4<br>
+905 2019-Jan-15 20:38:01.982608 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+906 2019-Jan-15 20:38:01.982664 - [DEBUG] Value    : BOTTOM<br>
+907 2019-Jan-15 20:38:01.982689 - [DEBUG]  <br>
+908 2019-Jan-15 20:38:01.982716 - [DEBUG] Function : main<br>
+909 2019-Jan-15 20:38:01.982742 - [DEBUG] Inst.    : %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3<br>
+910 2019-Jan-15 20:38:01.982966 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+911 2019-Jan-15 20:38:01.983022 - [DEBUG] Value    : BOTTOM<br>
+912 2019-Jan-15 20:38:01.983048 - [DEBUG]  <br>
+913 2019-Jan-15 20:38:01.983074 - [DEBUG] Function : main<br>
+914 2019-Jan-15 20:38:01.983100 - [DEBUG] Inst.    : %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2<br>
+915 2019-Jan-15 20:38:01.983324 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+916 2019-Jan-15 20:38:01.983379 - [DEBUG] Value    : BOTTOM<br>
+917 2019-Jan-15 20:38:01.983405 - [DEBUG]  <br>
+918 2019-Jan-15 20:38:01.983432 - [DEBUG] Function : main<br>
+919 2019-Jan-15 20:38:01.983458 - [DEBUG] Inst.    : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+920 2019-Jan-15 20:38:01.983688 - [DEBUG] Fact     : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+921 2019-Jan-15 20:38:01.983925 - [DEBUG] Value    : BOTTOM<br>
+922 2019-Jan-15 20:38:01.983973 - [DEBUG]  <br>
+923 2019-Jan-15 20:38:01.983998 - [DEBUG] Function : main<br>
+924 2019-Jan-15 20:38:01.984024 - [DEBUG] Inst.    : %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8<br>
+925 2019-Jan-15 20:38:01.984255 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+926 2019-Jan-15 20:38:01.984312 - [DEBUG] Value    : BOTTOM<br>
+927 2019-Jan-15 20:38:01.984338 - [DEBUG]  <br>
+928 2019-Jan-15 20:38:01.984365 - [DEBUG] Function : main<br>
+929 2019-Jan-15 20:38:01.984391 - [DEBUG] Inst.    : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+930 2019-Jan-15 20:38:01.984622 - [DEBUG] Fact     : %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7<br>
+931 2019-Jan-15 20:38:01.984859 - [DEBUG] Value    : BOTTOM<br>
+932 2019-Jan-15 20:38:01.984885 - [DEBUG]  <br>
+933 2019-Jan-15 20:38:01.984909 - [DEBUG] Function : main<br>
+934 2019-Jan-15 20:38:01.984935 - [DEBUG] Inst.    : %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9<br>
+935 2019-Jan-15 20:38:01.985164 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+936 2019-Jan-15 20:38:01.985221 - [DEBUG] Value    : BOTTOM<br>
+937 2019-Jan-15 20:38:01.985246 - [DEBUG]  <br>
+938 2019-Jan-15 20:38:01.985274 - [DEBUG] Function : main<br>
+939 2019-Jan-15 20:38:01.985300 - [DEBUG] Inst.    : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+940 2019-Jan-15 20:38:01.985525 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+941 2019-Jan-15 20:38:01.985750 - [DEBUG] Value    : BOTTOM<br>
+942 2019-Jan-15 20:38:01.985777 - [DEBUG]  <br>
+943 2019-Jan-15 20:38:01.985801 - [DEBUG] Function : main<br>
+944 2019-Jan-15 20:38:01.985826 - [DEBUG] Inst.    : %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11<br>
+945 2019-Jan-15 20:38:01.986051 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+946 2019-Jan-15 20:38:01.986108 - [DEBUG] Value    : BOTTOM<br>
+947 2019-Jan-15 20:38:01.986134 - [DEBUG]  <br>
+948 2019-Jan-15 20:38:01.986160 - [DEBUG] Function : main<br>
+949 2019-Jan-15 20:38:01.986187 - [DEBUG] Inst.    : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+950 2019-Jan-15 20:38:01.986416 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+951 2019-Jan-15 20:38:01.986641 - [DEBUG] Value    : BOTTOM<br>
+952 2019-Jan-15 20:38:01.986667 - [DEBUG]  <br>
+953 2019-Jan-15 20:38:01.986692 - [DEBUG] Function : main<br>
+954 2019-Jan-15 20:38:01.986717 - [DEBUG] Inst.    : %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12<br>
+955 2019-Jan-15 20:38:01.986946 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+956 2019-Jan-15 20:38:01.987003 - [DEBUG] Value    : BOTTOM<br>
+957 2019-Jan-15 20:38:01.987029 - [DEBUG]  <br>
+958 2019-Jan-15 20:38:01.987056 - [DEBUG] Function : main<br>
+959 2019-Jan-15 20:38:01.987082 - [DEBUG] Inst.    : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+960 2019-Jan-15 20:38:01.987320 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+961 2019-Jan-15 20:38:01.987546 - [DEBUG] Value    : BOTTOM<br>
+962 2019-Jan-15 20:38:01.987571 - [DEBUG]  <br>
+963 2019-Jan-15 20:38:01.987595 - [DEBUG] Function : main<br>
+964 2019-Jan-15 20:38:01.987621 - [DEBUG] Inst.    : %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13<br>
+965 2019-Jan-15 20:38:01.987845 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+966 2019-Jan-15 20:38:01.987902 - [DEBUG] Value    : BOTTOM<br>
+967 2019-Jan-15 20:38:01.987927 - [DEBUG]  <br>
+968 2019-Jan-15 20:38:01.987955 - [DEBUG] Function : main<br>
+969 2019-Jan-15 20:38:01.987981 - [DEBUG] Inst.    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+970 2019-Jan-15 20:38:01.988215 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+971 2019-Jan-15 20:38:01.988440 - [DEBUG] Value    : BOTTOM<br>
+972 2019-Jan-15 20:38:01.988466 - [DEBUG]  <br>
+973 2019-Jan-15 20:38:01.988490 - [DEBUG] Function : main<br>
+974 2019-Jan-15 20:38:01.988516 - [DEBUG] Inst.    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+975 2019-Jan-15 20:38:01.988740 - [DEBUG] Fact     : store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10<br>
+976 2019-Jan-15 20:38:01.988964 - [DEBUG] Value    : BOTTOM<br>
+977 2019-Jan-15 20:38:01.988990 - [DEBUG]  <br>
+978 2019-Jan-15 20:38:01.989015 - [DEBUG] Function : main<br>
+979 2019-Jan-15 20:38:01.989040 - [DEBUG] Inst.    : ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15<br>
+980 2019-Jan-15 20:38:01.989264 - [DEBUG] Fact     : @zero_value = constant i2 0, align 4, ID: -1<br>
+981 2019-Jan-15 20:38:01.989321 - [DEBUG] Value    : BOTTOM<br>
+982 2019-Jan-15 20:38:01.989346 - [DEBUG]  <br>
+983 2019-Jan-15 20:38:01.989371 - [INFO] Problem solved<br>
+### DUMP LLVMIFDSSolver results<br>
+--- IFDS START RESULT RECORD ---<br>
+N: call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 1024, i32 8, i1 false), !dbg !42, !phasar.instruction.id !47, ID: 14 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !16, metadata !28), !dbg !29, !phasar.instruction.id !30, ID: 5 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 in function: main<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: store i32 0, i32* %retval, align 4, !phasar.instruction.id !15, ID: 4 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %ss = alloca %struct.s2, align 8, !phasar.instruction.id !14, ID: 3 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %s = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: call void @llvm.dbg.declare(metadata %struct.s2* %ss, metadata !31, metadata !28), !dbg !32, !phasar.instruction.id !33, ID: 6 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !36, !phasar.instruction.id !37, ID: 8 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %tainted = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39, ID: 9 in function: main<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !34, !phasar.instruction.id !35, ID: 7 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %0 = bitcast %struct.s2* %ss to i8*, !dbg !42, !phasar.instruction.id !43, ID: 11 in function: main<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !44, !phasar.instruction.id !45, ID: 12 in function: main<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %1 = bitcast %struct.s2* %s2 to i8*, !dbg !42, !phasar.instruction.id !46, ID: 13 in function: main<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+--- IFDS START RESULT RECORD ---<br>
+N: ret i32 0, !dbg !48, !phasar.instruction.id !49, ID: 15 in function: main<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTT984 2019-Jan-15 20:38:02.002463 - [INFO] Write results to file<br>
+985 2019-Jan-15 20:38:02.002645 - [INFO] Shutdown llvm and the analysis framework.<br>
+<br>
+<br>
+OM<br>
+D:	store i8* %call, i8** %tainted, align 8, !dbg !40, !phasar.instruction.id !41, ID: 10 	V:  BOTTOM<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1 	V:  BOTTOM<br>
+<br>
+No IFDS report available!<br>
+</div>
+</body>
+</html>

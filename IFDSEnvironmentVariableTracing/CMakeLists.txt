@@ -7,8 +7,10 @@ add_library(IFDSEnvironmentVariableTracing MODULE
   FlowFunctions/FlowFunctionWrapper.h
   FlowFunctions/FlowFunctionWrapper.cpp
   FlowFunctions/Identity.h
-  FlowFunctions/MapTaintedArgsToCallee.h
-  FlowFunctions/MapTaintedArgsToCallee.cpp
+  FlowFunctions/MapTaintedValuesToCallee.h
+  FlowFunctions/MapTaintedValuesToCallee.cpp
+  FlowFunctions/MapTaintedValuesToCaller.h
+  FlowFunctions/MapTaintedValuesToCaller.cpp
 
   Utils/DataFlowUtils.h
   Utils/DataFlowUtils.cpp

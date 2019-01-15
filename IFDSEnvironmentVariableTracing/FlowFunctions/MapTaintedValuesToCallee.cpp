@@ -1,4 +1,4 @@
-#include "MapTaintedArgsToCallee.h"
+#include "MapTaintedValuesToCallee.h"
 
 #include "../Utils/DataFlowUtils.h"
 
@@ -9,7 +9,7 @@
 namespace psr {
 
 std::set<ExtendedValue>
-MapTaintedArgsToCallee::computeTargets(ExtendedValue fact) {
+MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
   std::set<ExtendedValue> mappedFormals;
 

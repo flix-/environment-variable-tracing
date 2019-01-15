@@ -1,7 +1,8 @@
 #include "DataFlowUtils.h"
 
-#include <stack>
 #include <queue>
+#include <stack>
+#include <string>
 
 #include <llvm/IR/IntrinsicInst.h>
 
@@ -17,27 +18,6 @@ static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("AL
 
 //  return loadInst1->getType() == loadInst2->getType();
 //}
-
-static bool
-isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
-               const llvm::GetElementPtrInst* memLocationInstGEP) {
-
-  bool hasSameNumOfOperands = memLocationFactGEP->getNumOperands() == memLocationInstGEP->getNumOperands();
-  if (!hasSameNumOfOperands) return false;
-
-  // Compare Pointer Type (only constants supported right now)
-  const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
-  const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
-  if (gepFactOperandType != gepInstOperandType) return false;
-
-  // Compare Indices
-  for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
-    const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
-    const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
-    if (gepFactIndice != gepInstIndice) return false;
-  }
-  return true;
-}
 
 //static bool
 //isSameOpcode(const llvm::Value* op1,
@@ -143,6 +123,45 @@ isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
 //  } while (true);
 //}
 
+static std::string
+getTypeName(const llvm::Type* type) {
+
+  std::string typeName;
+  llvm::raw_string_ostream typeRawOutputStream(typeName);
+  type->print(typeRawOutputStream);
+
+  return typeRawOutputStream.str();
+}
+
+static bool
+isUnionBitCast(const llvm::BitCastInst* bitCastInst) {
+
+  std::string typeName = getTypeName(bitCastInst->getSrcTy());
+
+  return typeName.find("union") != std::string::npos;
+}
+
+static bool
+isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
+               const llvm::GetElementPtrInst* memLocationInstGEP) {
+
+  bool hasSameNumOfOperands = memLocationFactGEP->getNumOperands() == memLocationInstGEP->getNumOperands();
+  if (!hasSameNumOfOperands) return false;
+
+  // Compare Pointer Type
+  const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
+  const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
+  if (gepFactOperandType != gepInstOperandType) return false;
+
+  // Compare Indices
+  for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
+    const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
+    const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
+    if (gepFactIndice != gepInstIndice) return false;
+  }
+  return true;
+}
+
 static bool
 isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue,
                         std::queue<const llvm::Value*>& instGEPQueue) {
@@ -183,11 +202,14 @@ getMemLocationFrameGEPQueue(const llvm::Value* memLocationValue) {
 
   if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(memLocationValue)) {
     queue = getMemLocationFrameGEPQueue(bitCastInst->getOperand(0));
+    bool poisonQueue = isUnionBitCast(bitCastInst);
+
+    if (!poisonQueue) return queue;
+
+    // FALLTHROUGH
   }
   else if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationValue)) {
-    // TODO: Ignore Load / Not ignore Load?!
     return getMemLocationFrameGEPQueue(loadInst->getOperand(0));
-    //queue = getMemLocationFrameGEPQueue(loadInst->getOperand(0));
   }
   else if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationValue)) {
     queue = getMemLocationFrameGEPQueue(gepInst->getPointerOperand());
@@ -198,6 +220,7 @@ getMemLocationFrameGEPQueue(const llvm::Value* memLocationValue) {
     return queue;
   }
 
+  // Poison queue
   bool isPoisoned = !queue.empty() && queue.back() == POISON_PILL;
   if (!isPoisoned) queue.push(POISON_PILL);
 
@@ -209,14 +232,6 @@ isSameMemoryLocationFrame(const ExtendedValue& fact,
                           const llvm::Value* memLocationFrameFact,
                           const llvm::Value* memLocationFrameInst) {
 
-  /*
-   * If we call a function we push every tainted memory location to the callee (e.g. store()).
-   * The store instruction however finally points to a memory location frame of the caller.
-   * A mapping to the patched memory location frame can be found in the ExtendedValue. If
-   * such a mapping can be found we use the patched memory location frame instead of the
-   * original one for comparison. Note that this only applies to facts as instructions itself
-   * are never patched.
-   */
   const auto patchedMemLocationFrameFact = fact.getPatchedMemLocationFrame();
   if (patchedMemLocationFrameFact != nullptr) {
     return patchedMemLocationFrameFact == memLocationFrameInst;
@@ -231,9 +246,7 @@ getMemoryLocationFromFact(const llvm::Value* fact) {
   if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(fact)) {
     return storeInst->getPointerOperand();
   }
-  if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(fact)) {
-    return memTransferInst->getRawDest();
-  }
+
   return nullptr;
 }
 
@@ -319,7 +332,6 @@ DataFlowUtils::isMemoryLocationFrameEqual(const ExtendedValue& fact,
 
   return false;
 }
-
 
 const llvm::Value*
 DataFlowUtils::getMemoryLocationFrame(const llvm::Value* memLocationInst) {
