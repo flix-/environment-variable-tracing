@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <string.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+struct s2 {
+    char *t2;
+    int *i;
+};
+
+struct s1 {
+    char *t1;
+    struct s2 s2;
+};
+
+int
+main()
+{
+    struct s1 s;
+    struct s2 s2;
+
+    s.s2.t2 = getenv("gude");
+
+    memcpy(&s2, &s, 1024);
+
+    char *t1 = s2.t2;
+
+    s.s2.t2 = "untaint";
+    char *nt1 = s.s2.ts;
+
+    char *t2 = s2.t2;
+
+    return 0;
+}
+
+</pre>
+<div>
+0 2019-Jan-16 21:15:56.829402 - [DEBUG] Set-up the command-line parameters<br>
+1 2019-Jan-16 21:15:56.829669 - [INFO] Chosen operation mode: 'phasarLLVM'<br>
+error: could not parse program options<br>
+message: 'main.ll' is not a valid module, abort<br>
+</div>
+</body>
+</html>

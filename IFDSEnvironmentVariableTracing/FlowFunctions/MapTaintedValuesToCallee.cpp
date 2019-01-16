@@ -23,13 +23,13 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     if (isSameMemLocationFrame) {
       const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
-      ExtendedValue patchedFact = fact;
-      patchedFact.setPatchedMemLocationFrame(formalParameter);
-      mappedFormals.insert(patchedFact);
+      ExtendedValue ev = fact;
+      ev.setMemoryLocationFrame(formalParameter);
+      mappedFormals.insert(ev);
 
       lineNumberStore.addLineNumber(callInst);
 
-      llvm::outs() << "Mapped" << "\n"; patchedFact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedFact.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+      llvm::outs() << "Mapped" << "\n"; ev.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; ev.getMemoryLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
     }
   }
 

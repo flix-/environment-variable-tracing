@@ -10,6 +10,7 @@
 #include "Utils/DataFlowUtils.h"
 
 #include <fstream>
+#include <vector>
 
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/IntrinsicInst.h>
@@ -106,11 +107,11 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        */
       bool isValueArgument = llvm::isa<llvm::Argument>(value);
       if (isValueArgument) {
-        bool patchMemLocationFrame = fact.getPatchedMemLocationFrame() == value;
+        bool patchMemLocationFrame = fact.getMemoryLocationFrame() == value;
         if (patchMemLocationFrame) {
           const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrame(memLocation);
-          fact.setPatchedMemLocationFrame(patchedMemLocationFrame);
-          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+          fact.setMemoryLocationFrame(patchedMemLocationFrame);
+          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getMemoryLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
         }
         return { fact };
       }
@@ -138,7 +139,12 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       std::set<ExtendedValue> targetFacts;
 
       if (genStoreInst) {
-        targetFacts.insert(ExtendedValue(storeInst));
+        ExtendedValue ev(storeInst);
+        const auto memoryLocation = DataFlowUtils::getMemoryLocation(storeInst);
+        ev.setMemoryLocation(memoryLocation);
+
+        targetFacts.insert(ev);
+
         lineNumberStore.addLineNumber(storeInst);
       }
       if (idFact) targetFacts.insert(fact);
@@ -405,10 +411,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocation = memTransferInst->getRawSource();
       const auto dstMemLocation = memTransferInst->getRawDest();
 
-      const auto patchedStartMemLocation = DataFlowUtils::isMemoryLocationSubsetEqual(srcMemLocation, fact);
+      bool patchedStartMemLocation = DataFlowUtils::isMemoryLocationSubsetEqual(srcMemLocation, fact);
       bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
 
-      bool genStoreInst = patchedStartMemLocation != nullptr;
+      bool genStoreInst = patchedStartMemLocation;
       bool idFact = !isDstMemLocationFrameTainted;
 
       std::set<ExtendedValue> targetFacts;
@@ -417,14 +423,14 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
         const auto patchedMemoryLocationFrame = DataFlowUtils::getMemoryLocationFrame(dstMemLocation);
 
         ExtendedValue patchedMemoryLocation = fact;
-        patchedMemoryLocation.setPatchedMemLocationFrame(patchedMemoryLocationFrame);
-        patchedMemoryLocation.setPatchedStartMemLocation(patchedStartMemLocation);
+        //patchedMemoryLocation.setPatchedMemLocationFrame(patchedMemoryLocationFrame);
+        //patchedMemoryLocation.setPatchedStartMemLocation(patchedStartMemLocation);
         targetFacts.insert(patchedMemoryLocation);
 
         lineNumberStore.addLineNumber(memTransferInst);
 
-        llvm::outs() << "Patched memory location frame from" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
-        llvm::outs() << "Patched start memory location to" << "\n"; patchedMemoryLocation.getPatchedStartMemLocation()->print(llvm::outs()); llvm::outs() << "\n";
+        //llvm::outs() << "Patched memory location frame from" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+        //llvm::outs() << "Patched start memory location to" << "\n"; patchedMemoryLocation.getPatchedStartMemLocation()->print(llvm::outs()); llvm::outs() << "\n";
       }
       if (idFact) targetFacts.insert(fact);
 
