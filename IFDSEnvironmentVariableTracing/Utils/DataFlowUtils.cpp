@@ -159,34 +159,92 @@ isGEPInstEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
     const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
     if (gepFactIndice != gepInstIndice) return false;
   }
+
   return true;
 }
 
+//static bool
+//isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue,
+//                        std::queue<const llvm::Value*>& instGEPQueue) {
+
+//  assert(factGEPQueue.size() == instGEPQueue.size());
+//  assert(factGEPQueue.back() == POISON_PILL);
+//  assert(instGEPQueue.back() == POISON_PILL);
+
+//  while (!(factGEPQueue.front() == POISON_PILL)) {
+//    const auto factGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(factGEPQueue.front());
+//    const auto instGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(instGEPQueue.front());
+
+//    bool isEqual = isGEPInstEqual(factGEPPtr, instGEPPtr);
+//    if (!isEqual) return false;
+
+//    factGEPQueue.pop();
+//    instGEPQueue.pop();
+//  }
+
+//  return true;
+//}
+
 static bool
-isLastGEPInstancesEqual(std::queue<const llvm::Value*>& factGEPQueue,
-                        std::queue<const llvm::Value*>& instGEPQueue) {
+isSameMemoryLocationFrame(const ExtendedValue& fact,
+                          const llvm::Value* memLocationFrameFact,
+                          const llvm::Value* memLocationFrameInst) {
 
-  assert(factGEPQueue.size() == instGEPQueue.size());
-  assert(factGEPQueue.back() == POISON_PILL);
-  assert(instGEPQueue.back() == POISON_PILL);
-
-  while (!(factGEPQueue.front() == POISON_PILL)) {
-    const auto factGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(factGEPQueue.front());
-    const auto instGEPPtr = llvm::dyn_cast<llvm::GetElementPtrInst>(instGEPQueue.front());
-
-    bool isEqual = isGEPInstEqual(factGEPPtr, instGEPPtr);
-    if (!isEqual) return false;
-
-    factGEPQueue.pop();
-    instGEPQueue.pop();
+  const auto patchedMemLocationFrameFact = fact.getPatchedMemLocationFrame();
+  if (patchedMemLocationFrameFact != nullptr) {
+    return patchedMemLocationFrameFact == memLocationFrameInst;
   }
-  return true;
+
+  return memLocationFrameFact == memLocationFrameInst;
 }
 
 static bool
 isMemoryLocationFrame(const llvm::Value* memLocation) {
+
   return llvm::isa<llvm::AllocaInst>(memLocation) ||
          llvm::isa<llvm::Argument>(memLocation);
+}
+
+static bool
+isFirstNQueueInstancesEqual(const ExtendedValue& fact,
+                            std::queue<const llvm::Value*> memLocationFactQueue,
+                            std::queue<const llvm::Value*> memLocationInstQueue,
+                            size_t n) {
+
+  assert(memLocationFactQueue.back() == POISON_PILL);
+  assert(memLocationInstQueue.back() == POISON_PILL);
+
+  bool queuesHaveAtLeastNInstances = memLocationFactQueue.size() > n &&
+                                     memLocationInstQueue.size() > n;
+  if (!queuesHaveAtLeastNInstances) return false;
+
+  bool haveMemLocationFrames = isMemoryLocationFrame(memLocationFactQueue.front()) &&
+                               isMemoryLocationFrame(memLocationInstQueue.front());
+  if (!haveMemLocationFrames) return false;
+
+  assert(true && "We have queues that both start with a memory location frame and end with POISON_PILL. "
+                 "Size may differ but we have at least n instances in each.");
+
+  bool isSameMemLocationFrame = isSameMemoryLocationFrame(fact,
+                                                          memLocationFactQueue.front(),
+                                                          memLocationInstQueue.front());
+  if (!isSameMemLocationFrame) return false;
+
+  memLocationFactQueue.pop();
+  memLocationInstQueue.pop();
+
+  while (--n > 0) {
+    const auto factGEPPtr = llvm::cast<llvm::GetElementPtrInst>(memLocationFactQueue.front());
+    const auto instGEPPtr = llvm::cast<llvm::GetElementPtrInst>(memLocationInstQueue.front());
+
+    bool isEqual = isGEPInstEqual(factGEPPtr, instGEPPtr);
+    if (!isEqual) return false;
+
+    memLocationFactQueue.pop();
+    memLocationInstQueue.pop();
+  }
+
+  return true;
 }
 
 static std::queue<const llvm::Value*>
@@ -227,74 +285,49 @@ getMemLocationFrameGEPQueue(const llvm::Value* memLocationValue) {
   return queue;
 }
 
-static bool
-isSameMemoryLocationFrame(const ExtendedValue& fact,
-                          const llvm::Value* memLocationFrameFact,
-                          const llvm::Value* memLocationFrameInst) {
+static std::queue<const llvm::Value*>
+getPoisonedMemLocationFrameGEPQueue(const llvm::Value* memLocation) {
 
-  const auto patchedMemLocationFrameFact = fact.getPatchedMemLocationFrame();
-  if (patchedMemLocationFrameFact != nullptr) {
-    return patchedMemLocationFrameFact == memLocationFrameInst;
-  }
+  std::queue<const llvm::Value*> memLocationQueue = getMemLocationFrameGEPQueue(memLocation);
+  if (memLocationQueue.back() != POISON_PILL) memLocationQueue.push(POISON_PILL);
 
-  return memLocationFrameFact == memLocationFrameInst;
+  return memLocationQueue;
 }
 
 static const llvm::Value*
-getMemoryLocationFromFact(const llvm::Value* fact) {
+getMemoryLocationFromValueFact(const ExtendedValue& fact) {
 
-  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(fact)) {
+  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(fact.getValue())) {
+    bool hasPatchedStartMemLocation = fact.getPatchedStartMemLocation() != nullptr;
+    if (hasPatchedStartMemLocation) return fact.getPatchedStartMemLocation();
+
     return storeInst->getPointerOperand();
   }
 
   return nullptr;
 }
 
-static bool
-isMemoryLocationLazilyEqual(const ExtendedValue& fact,
-                            const llvm::Value* memLocationInst) {
+bool
+DataFlowUtils::isMemoryLocationEqual(const ExtendedValue& fact,
+                                     const llvm::Value* memLocationInst) {
 
-  if (const auto memLocationFact = getMemoryLocationFromFact(fact.getValue())) {
+  const auto memLocationFact = getMemoryLocationFromValueFact(fact);
+  if (memLocationFact == nullptr) return false;
 
-    std::queue<const llvm::Value*> memLocationFactQueue = getMemLocationFrameGEPQueue(memLocationFact);
-    std::queue<const llvm::Value*> memLocationInstQueue = getMemLocationFrameGEPQueue(memLocationInst);
+  std::queue<const llvm::Value*> memLocationFactQueue = getPoisonedMemLocationFrameGEPQueue(memLocationFact);
+  std::queue<const llvm::Value*> memLocationInstQueue = getPoisonedMemLocationFrameGEPQueue(memLocationInst);
 
-    if (memLocationFactQueue.back() != POISON_PILL) memLocationFactQueue.push(POISON_PILL);
-    if (memLocationInstQueue.back() != POISON_PILL) memLocationInstQueue.push(POISON_PILL);
+  bool isSameSize = memLocationFactQueue.size() == memLocationInstQueue.size();
+  if (!isSameSize) return false;
 
-    bool isSameSize = memLocationFactQueue.size() == memLocationInstQueue.size();
-    if (!isSameSize) return false;
+  size_t allMemoryInstances = memLocationFactQueue.size() - 1;
+  bool isMemLocationEqual = isFirstNQueueInstancesEqual(fact,
+                                                        memLocationFactQueue,
+                                                        memLocationInstQueue,
+                                                        allMemoryInstances);
+  if (!isMemLocationEqual) return false;
 
-    bool gotMemLocationFrame = isMemoryLocationFrame(memLocationFactQueue.front()) &&
-                               isMemoryLocationFrame(memLocationInstQueue.front());
-    if (!gotMemLocationFrame) return false;
-
-    bool isSameMemLocationFrame = isSameMemoryLocationFrame(fact,
-                                                            memLocationFactQueue.front(),
-                                                            memLocationInstQueue.front());
-    if (!isSameMemLocationFrame) return false;
-
-    /*
-     * We have reached the same memory location frame. If we have a struct or array then
-     * the memory location frame contains multiple values. Comparing GEP instances to
-     * figure out the correct location...
-     */
-    memLocationFactQueue.pop();
-    memLocationInstQueue.pop();
-
-    bool isOnlyPoisonPillLeft = memLocationFactQueue.size() == 1;
-    if (isOnlyPoisonPillLeft) return true;
-
-    assert(llvm::isa<llvm::GetElementPtrInst>(memLocationFactQueue.front()));
-    assert(llvm::isa<llvm::GetElementPtrInst>(memLocationInstQueue.front()));
-
-    bool isGEPInstancesEqual = isLastGEPInstancesEqual(memLocationFactQueue, memLocationInstQueue);
-    if (!isGEPInstancesEqual) return false;
-
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 bool
@@ -304,18 +337,36 @@ DataFlowUtils::isValueEqual(const ExtendedValue& fact,
   return fact.getValue() == inst;
 }
 
-bool
-DataFlowUtils::isMemoryLocationEqual(const ExtendedValue& fact,
-                                     const llvm::Value* memLocationInst) {
+const llvm::Value*
+DataFlowUtils::isMemoryLocationSubsetEqual(const llvm::Value* memLocationInst,
+                                           const ExtendedValue& fact) {
 
-  return isMemoryLocationLazilyEqual(fact, memLocationInst);
+  const auto memLocationFact = getMemoryLocationFromValueFact(fact);
+  if (memLocationFact == nullptr) return nullptr;
+
+  std::queue<const llvm::Value*> memLocationFactQueue = getPoisonedMemLocationFrameGEPQueue(memLocationFact);
+  std::queue<const llvm::Value*> memLocationInstQueue = getPoisonedMemLocationFrameGEPQueue(memLocationInst);
+
+  size_t firstNMemoryInstances = memLocationInstQueue.size() - 1;
+  bool isFirstNMemoryLocationsEqual = isFirstNQueueInstancesEqual(fact,
+                                                                  memLocationFactQueue,
+                                                                  memLocationInstQueue,
+                                                                  firstNMemoryInstances);
+  if (!isFirstNMemoryLocationsEqual) return nullptr;
+
+  const size_t popCount = memLocationFactQueue.size() - memLocationInstQueue.size();
+  for (size_t i = 0; i < popCount; ++i) memLocationFactQueue.pop();
+
+  assert(memLocationFactQueue.front() != POISON_PILL);
+
+  return memLocationFactQueue.front();
 }
 
 bool
 DataFlowUtils::isMemoryLocationFrameEqual(const ExtendedValue& fact,
                                           const llvm::Value* memLocationInst) {
 
-  const auto memLocationFact = getMemoryLocationFromFact(fact.getValue());
+  const auto memLocationFact = getMemoryLocationFromValueFact(fact);
   if (memLocationFact == nullptr) return false;
 
   const llvm::Value* memLocationFrameFact = getMemoryLocationFrame(memLocationFact);
@@ -475,5 +526,6 @@ DataFlowUtils::isEndOfBranchOrSwitchInst(const ExtendedValue& fact,
   else if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(branchOrSwitchInst)) {
     return isEndOfTaintedSwitch(switchInst, instruction);
   }
+
   return false;
 }

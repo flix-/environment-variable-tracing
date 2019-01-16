@@ -405,10 +405,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocation = memTransferInst->getRawSource();
       const auto dstMemLocation = memTransferInst->getRawDest();
 
-      bool isSrcMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, srcMemLocation);
+      const auto patchedStartMemLocation = DataFlowUtils::isMemoryLocationSubsetEqual(srcMemLocation, fact);
       bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
 
-      bool genStoreInst = isSrcMemLocationFrameTainted;
+      bool genStoreInst = patchedStartMemLocation != nullptr;
       bool idFact = !isDstMemLocationFrameTainted;
 
       std::set<ExtendedValue> targetFacts;
@@ -418,11 +418,13 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
         ExtendedValue patchedMemoryLocation = fact;
         patchedMemoryLocation.setPatchedMemLocationFrame(patchedMemoryLocationFrame);
+        patchedMemoryLocation.setPatchedStartMemLocation(patchedStartMemLocation);
         targetFacts.insert(patchedMemoryLocation);
 
         lineNumberStore.addLineNumber(memTransferInst);
 
-        llvm::outs() << "Patched" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+        llvm::outs() << "Patched memory location frame from" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+        llvm::outs() << "Patched start memory location to" << "\n"; patchedMemoryLocation.getPatchedStartMemLocation()->print(llvm::outs()); llvm::outs() << "\n";
       }
       if (idFact) targetFacts.insert(fact);
 
