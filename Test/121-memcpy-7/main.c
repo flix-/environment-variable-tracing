@@ -4,9 +4,17 @@ extern char *getenv(const char *name);
 extern int foo();
 extern int bar();
 
+struct s3 {
+    int i1;
+    int i2;
+    int i3;
+    char *t3;
+};
+
 struct s2 {
+    int i1;
     char *t2;
-    int *i;
+    struct s3 s3;
 };
 
 struct s1 {
@@ -17,19 +25,28 @@ struct s1 {
 int
 main()
 {
-    struct s1 s;
+    struct s1 s11;
+    s11.s2.s3.t3 = getenv("gude");
+
+    struct s1 s12;
+    memcpy(&s12, &s11, 1024);
+
+    char *t1 = s12.s2.s3.t3;
+
     struct s2 s2;
+    memcpy(&s2, &s11.s2, 1024);
 
-    s.s2.t2 = getenv("gude");
+    char *t2 = s2.s3.t3;
 
-    memcpy(&s2, &s, 1024);
+    struct s3 s3;
+    memcpy(&s3, &s11.s2.s3, 1024);
 
-    char *t1 = s2.t2;
+    char *t3 = s3.t3;
 
-    s.s2.t2 = "untaint";
-    char *nt1 = s.s2.ts;
+    char *t4;
+    memcpy(&t4, &s11.s2.s3.t3, 1024);
 
-    char *t2 = s2.t2;
+    char *t5 = t4;
 
     return 0;
 }

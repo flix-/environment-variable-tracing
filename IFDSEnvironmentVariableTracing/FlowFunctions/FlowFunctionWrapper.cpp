@@ -22,8 +22,15 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
     bool isBranchOrSwitchInst = llvm::isa<llvm::BranchInst>(currentInst) ||
                                 llvm::isa<llvm::SwitchInst>(currentInst);
     if (!isBranchOrSwitchInst) {
+      ExtendedValue ev(currentInst);
+
+      if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
+        ev.setMemoryLocation(DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand()));
+      }
+
       lineNumberStore.addLineNumber(currentInst);
-      return { fact, ExtendedValue(currentInst) };
+
+      return { fact, ev };
     }
     return { fact };
   }

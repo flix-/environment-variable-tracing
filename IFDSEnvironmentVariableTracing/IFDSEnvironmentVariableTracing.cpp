@@ -109,7 +109,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       if (isValueArgument) {
         bool patchMemLocationFrame = fact.getMemoryLocationFrame() == value;
         if (patchMemLocationFrame) {
-          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrame(memLocation);
+          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(memLocation);
           fact.setMemoryLocationFrame(patchedMemLocationFrame);
           llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getMemoryLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
         }
@@ -140,8 +140,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
       if (genStoreInst) {
         ExtendedValue ev(storeInst);
-        const auto memoryLocation = DataFlowUtils::getMemoryLocation(storeInst);
-        ev.setMemoryLocation(memoryLocation);
+        const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+        ev.setMemoryLocation(memoryLocationSeq);
 
         targetFacts.insert(ev);
 
@@ -408,29 +408,34 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
 
-      const auto srcMemLocation = memTransferInst->getRawSource();
-      const auto dstMemLocation = memTransferInst->getRawDest();
+      const auto srcMemLocationMatr = memTransferInst->getRawSource();
+      const auto dstMemLocationMatr = memTransferInst->getRawDest();
 
-      bool patchedStartMemLocation = DataFlowUtils::isMemoryLocationSubsetEqual(srcMemLocation, fact);
-      bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
+      const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcMemLocationMatr, fact);
+      bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocationMatr);
 
-      bool genStoreInst = patchedStartMemLocation;
+      bool genStoreInst = !srcMemLocationSeq.empty();
       bool idFact = !isDstMemLocationFrameTainted;
 
       std::set<ExtendedValue> targetFacts;
 
       if (genStoreInst) {
-        const auto patchedMemoryLocationFrame = DataFlowUtils::getMemoryLocationFrame(dstMemLocation);
+        const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-        ExtendedValue patchedMemoryLocation = fact;
-        //patchedMemoryLocation.setPatchedMemLocationFrame(patchedMemoryLocationFrame);
-        //patchedMemoryLocation.setPatchedStartMemLocation(patchedStartMemLocation);
-        targetFacts.insert(patchedMemoryLocation);
+        ExtendedValue ev(fact);
+        const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemoryLocation(),
+                                                                                             dstMemLocationSeq,
+                                                                                             srcMemLocationSeq.size());
+        ev.setMemoryLocation(relocatedMemLocationSeq);
 
+        targetFacts.insert(ev);
         lineNumberStore.addLineNumber(memTransferInst);
 
-        //llvm::outs() << "Patched memory location frame from" << "\n"; patchedMemoryLocation.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; patchedMemoryLocation.getPatchedMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
-        //llvm::outs() << "Patched start memory location to" << "\n"; patchedMemoryLocation.getPatchedStartMemLocation()->print(llvm::outs()); llvm::outs() << "\n";
+        llvm::outs() << "[TRACK] New relocated memory location (memcpy/memmove)" << "\n";
+        llvm::outs() << "[TRACK] Source:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(fact);
+        llvm::outs() << "[TRACK] Destination:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(ev);
       }
       if (idFact) targetFacts.insert(fact);
 
