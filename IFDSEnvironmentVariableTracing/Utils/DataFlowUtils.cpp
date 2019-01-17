@@ -141,7 +141,7 @@ normalizeMemoryLocationSeq(std::vector<const llvm::Value*> memLocationSeq) {
   return memLocationSeq;
 }
 
-std::vector<const llvm::Value*>
+const std::vector<const llvm::Value*>
 DataFlowUtils::getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr) {
 
   auto memLocationSeq = normalizeMemoryLocationSeq(getMemoryLocationSeqFromMatrRec(memLocationMatr));
@@ -154,7 +154,7 @@ DataFlowUtils::getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr) 
 static std::vector<const llvm::Value*>
 getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact) {
 
-  return memLocationFact.getMemoryLocation();
+  return memLocationFact.getMemLocationSeq();
 }
 
 static const llvm::Value*
@@ -169,7 +169,7 @@ getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
 const llvm::Value*
 DataFlowUtils::getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
 
-  const auto memLocationSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
+  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationSeq.empty()) return nullptr;
 
   return memLocationSeq.front();
@@ -265,7 +265,7 @@ DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
   if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(ev.getValue())) {
     llvm::outs() << "[TRACK] "; storeInst->print(llvm::outs()); llvm::outs() << "\n";
 
-    for (const auto memLocationPart : ev.getMemoryLocation()) {
+    for (const auto memLocationPart : ev.getMemLocationSeq()) {
       llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
     }
   }

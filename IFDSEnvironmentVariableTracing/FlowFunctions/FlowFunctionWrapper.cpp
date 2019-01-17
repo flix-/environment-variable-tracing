@@ -25,7 +25,7 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
       ExtendedValue ev(currentInst);
 
       if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
-        ev.setMemoryLocation(DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand()));
+        ev.setMemLocationSeq(DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand()));
       }
 
       lineNumberStore.addLineNumber(currentInst);

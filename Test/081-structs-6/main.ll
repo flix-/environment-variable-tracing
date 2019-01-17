@@ -3,8 +3,8 @@ source_filename = "main.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
 
-%struct.a = type { i32, %struct.b }
-%struct.b = type { i8* }
+%struct.a = type { i32, %struct.b, i8* }
+%struct.b = type { i8*, i8* }
 
 @.str = private unnamed_addr constant [3 x i8] c"hi\00", align 1
 
@@ -13,31 +13,63 @@ define i32 @main() #0 !dbg !7 {
 entry:
   %retval = alloca i32, align 4
   %s1 = alloca %struct.a, align 8
-  %tainted = alloca i8*, align 8
+  %tainted5 = alloca i8*, align 8
+  %tainted17 = alloca i8*, align 8
+  %tainted2 = alloca i8*, align 8
   %s2_inner = alloca %struct.b, align 8
-  %not_tainted = alloca i8*, align 8
+  %not_tainted1 = alloca i8*, align 8
+  %not_tainted2 = alloca i8*, align 8
+  %tainted3 = alloca i8*, align 8
   store i32 0, i32* %retval, align 4
-  call void @llvm.dbg.declare(metadata %struct.a* %s1, metadata !11, metadata !21), !dbg !22
-  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !23
-  %b = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !24
-  %taint = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !25
-  store i8* %call, i8** %taint, align 8, !dbg !26
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !27, metadata !21), !dbg !28
-  %b1 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !29
-  %taint2 = getelementptr inbounds %struct.b, %struct.b* %b1, i32 0, i32 0, !dbg !30
-  %0 = load i8*, i8** %taint2, align 8, !dbg !30
-  store i8* %0, i8** %tainted, align 8, !dbg !28
-  call void @llvm.dbg.declare(metadata %struct.b* %s2_inner, metadata !31, metadata !21), !dbg !32
-  %b3 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !33
-  %1 = bitcast %struct.b* %b3 to i8*, !dbg !34
-  %2 = bitcast %struct.b* %s2_inner to i8*, !dbg !34
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* %2, i64 8, i32 8, i1 false), !dbg !34
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !35, metadata !21), !dbg !36
-  %b4 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !37
-  %taint5 = getelementptr inbounds %struct.b, %struct.b* %b4, i32 0, i32 0, !dbg !38
-  %3 = load i8*, i8** %taint5, align 8, !dbg !38
-  store i8* %3, i8** %not_tainted, align 8, !dbg !36
-  ret i32 0, !dbg !39
+  call void @llvm.dbg.declare(metadata %struct.a* %s1, metadata !11, metadata !23), !dbg !24
+  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25
+  %tainted = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 2, !dbg !26
+  store i8* %call, i8** %tainted, align 8, !dbg !27
+  %tainted1 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 2, !dbg !28
+  %0 = load i8*, i8** %tainted1, align 8, !dbg !28
+  %b = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !29
+  %taint = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !30
+  store i8* %0, i8** %taint, align 8, !dbg !31
+  %b2 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !32
+  %taint3 = getelementptr inbounds %struct.b, %struct.b* %b2, i32 0, i32 0, !dbg !33
+  %1 = load i8*, i8** %taint3, align 8, !dbg !33
+  %b4 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !34
+  %taint2 = getelementptr inbounds %struct.b, %struct.b* %b4, i32 0, i32 1, !dbg !35
+  store i8* %1, i8** %taint2, align 8, !dbg !36
+  call void @llvm.dbg.declare(metadata i8** %tainted5, metadata !37, metadata !23), !dbg !38
+  %tainted6 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 2, !dbg !39
+  %2 = load i8*, i8** %tainted6, align 8, !dbg !39
+  store i8* %2, i8** %tainted5, align 8, !dbg !38
+  call void @llvm.dbg.declare(metadata i8** %tainted17, metadata !40, metadata !23), !dbg !41
+  %b8 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !42
+  %taint9 = getelementptr inbounds %struct.b, %struct.b* %b8, i32 0, i32 0, !dbg !43
+  %3 = load i8*, i8** %taint9, align 8, !dbg !43
+  store i8* %3, i8** %tainted17, align 8, !dbg !41
+  call void @llvm.dbg.declare(metadata i8** %tainted2, metadata !44, metadata !23), !dbg !45
+  %b10 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !46
+  %taint211 = getelementptr inbounds %struct.b, %struct.b* %b10, i32 0, i32 1, !dbg !47
+  %4 = load i8*, i8** %taint211, align 8, !dbg !47
+  store i8* %4, i8** %tainted2, align 8, !dbg !45
+  call void @llvm.dbg.declare(metadata %struct.b* %s2_inner, metadata !48, metadata !23), !dbg !49
+  %b12 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !50
+  %5 = bitcast %struct.b* %b12 to i8*, !dbg !51
+  %6 = bitcast %struct.b* %s2_inner to i8*, !dbg !51
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 16, i32 8, i1 false), !dbg !51
+  call void @llvm.dbg.declare(metadata i8** %not_tainted1, metadata !52, metadata !23), !dbg !53
+  %b13 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !54
+  %taint14 = getelementptr inbounds %struct.b, %struct.b* %b13, i32 0, i32 0, !dbg !55
+  %7 = load i8*, i8** %taint14, align 8, !dbg !55
+  store i8* %7, i8** %not_tainted1, align 8, !dbg !53
+  call void @llvm.dbg.declare(metadata i8** %not_tainted2, metadata !56, metadata !23), !dbg !57
+  %b15 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 1, !dbg !58
+  %taint216 = getelementptr inbounds %struct.b, %struct.b* %b15, i32 0, i32 1, !dbg !59
+  %8 = load i8*, i8** %taint216, align 8, !dbg !59
+  store i8* %8, i8** %not_tainted2, align 8, !dbg !57
+  call void @llvm.dbg.declare(metadata i8** %tainted3, metadata !60, metadata !23), !dbg !61
+  %tainted18 = getelementptr inbounds %struct.a, %struct.a* %s1, i32 0, i32 2, !dbg !62
+  %9 = load i8*, i8** %tainted18, align 8, !dbg !62
+  store i8* %9, i8** %tainted3, align 8, !dbg !61
+  ret i32 0, !dbg !63
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -64,36 +96,60 @@ attributes #3 = { argmemonly nounwind }
 !4 = !{i32 2, !"Debug Info Version", i32 3}
 !5 = !{i32 1, !"wchar_size", i32 4}
 !6 = !{!"clang version 5.0.1 (tags/RELEASE_501/final 348479)"}
-!7 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 15, type: !8, isLocal: false, isDefinition: true, scopeLine: 16, isOptimized: false, unit: !0, variables: !2)
+!7 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 17, type: !8, isLocal: false, isDefinition: true, scopeLine: 18, isOptimized: false, unit: !0, variables: !2)
 !8 = !DISubroutineType(types: !9)
 !9 = !{!10}
 !10 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!11 = !DILocalVariable(name: "s1", scope: !7, file: !1, line: 17, type: !12)
-!12 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "a", file: !1, line: 9, size: 128, elements: !13)
-!13 = !{!14, !15}
-!14 = !DIDerivedType(tag: DW_TAG_member, name: "a", scope: !12, file: !1, line: 10, baseType: !10, size: 32)
-!15 = !DIDerivedType(tag: DW_TAG_member, name: "b", scope: !12, file: !1, line: 11, baseType: !16, size: 64, offset: 64)
-!16 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "b", file: !1, line: 5, size: 64, elements: !17)
-!17 = !{!18}
+!11 = !DILocalVariable(name: "s1", scope: !7, file: !1, line: 19, type: !12)
+!12 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "a", file: !1, line: 10, size: 256, elements: !13)
+!13 = !{!14, !15, !22}
+!14 = !DIDerivedType(tag: DW_TAG_member, name: "a", scope: !12, file: !1, line: 11, baseType: !10, size: 32)
+!15 = !DIDerivedType(tag: DW_TAG_member, name: "b", scope: !12, file: !1, line: 12, baseType: !16, size: 128, offset: 64)
+!16 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "b", file: !1, line: 5, size: 128, elements: !17)
+!17 = !{!18, !21}
 !18 = !DIDerivedType(tag: DW_TAG_member, name: "taint", scope: !16, file: !1, line: 6, baseType: !19, size: 64)
 !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
 !20 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-!21 = !DIExpression()
-!22 = !DILocation(line: 17, column: 14, scope: !7)
-!23 = !DILocation(line: 18, column: 18, scope: !7)
-!24 = !DILocation(line: 18, column: 8, scope: !7)
-!25 = !DILocation(line: 18, column: 10, scope: !7)
-!26 = !DILocation(line: 18, column: 16, scope: !7)
-!27 = !DILocalVariable(name: "tainted", scope: !7, file: !1, line: 20, type: !19)
-!28 = !DILocation(line: 20, column: 11, scope: !7)
-!29 = !DILocation(line: 20, column: 24, scope: !7)
-!30 = !DILocation(line: 20, column: 26, scope: !7)
-!31 = !DILocalVariable(name: "s2_inner", scope: !7, file: !1, line: 22, type: !16)
-!32 = !DILocation(line: 22, column: 14, scope: !7)
-!33 = !DILocation(line: 23, column: 8, scope: !7)
-!34 = !DILocation(line: 23, column: 12, scope: !7)
-!35 = !DILocalVariable(name: "not_tainted", scope: !7, file: !1, line: 25, type: !19)
-!36 = !DILocation(line: 25, column: 11, scope: !7)
-!37 = !DILocation(line: 25, column: 28, scope: !7)
-!38 = !DILocation(line: 25, column: 30, scope: !7)
-!39 = !DILocation(line: 27, column: 5, scope: !7)
+!21 = !DIDerivedType(tag: DW_TAG_member, name: "taint2", scope: !16, file: !1, line: 7, baseType: !19, size: 64, offset: 64)
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "tainted", scope: !12, file: !1, line: 13, baseType: !19, size: 64, offset: 192)
+!23 = !DIExpression()
+!24 = !DILocation(line: 19, column: 14, scope: !7)
+!25 = !DILocation(line: 20, column: 18, scope: !7)
+!26 = !DILocation(line: 20, column: 8, scope: !7)
+!27 = !DILocation(line: 20, column: 16, scope: !7)
+!28 = !DILocation(line: 21, column: 21, scope: !7)
+!29 = !DILocation(line: 21, column: 8, scope: !7)
+!30 = !DILocation(line: 21, column: 10, scope: !7)
+!31 = !DILocation(line: 21, column: 16, scope: !7)
+!32 = !DILocation(line: 22, column: 22, scope: !7)
+!33 = !DILocation(line: 22, column: 24, scope: !7)
+!34 = !DILocation(line: 22, column: 8, scope: !7)
+!35 = !DILocation(line: 22, column: 10, scope: !7)
+!36 = !DILocation(line: 22, column: 17, scope: !7)
+!37 = !DILocalVariable(name: "tainted", scope: !7, file: !1, line: 24, type: !19)
+!38 = !DILocation(line: 24, column: 11, scope: !7)
+!39 = !DILocation(line: 24, column: 24, scope: !7)
+!40 = !DILocalVariable(name: "tainted1", scope: !7, file: !1, line: 25, type: !19)
+!41 = !DILocation(line: 25, column: 11, scope: !7)
+!42 = !DILocation(line: 25, column: 25, scope: !7)
+!43 = !DILocation(line: 25, column: 27, scope: !7)
+!44 = !DILocalVariable(name: "tainted2", scope: !7, file: !1, line: 26, type: !19)
+!45 = !DILocation(line: 26, column: 11, scope: !7)
+!46 = !DILocation(line: 26, column: 25, scope: !7)
+!47 = !DILocation(line: 26, column: 27, scope: !7)
+!48 = !DILocalVariable(name: "s2_inner", scope: !7, file: !1, line: 28, type: !16)
+!49 = !DILocation(line: 28, column: 14, scope: !7)
+!50 = !DILocation(line: 29, column: 8, scope: !7)
+!51 = !DILocation(line: 29, column: 12, scope: !7)
+!52 = !DILocalVariable(name: "not_tainted1", scope: !7, file: !1, line: 31, type: !19)
+!53 = !DILocation(line: 31, column: 11, scope: !7)
+!54 = !DILocation(line: 31, column: 29, scope: !7)
+!55 = !DILocation(line: 31, column: 31, scope: !7)
+!56 = !DILocalVariable(name: "not_tainted2", scope: !7, file: !1, line: 32, type: !19)
+!57 = !DILocation(line: 32, column: 11, scope: !7)
+!58 = !DILocation(line: 32, column: 29, scope: !7)
+!59 = !DILocation(line: 32, column: 31, scope: !7)
+!60 = !DILocalVariable(name: "tainted3", scope: !7, file: !1, line: 34, type: !19)
+!61 = !DILocation(line: 34, column: 11, scope: !7)
+!62 = !DILocation(line: 34, column: 25, scope: !7)
+!63 = !DILocation(line: 36, column: 5, scope: !7)

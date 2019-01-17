@@ -24,12 +24,12 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
       ExtendedValue ev = fact;
-      ev.setMemoryLocationFrame(formalParameter);
+      ev.setMemLocationFrame(formalParameter);
       mappedFormals.insert(ev);
 
       lineNumberStore.addLineNumber(callInst);
 
-      llvm::outs() << "Mapped" << "\n"; ev.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; ev.getMemoryLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+      llvm::outs() << "Mapped" << "\n"; ev.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; ev.getMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
     }
   }
 

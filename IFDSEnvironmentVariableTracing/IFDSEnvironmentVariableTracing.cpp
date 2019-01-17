@@ -107,11 +107,11 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        */
       bool isValueArgument = llvm::isa<llvm::Argument>(value);
       if (isValueArgument) {
-        bool patchMemLocationFrame = fact.getMemoryLocationFrame() == value;
+        bool patchMemLocationFrame = fact.getMemLocationFrame() == value;
         if (patchMemLocationFrame) {
           const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(memLocation);
-          fact.setMemoryLocationFrame(patchedMemLocationFrame);
-          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getMemoryLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+          fact.setMemLocationFrame(patchedMemLocationFrame);
+          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
         }
         return { fact };
       }
@@ -141,7 +141,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       if (genStoreInst) {
         ExtendedValue ev(storeInst);
         const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
-        ev.setMemoryLocation(memoryLocationSeq);
+        ev.setMemLocationSeq(memoryLocationSeq);
 
         targetFacts.insert(ev);
 
@@ -412,10 +412,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto dstMemLocationMatr = memTransferInst->getRawDest();
 
       const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcMemLocationMatr, fact);
-      bool isDstMemLocationFrameTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocationMatr);
+      const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
       bool genStoreInst = !srcMemLocationSeq.empty();
-      bool idFact = !isDstMemLocationFrameTainted;
+      bool idFact = dstMemLocationSeq.empty();
 
       std::set<ExtendedValue> targetFacts;
 
@@ -423,10 +423,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
         const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
         ExtendedValue ev(fact);
-        const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemoryLocation(),
+        const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
                                                                                              dstMemLocationSeq,
                                                                                              srcMemLocationSeq.size());
-        ev.setMemoryLocation(relocatedMemLocationSeq);
+        ev.setMemLocationSeq(relocatedMemLocationSeq);
 
         targetFacts.insert(ev);
         lineNumberStore.addLineNumber(memTransferInst);
@@ -457,12 +457,16 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto memSetInst = llvm::cast<const llvm::MemSetInst>(currentInst);
 
-      const auto dstMemLocation = memSetInst->getRawDest();
+      const auto dstMemLocationMatr = memSetInst->getRawDest();
 
-      bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationFrameEqual(fact, dstMemLocation);
-      if (isDstMemLocationTainted) return { };
+      const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
-      return { fact };
+      bool idFact = dstMemLocationSeq.empty();
+      if (idFact) {
+        return { fact };
+      }
+
+      return { };
     };
 
     return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, lineNumberStore, zeroValue());
@@ -479,6 +483,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
                                                           ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       lineNumberStore.addLineNumber(currentInst);
+
       if (fact == zeroValue) return { ExtendedValue(currentInst) };
       return { fact };
     };

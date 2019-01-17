@@ -22,31 +22,38 @@ struct s1 {
     struct s2 s2;
 };
 
+struct s6 {
+    struct s2 s2;
+};
+
+struct s5 {
+    struct s6 s6;
+};
+
+struct s4 {
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+    struct s5 s5;
+};
+
+
 int
 main()
 {
-    struct s1 s11;
-    s11.s2.s3.t3 = getenv("gude");
+    struct s1 s1;
+    struct s4 s4;
+    s1.s2.s3.t3 = getenv("gude");
 
-    struct s1 s12;
-    memcpy(&s12, &s11, 1024);
+    memcpy(&s4.s5.s6.s2, &s1.s2, 1024);
 
-    char *t1 = s12.s2.s3.t3;
+    char *tainted = s4.s5.s6.s2.s3.t3;
 
-    struct s2 s2;
-    memcpy(&s2, &s11.s2, 1024);
+    s4.s5.s6.s2.s3.t3 = "untaint";
 
-    char *t2 = s2.s3.t3;
-
-    struct s3 s3;
-    memcpy(&s3, &s11.s2.s3, 1024);
-
-    char *t3 = s3.t3;
-
-    char *t4;
-    memcpy(&t4, &s11.s2.s3.t3, 1024);
-
-    char *t5 = t4;
+    char *untainted = s4.s5.s6.s2.s3.t3;
 
     return 0;
 }

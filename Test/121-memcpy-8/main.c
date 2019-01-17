@@ -44,16 +44,16 @@ int
 main()
 {
     struct s1 s1;
-    struct s4 s4;
     s1.s2.s3.t3 = getenv("gude");
+    s1.s2.t2 = getenv("gude");
 
-    memcpy(&s4.s5.s6.s2, &s1.s2, 1024);
+    char *t1 = s1.s2.s3.t3;
+    char *t2 = s1.s2.t2;
 
-    char *tainted = s4.s5.s6.s2.s3.t3;
+    memcpy(&s1.s2.s3.t3, &s1.t1, 1024);
 
-    s4.s5.s6.s2.s3.t3 = "untaint";
-
-    char *untainted = s4.s5.s6.s2.s3.t3;
+    char *ut1 = s1.s2.s3.t3;
+    char *t3 = s1.s2.t2;
 
     return 0;
 }
