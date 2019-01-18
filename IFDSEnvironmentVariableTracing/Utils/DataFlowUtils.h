@@ -39,11 +39,13 @@ public:
   static const std::vector<const llvm::Value*> createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
                                                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,
                                                                                 std::size_t skipPartsInTaintedCount);
-  static void dumpMemoryLocation(const ExtendedValue& ev);
 
-  static bool isMemoryLocationFact(const ExtendedValue& ev);
   static bool isEndOfBranchOrSwitchInst(const ExtendedValue& fact,
                                         const llvm::Instruction* instruction);
+
+  static bool isTemporaryFact(const ExtendedValue& ev);
+  static void dumpMemoryLocation(const ExtendedValue& ev);
+  static std::string getTypeName(const llvm::Type* type);
 
 };
 

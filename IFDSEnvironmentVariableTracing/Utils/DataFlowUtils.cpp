@@ -20,20 +20,10 @@ isMemoryLocationFrame(const llvm::Value* memLocationPart) {
          llvm::isa<llvm::Argument>(memLocationPart);
 }
 
-static std::string
-getTypeName(const llvm::Type* type) {
-
-  std::string typeName;
-  llvm::raw_string_ostream typeRawOutputStream(typeName);
-  type->print(typeRawOutputStream);
-
-  return typeRawOutputStream.str();
-}
-
 static bool
 isUnionBitCast(const llvm::BitCastInst* bitCastInst) {
 
-  std::string typeName = getTypeName(bitCastInst->getSrcTy());
+  std::string typeName = DataFlowUtils::getTypeName(bitCastInst->getSrcTy());
 
   return typeName.find("union") != std::string::npos;
 }
@@ -259,25 +249,6 @@ DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Va
   return relocatedDstMemLocationSeq;
 }
 
-void
-DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
-
-  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(ev.getValue())) {
-    llvm::outs() << "[TRACK] "; storeInst->print(llvm::outs()); llvm::outs() << "\n";
-
-    for (const auto memLocationPart : ev.getMemLocationSeq()) {
-      llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
-    }
-  }
-}
-
-bool
-DataFlowUtils::isMemoryLocationFact(const ExtendedValue& ev) {
-  const auto value = ev.getValue();
-
-  return llvm::isa<llvm::StoreInst>(value);
-}
-
 static bool
 isEndOfTaintedBranch(const llvm::BranchInst *branchInst,
                      const llvm::Instruction *instruction) {
@@ -309,11 +280,9 @@ isEndOfTaintedBranch(const llvm::BranchInst *branchInst,
   if (isBranchWithoutElse) {
     bool isMatch = instructionLabel.compare_lower(bbLabel1) == 0 ||
                    instructionLabel.compare_lower(bbLabel2) == 0;
-    if (isMatch) {
-      return true;
-    } else {
-      return false;
-    }
+    if (isMatch) return true;
+
+    return false;
   }
   // Case 2
   /*
@@ -411,4 +380,34 @@ DataFlowUtils::isEndOfBranchOrSwitchInst(const ExtendedValue& fact,
   }
 
   return false;
+}
+
+bool
+DataFlowUtils::isTemporaryFact(const ExtendedValue& fact) {
+
+  const llvm::Value* value = fact.getValue();
+
+  return !llvm::isa<llvm::StoreInst>(value);
+}
+
+void
+DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
+
+  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(ev.getValue())) {
+    llvm::outs() << "[TRACK] "; storeInst->print(llvm::outs()); llvm::outs() << "\n";
+
+    for (const auto memLocationPart : ev.getMemLocationSeq()) {
+      llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+    }
+  }
+}
+
+std::string
+DataFlowUtils::getTypeName(const llvm::Type* type) {
+
+  std::string typeName;
+  llvm::raw_string_ostream typeRawOutputStream(typeName);
+  type->print(typeRawOutputStream);
+
+  return typeRawOutputStream.str();
 }

@@ -6,6 +6,7 @@ namespace psr {
 
 std::set<ExtendedValue>
 FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
+
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
   if (isBranchOrSwitchFact) {

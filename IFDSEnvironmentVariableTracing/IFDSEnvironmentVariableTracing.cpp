@@ -99,55 +99,96 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
       const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
 
-      const auto value = storeInst->getValueOperand();
-      const auto memLocation = storeInst->getPointerOperand();
+      const auto srcValue = storeInst->getValueOperand();
+      const auto dstMemLocationMatr = storeInst->getPointerOperand();
+
+      bool isSrcValueArgument = llvm::isa<llvm::Argument>(srcValue);
+      bool isSrcValuePointer = srcValue->getType()->isPointerTy() && !llvm::isa<llvm::CallInst>(srcValue);
+
+      std::set<ExtendedValue> targetFacts;
 
       /*
        * Patch memory location frame if value is an argument
        */
-      bool isValueArgument = llvm::isa<llvm::Argument>(value);
-      if (isValueArgument) {
-        bool patchMemLocationFrame = fact.getMemLocationFrame() == value;
+      if (isSrcValueArgument) {
+        bool patchMemLocationFrame = fact.getMemLocationFrame() == srcValue;
         if (patchMemLocationFrame) {
-          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(memLocation);
-          fact.setMemLocationFrame(patchedMemLocationFrame);
-          llvm::outs() << "Patched" << "\n"; fact.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; fact.getMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+          ExtendedValue ev(fact);
+          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
+          ev.setMemLocationFrame(patchedMemLocationFrame);
+
+          targetFacts.insert(ev);
+
+          llvm::outs() << "[TRACK] Patched memory location (store)" << "\n";
+          llvm::outs() << "[TRACK] Source:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(fact);
+          llvm::outs() << "[TRACK] Destination:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(ev);
         }
-        return { fact };
+        else {
+          targetFacts.insert(fact);
+        }
       }
-
       /*
-       * If we haven't got an argument as value proceed with usual store instruction
-       * processing...
-       *
-       * Rules
-       * -----
-       *
-       * (1) If a value is tainted GEN store instruction fact
-       * (2) If destination is tainted KILL old memory location fact
-       * (3) If a value is a temporary (call, load, ...) KILL temporary fact
-       * (4) Keep all other facts
+       * If we got a pointer value then we need to find all tainted memory locations for that
+       * pointer and create a new relocated address that relatively works from the memory
+       * location destination. If the value is a pointer so is the desination as the store
+       * instruction is defined as <store, ty val, *ty dst> that means we need to remove all
+       * facts that started at the destination.
        */
+      else if (isSrcValuePointer) {
+        const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcValue, fact);
+        const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
-      bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, memLocation);
-      bool isValueTaintedByTemporary = DataFlowUtils::isValueEqual(fact, value);
-      bool isValueTaintedByMemLocation = DataFlowUtils::isMemoryLocationEqual(fact, value);
+        bool genFact = !srcMemLocationSeq.empty();
+        bool killFact = !dstMemLocationSeq.empty() || DataFlowUtils::isTemporaryFact(fact);
 
-      bool genStoreInst = isValueTaintedByTemporary || isValueTaintedByMemLocation;
-      bool idFact = !isMemLocationTainted && !isValueTaintedByTemporary;
+        if (genFact) {
+          const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-      std::set<ExtendedValue> targetFacts;
+          ExtendedValue ev(fact);
+          const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
+                                                                                               dstMemLocationSeq,
+                                                                                               srcMemLocationSeq.size());
+          ev.setMemLocationSeq(relocatedMemLocationSeq);
 
-      if (genStoreInst) {
-        ExtendedValue ev(storeInst);
-        const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
-        ev.setMemLocationSeq(memoryLocationSeq);
+          targetFacts.insert(ev);
+          lineNumberStore.addLineNumber(storeInst);
 
-        targetFacts.insert(ev);
-
-        lineNumberStore.addLineNumber(storeInst);
+          llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
+          llvm::outs() << "[TRACK] Source:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(fact);
+          llvm::outs() << "[TRACK] Destination:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(ev);
+        }
+        if (!killFact) targetFacts.insert(fact);
       }
-      if (idFact) targetFacts.insert(fact);
+      /*
+       * We haven't got a pointer so we are only overwriting a primitive value that cannot have
+       * other subparts we need to consider. As we are only storing a primtive value the destination
+       * can only be a primitive. So it is sufficient to check the destination for equality and not
+       * for subparts (see above). Note that if we copy a struct llvm IR will contain a memcpy
+       * instruction so we don't need to consider this case here. We can also get rid of all the
+       * temporary values created to describe the value as they will not be reused later on.
+       */
+      else {
+        bool isValueTainted = DataFlowUtils::isValueEqual(fact, srcValue);
+        bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocationMatr);
+
+        bool genFact = isValueTainted;
+        bool killFact = isMemLocationTainted || DataFlowUtils::isTemporaryFact(fact);
+
+        if (genFact) {
+          ExtendedValue ev(storeInst);
+          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+          ev.setMemLocationSeq(memoryLocationSeq);
+
+          targetFacts.insert(ev);
+
+          lineNumberStore.addLineNumber(storeInst);
+        }
+        if (!killFact) targetFacts.insert(fact);
+      }
 
       return targetFacts;
     };
@@ -414,12 +455,12 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcMemLocationMatr, fact);
       const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
-      bool genStoreInst = !srcMemLocationSeq.empty();
-      bool idFact = dstMemLocationSeq.empty();
+      bool genFact = !srcMemLocationSeq.empty();
+      bool killFact = !dstMemLocationSeq.empty();
 
       std::set<ExtendedValue> targetFacts;
 
-      if (genStoreInst) {
+      if (genFact) {
         const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
         ExtendedValue ev(fact);
@@ -431,13 +472,13 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
         targetFacts.insert(ev);
         lineNumberStore.addLineNumber(memTransferInst);
 
-        llvm::outs() << "[TRACK] New relocated memory location (memcpy/memmove)" << "\n";
+        llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
         DataFlowUtils::dumpMemoryLocation(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";
         DataFlowUtils::dumpMemoryLocation(ev);
       }
-      if (idFact) targetFacts.insert(fact);
+      if (!killFact) targetFacts.insert(fact);
 
       return targetFacts;
     };
@@ -461,12 +502,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
-      bool idFact = dstMemLocationSeq.empty();
-      if (idFact) {
-        return { fact };
-      }
+      bool killFact = !dstMemLocationSeq.empty();
+      if (killFact) return { };
 
-      return { };
+      return { fact };
     };
 
     return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, lineNumberStore, zeroValue());
