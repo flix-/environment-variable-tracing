@@ -141,7 +141,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
         bool genFact = !srcMemLocationSeq.empty();
-        bool killFact = !dstMemLocationSeq.empty() || DataFlowUtils::isTemporaryInst(fact.getValue());
+        bool killFact = !dstMemLocationSeq.empty(); // || DataFlowUtils::isTemporaryFact(fact);
 
         if (genFact) {
           const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
@@ -176,7 +176,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocationMatr);
 
         bool genFact = isValueTainted;
-        bool killFact = isMemLocationTainted || DataFlowUtils::isTemporaryInst(fact.getValue());
+        bool killFact = isMemLocationTainted; // || DataFlowUtils::isTemporaryFact(fact);
 
         if (genFact) {
           ExtendedValue ev(storeInst);

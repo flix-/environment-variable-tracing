@@ -44,7 +44,9 @@ public:
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 
-  static bool isTemporaryInst(const llvm::Value* value);
+  static bool isTemporaryFact(const ExtendedValue& ev);
+  static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
+
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 

@@ -355,11 +355,21 @@ DataFlowUtils::getBBLabel(const llvm::Instruction* instruction) {
 }
 
 bool
-DataFlowUtils::isTemporaryInst(const llvm::Value* value) {
+DataFlowUtils::isTemporaryFact(const ExtendedValue& ev) {
 
-  return !llvm::isa<llvm::StoreInst>(value) &&
-         !llvm::isa<llvm::BranchInst>(value) &&
-         !llvm::isa<llvm::SwitchInst>(value);
+  const auto value = ev.getValue();
+
+  return !llvm::isa<llvm::StoreInst>(value);
+}
+
+bool
+DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
+
+  bool isBlacklistedInst = llvm::isa<llvm::StoreInst>(instruction) ||
+                           llvm::isa<llvm::BranchInst>(instruction) ||
+                           llvm::isa<llvm::SwitchInst>(instruction);
+
+  return !isBlacklistedInst;
 }
 
 void
