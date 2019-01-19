@@ -9,30 +9,34 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
 
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
+
   if (isBranchOrSwitchFact) {
-    /*
-     * We are inside a tainted block... If we get an instruction that ends
-     * it, kill branch fact.
-     */
-    bool isEndOfTaintedBlock = DataFlowUtils::isEndOfBranchOrSwitchInst(fact, currentInst);
+    std::string basicBlockLabel = DataFlowUtils::getBBLabel(currentInst);
+
+    bool isEndOfTaintedBlock = basicBlockLabel == fact.getEndOfTaintedBlockLabel();
     if (isEndOfTaintedBlock) return { };
 
-    /*
-     * Do not add more deeply nested branch/switch statements here.
-     */
-    bool isBranchOrSwitchInst = llvm::isa<llvm::BranchInst>(currentInst) ||
-                                llvm::isa<llvm::SwitchInst>(currentInst);
-    if (!isBranchOrSwitchInst) {
-      ExtendedValue ev(currentInst);
+    bool genFact = DataFlowUtils::isTemporaryInst(currentInst);
+    if (genFact) {
+      lineNumberStore.addLineNumber(currentInst);
+      return { fact, ExtendedValue(currentInst) };
+    }
 
-      if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
-        ev.setMemLocationSeq(DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand()));
-      }
+    /*
+     * Handle all instructions here that generate memory locations (store
+     * instructions). Note that we cannot prevent killing of facts as
+     * all other facts except the branch one do not know that they are
+     * in a tainted block. Problem of distributivity...
+     */
+    if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
+      ExtendedValue ev(currentInst);
+      ev.setMemLocationSeq(DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand()));
 
       lineNumberStore.addLineNumber(currentInst);
 
       return { fact, ev };
     }
+
     return { fact };
   }
 

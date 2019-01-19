@@ -1,6 +1,7 @@
 #ifndef DATAFLOWUTILS_H
 #define DATAFLOWUTILS_H
 
+#include <string>
 #include <vector>
 
 #include <llvm/IR/Instructions.h>
@@ -40,10 +41,10 @@ public:
                                                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,
                                                                                 std::size_t skipPartsInTaintedCount);
 
-  static bool isEndOfBranchOrSwitchInst(const ExtendedValue& fact,
-                                        const llvm::Instruction* instruction);
+  static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
+  static std::string getBBLabel(const llvm::Instruction* instruction);
 
-  static bool isTemporaryFact(const ExtendedValue& ev);
+  static bool isTemporaryInst(const llvm::Value* value);
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 

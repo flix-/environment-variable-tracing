@@ -249,45 +249,21 @@ DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Va
   return relocatedDstMemLocationSeq;
 }
 
-static bool
-isEndOfTaintedBranch(const llvm::BranchInst *branchInst,
-                     const llvm::Instruction *instruction) {
-
-  const auto bbInst = instruction->getParent();
-  if (bbInst == nullptr) return false;
-
-  const auto instructionLabel = bbInst->getName();
-  bool isEndOfBranch = instructionLabel.contains_lower("end");
-  if (!isEndOfBranch) return false;
-
+static std::string
+getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
   /*
-   * We now have an instruction that belongs to the end of a branch
-   * statement. We need to figure out if the label matches the one
-   * of the branch statement. There are two cases to consider.
-   * (1) If the branch does not have an else/else if part then we
-   * can match the instruction label directly against the labels of
-   * the branch instruction. (2) If there is an else/else if part
-   * we need to figure out the label of the block where the branch
-   * merges.
+   * If the branch does not have an else part then we can
+   * obtain the label directly from the branch instruction.
    */
-  // Case 1
   const auto bbLabel1 = branchInst->getOperand(1)->getName();
   const auto bbLabel2 = branchInst->getOperand(2)->getName();
 
-  bool isBranchWithoutElse = bbLabel1.contains_lower("end") ||
-                             bbLabel2.contains_lower("end");
+  if (bbLabel1.contains_lower("end")) return bbLabel1;
+  if (bbLabel2.contains_lower("end")) return bbLabel2;
 
-  if (isBranchWithoutElse) {
-    bool isMatch = instructionLabel.compare_lower(bbLabel1) == 0 ||
-                   instructionLabel.compare_lower(bbLabel2) == 0;
-    if (isMatch) return true;
-
-    return false;
-  }
-  // Case 2
   /*
    * The way we determine the basic block where the branch merges
-   * is as follows:
+   * when we have an else part is as follows:
    *
    * Starting with the branch instruction whenever we encounter a
    * conditional branch instruction (beginning of a new branch)
@@ -299,95 +275,91 @@ isEndOfTaintedBranch(const llvm::BranchInst *branchInst,
    * block of the branch. terminatorInstPtr will point to the
    * basic block where the branch instruction has merged.
    */
-  std::stack<const llvm::BranchInst*> branchStack;
+  std::stack<const llvm::BranchInst*> branchInstStack;
 
   const llvm::TerminatorInst* terminatorInstPtr = branchInst;
   do {
     if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInstPtr)) {
-      if (branchInst->isConditional()) branchStack.push(branchInst);
+      if (branchInst->isConditional()) branchInstStack.push(branchInst);
     }
 
     terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
 
     const auto bbLabel = terminatorInstPtr->getParent()->getName();
     bool isEnd = bbLabel.contains_lower("end");
-    if (isEnd) branchStack.pop();
-  } while (!branchStack.empty());
+    if (isEnd) branchInstStack.pop();
+
+  } while (!branchInstStack.empty());
 
   const auto endOfBranchLabel = terminatorInstPtr->getParent()->getName();
 
-  return instructionLabel.compare_lower(endOfBranchLabel) == 0;
+  return endOfBranchLabel;
 }
 
-static bool
-isEndOfTaintedSwitch(const llvm::SwitchInst* const switchInst,
-                     const llvm::Instruction *instruction) {
-
-  const auto bbInst = instruction->getParent();
-  if (bbInst == nullptr) return false;
-
-  const auto instructionLabel = bbInst->getName();
-  bool isEndOfSwitch = instructionLabel.contains_lower("epilog");
-  if (!isEndOfSwitch) return false;
+static std::string
+getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
 
   /*
-   * We now have an instruction that belongs to the end of a switch
-   * statement. We need to figure out if the label matches the one
-   * of the switch statement (e.g. we don't want to remove the switch
-   * statement if it is a nested one). If the default case of the
-   * switch statement points to an epilog (no default branch) we can
-   * obtain the label immediately (1) if not we need to determine the
-   * label of the end of the switch statement (see branch algorithm) (2).
+   * If there is no default branch we can obtain the label directly
+   * from the switch instruction.
    */
-  // Case 1
   const auto defaultBB = switchInst->getDefaultDest();
   const auto defaultLabel = defaultBB->getName();
   bool isEpilogLabel = defaultLabel.contains_lower("epilog");
-  if (isEpilogLabel) return instructionLabel.compare_lower(defaultLabel) == 0;
+  if (isEpilogLabel) return defaultLabel;
 
-  // Case 2
-  std::stack<const llvm::SwitchInst*> switchStack;
+  /*
+   * If there is a default set use algorithm as described for branch
+   * instructions (see above).
+   */
+  std::stack<const llvm::SwitchInst*> switchInstStack;
 
   const llvm::TerminatorInst* terminatorInstPtr = switchInst;
   do {
     if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
-      switchStack.push(switchInst);
+      switchInstStack.push(switchInst);
     }
 
     terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
 
     const auto bbLabel = terminatorInstPtr->getParent()->getName();
     bool isEpilog = bbLabel.contains_lower("epilog");
-    if (isEpilog) switchStack.pop();
-  } while (!switchStack.empty());
+    if (isEpilog) switchInstStack.pop();
+  } while (!switchInstStack.empty());
 
   const auto endOfSwitchLabel = terminatorInstPtr->getParent()->getName();
 
-  return instructionLabel.compare_lower(endOfSwitchLabel) == 0;
+  return endOfSwitchLabel;
+}
+
+std::string
+DataFlowUtils::getEndOfBlockLabel(const llvm::Instruction* instruction) {
+
+  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
+    return getEndOfBranchLabel(branchInst);
+  }
+  else if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(instruction)) {
+    return getEndOfSwitchLabel(switchInst);
+  }
+
+  return std::string();
+}
+
+std::string
+DataFlowUtils::getBBLabel(const llvm::Instruction* instruction) {
+
+  const auto bbInst = instruction->getParent();
+  if (bbInst == nullptr) return "";
+
+  return bbInst->getName();
 }
 
 bool
-DataFlowUtils::isEndOfBranchOrSwitchInst(const ExtendedValue& fact,
-                                         const llvm::Instruction *instruction) {
+DataFlowUtils::isTemporaryInst(const llvm::Value* value) {
 
-  const auto branchOrSwitchInst = fact.getValue();
-
-  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(branchOrSwitchInst)) {
-    return isEndOfTaintedBranch(branchInst, instruction);
-  }
-  else if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(branchOrSwitchInst)) {
-    return isEndOfTaintedSwitch(switchInst, instruction);
-  }
-
-  return false;
-}
-
-bool
-DataFlowUtils::isTemporaryFact(const ExtendedValue& fact) {
-
-  const llvm::Value* value = fact.getValue();
-
-  return !llvm::isa<llvm::StoreInst>(value);
+  return !llvm::isa<llvm::StoreInst>(value) &&
+         !llvm::isa<llvm::BranchInst>(value) &&
+         !llvm::isa<llvm::SwitchInst>(value);
 }
 
 void

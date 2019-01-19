@@ -141,7 +141,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
         bool genFact = !srcMemLocationSeq.empty();
-        bool killFact = !dstMemLocationSeq.empty() || DataFlowUtils::isTemporaryFact(fact);
+        bool killFact = !dstMemLocationSeq.empty() || DataFlowUtils::isTemporaryInst(fact.getValue());
 
         if (genFact) {
           const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
@@ -176,7 +176,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         bool isMemLocationTainted = DataFlowUtils::isMemoryLocationEqual(fact, dstMemLocationMatr);
 
         bool genFact = isValueTainted;
-        bool killFact = isMemLocationTainted || DataFlowUtils::isTemporaryFact(fact);
+        bool killFact = isMemLocationTainted || DataFlowUtils::isTemporaryInst(fact.getValue());
 
         if (genFact) {
           ExtendedValue ev(storeInst);
@@ -278,10 +278,18 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
         bool isBranchTainted = DataFlowUtils::isValueEqual(fact, condition);
         if (isBranchTainted) {
+          const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
+
+          ExtendedValue ev(branchInst);
+          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+
           lineNumberStore.addLineNumber(branchInst);
-          return { fact, ExtendedValue(branchInst) };
+
+          // Do not keep temporary fact...
+          return { ev };
         }
       }
+
       return { fact };
     };
 
@@ -307,9 +315,17 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        */
       bool isSwitchTainted = DataFlowUtils::isValueEqual(fact, condition);
       if (isSwitchTainted) {
+        const auto endOfTaintedSwitchLabel = DataFlowUtils::getEndOfBlockLabel(switchInst);
+
+        ExtendedValue ev(switchInst);
+        ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
+
         lineNumberStore.addLineNumber(switchInst);
-        return { fact, ExtendedValue(switchInst) };
+
+        // Do not keep temporary fact
+        return { ev };
       }
+
       return { fact };
     };
 
