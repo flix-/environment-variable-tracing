@@ -143,7 +143,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
 
         bool genFact = !srcMemLocationSeq.empty();
-        bool killFact = !dstMemLocationSeq.empty();
+        bool killFact = !dstMemLocationSeq.empty() || !DataFlowUtils::isMemoryLocation(fact);
 
         if (genFact) {
           const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
@@ -169,20 +169,20 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        * We haven't got a pointer so we are only overwriting a primitive value that cannot have
        * other subparts we need to consider. As we are only storing a primtive value the destination
        * can only be a primitive. So it is sufficient to check the destination for equality and not
-       * for subparts (see above). Note that if we copy a struct llvm IR will contain a memcpy
-       * instruction so we don't need to consider this case here. We can also get rid of all the
-       * temporary values created to describe the value as they will not be reused later on.
+       * for subparts (see above). As above we get clear our facts set from all non memory location
+       * facts. Note that if we copy a struct llvm IR will contain a memcpy instruction so we don't
+       * need to consider this case here.
        */
       else {
-        bool isValueTainted = DataFlowUtils::isValueTainted(fact, srcValue);
-        bool isMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact, dstMemLocationMatr);
+        bool isSrcMemLocationTainted = DataFlowUtils::isValueTainted(fact, srcValue);
+        bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact, dstMemLocationMatr);
 
-        bool genFact = isValueTainted;
-        bool killFact = isMemLocationTainted;
+        bool genFact = isSrcMemLocationTainted;
+        bool killFact = isDstMemLocationTainted || !DataFlowUtils::isMemoryLocation(fact);
 
         if (genFact) {
           ExtendedValue ev(storeInst);
-          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
           ev.setMemLocationSeq(memoryLocationSeq);
 
           targetFacts.insert(ev);

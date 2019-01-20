@@ -178,9 +178,6 @@ DataFlowUtils::isMemoryLocationTainted(const ExtendedValue& fact,
   const auto memLocationInstVector = getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationInstVector.empty()) return false;
 
-  bool isSameSize = memLocationFactVector.size() == memLocationInstVector.size();
-  if (!isSameSize) return false;
-
   std::size_t n = memLocationFactVector.size();
   bool isMemLocationsEqual = isFirstNMemoryLocationPartsEqual(memLocationFactVector,
                                                               memLocationInstVector,
@@ -244,9 +241,8 @@ DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Va
 
   std::vector<const llvm::Value*> relocatedDstMemLocationSeq = dstMemLocationSeq;
 
-  for (std::size_t i = 1; i < taintedMemLocationSeq.size(); ++i) {
-    bool copyMemLocationPart = i >= srcLength;
-    if (copyMemLocationPart) relocatedDstMemLocationSeq.push_back(taintedMemLocationSeq[i]);
+  for (std::size_t i = srcLength; i < taintedMemLocationSeq.size(); ++i) {
+    relocatedDstMemLocationSeq.push_back(taintedMemLocationSeq[i]);
   }
 
   return relocatedDstMemLocationSeq;
@@ -365,6 +361,11 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
          !llvm::isa<llvm::MemTransferInst>(instruction) &&
          !llvm::isa<llvm::BranchInst>(instruction) &&
          !llvm::isa<llvm::SwitchInst>(instruction);
+}
+
+bool
+DataFlowUtils::isMemoryLocation(ExtendedValue& ev) {
+  return !ev.getMemLocationSeq().empty();
 }
 
 void
