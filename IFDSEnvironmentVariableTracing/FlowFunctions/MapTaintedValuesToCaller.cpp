@@ -14,7 +14,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   const auto returnValue = retInst->getReturnValue();
   if (!returnValue) return { };
 
-  bool isReturnValueTainted = DataFlowUtils::isValueEqual(fact, returnValue);
+  bool isReturnValueTainted = DataFlowUtils::isValueTainted(fact, returnValue);
   if (isReturnValueTainted) return { ExtendedValue(callInst) };
 
   return { };

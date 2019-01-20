@@ -2,6 +2,8 @@
 
 #include "../Utils/DataFlowUtils.h"
 
+#include <llvm/IR/IntrinsicInst.h>
+
 namespace psr {
 
 std::set<ExtendedValue>
@@ -43,11 +45,21 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
      * tainted and the store fact is killed.
      *
      * Note that there is no way to relocate memory addresses here as we are dealing with
-     * untainted sources.
+     * untainted sources. This means that if e.g. we add a struct then all subparts of it
+     * are considered tainted. This should be the only spot where such memory locations
+     * are generated.
      */
     if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
       ExtendedValue ev(currentInst);
       const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+      ev.setMemLocationSeq(memLocationSeq);
+
+      targetFacts.insert(ev);
+    }
+    else
+    if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(currentInst)) {
+      ExtendedValue ev(currentInst);
+      const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
       ev.setMemLocationSeq(memLocationSeq);
 
       targetFacts.insert(ev);

@@ -14,11 +14,11 @@ class DataFlowUtils {
 public:
   DataFlowUtils() = delete;
 
-  static bool isValueEqual(const ExtendedValue& fact,
-                           const llvm::Value* instruction);
+  static bool isValueTainted(const ExtendedValue& fact,
+                             const llvm::Value* instruction);
 
-  static bool isMemoryLocationEqual(const ExtendedValue& fact,
-                                    const llvm::Value* memLocationMatr);
+  static bool isMemoryLocationTainted(const ExtendedValue& fact,
+                                      const llvm::Value* memLocationMatr);
   static bool isMemoryLocationFrameEqual(const ExtendedValue& fact,
                                          const llvm::Value* memLocationMatr);
 
@@ -39,12 +39,11 @@ public:
 
   static const std::vector<const llvm::Value*> createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
                                                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,
-                                                                                std::size_t skipPartsInTaintedCount);
+                                                                                std::size_t srcLength);
 
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 
-  static bool isTemporaryFact(const ExtendedValue& ev);
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
 
   static void dumpMemoryLocation(const ExtendedValue& ev);
