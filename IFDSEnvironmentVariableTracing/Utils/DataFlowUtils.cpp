@@ -11,7 +11,7 @@
 
 using namespace psr;
 
-static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("ALL I NEED IS A UNIQUE PTR");
+static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
 static const std::vector<const llvm::Value*> EMPTY_SEQ;
 
 static bool
@@ -364,7 +364,7 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
 }
 
 bool
-DataFlowUtils::isMemoryLocation(ExtendedValue& ev) {
+DataFlowUtils::isMemoryLocation(const ExtendedValue& ev) {
   return !ev.getMemLocationSeq().empty();
 }
 
@@ -373,8 +373,8 @@ DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
 
   const auto value = ev.getValue();
 
-  bool isMemoryLocation = !ev.getMemLocationSeq().empty();
-  if (isMemoryLocation) {
+  bool isMemLocation = isMemoryLocation(ev);
+  if (isMemLocation) {
     llvm::outs() << "[TRACK] "; value->print(llvm::outs()); llvm::outs() << "\n";
     for (const auto memLocationPart : ev.getMemLocationSeq()) {
       llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";

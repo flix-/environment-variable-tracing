@@ -46,7 +46,7 @@ public:
 
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
 
-  static bool isMemoryLocation(ExtendedValue& ev);
+  static bool isMemoryLocation(const ExtendedValue& ev);
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 

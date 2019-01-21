@@ -214,7 +214,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto trueConstant = llvm::ConstantInt::getTrue(phiNodeInst->getContext());
       const auto falseConstant = llvm::ConstantInt::getFalse(phiNodeInst->getContext());
 
-      // If phi node contains at least one tainted value push fact
       for (const auto block : phiNodeInst->blocks()) {
         const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
         /*
@@ -433,7 +432,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
      * For functions that kill facts and are handled in getSummaryFlowFunction()
      * we kill all facts here and just use what they have returned. This is
      * important e.g. if memset removes a store fact then it is not readded here
-     * through the identity function.
+     * e.g. through identity function.
      *
      * Need to keep the list in sync with "killing" functions in getSummaryFlowFunction()!
      */
