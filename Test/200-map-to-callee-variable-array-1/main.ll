@@ -9,20 +9,20 @@ target triple = "x86_64-unknown-linux-gnu"
 define void @foo(i8** %s) #0 !dbg !7 {
 entry:
   %s.addr = alloca i8**, align 8
-  %tainted = alloca i8*, align 8
-  %not_tainted = alloca i8*, align 8
+  %t1 = alloca i8*, align 8
+  %nt1 = alloca i8*, align 8
   store i8** %s, i8*** %s.addr, align 8
   call void @llvm.dbg.declare(metadata i8*** %s.addr, metadata !13, metadata !14), !dbg !15
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !14), !dbg !17
+  call void @llvm.dbg.declare(metadata i8** %t1, metadata !16, metadata !14), !dbg !17
   %0 = load i8**, i8*** %s.addr, align 8, !dbg !18
-  %arrayidx = getelementptr inbounds i8*, i8** %0, i64 0, !dbg !18
+  %arrayidx = getelementptr inbounds i8*, i8** %0, i64 1, !dbg !18
   %1 = load i8*, i8** %arrayidx, align 8, !dbg !18
-  store i8* %1, i8** %tainted, align 8, !dbg !17
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !19, metadata !14), !dbg !20
+  store i8* %1, i8** %t1, align 8, !dbg !17
+  call void @llvm.dbg.declare(metadata i8** %nt1, metadata !19, metadata !14), !dbg !20
   %2 = load i8**, i8*** %s.addr, align 8, !dbg !21
-  %arrayidx1 = getelementptr inbounds i8*, i8** %2, i64 1, !dbg !21
+  %arrayidx1 = getelementptr inbounds i8*, i8** %2, i64 2, !dbg !21
   %3 = load i8*, i8** %arrayidx1, align 8, !dbg !21
-  store i8* %3, i8** %not_tainted, align 8, !dbg !20
+  store i8* %3, i8** %nt1, align 8, !dbg !20
   ret void, !dbg !22
 }
 
@@ -37,8 +37,8 @@ entry:
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata [42 x i8*]* %s, metadata !27, metadata !14), !dbg !31
   %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !32
-  %arrayidx = getelementptr inbounds [42 x i8*], [42 x i8*]* %s, i64 0, i64 0, !dbg !33
-  store i8* %call, i8** %arrayidx, align 16, !dbg !34
+  %arrayidx = getelementptr inbounds [42 x i8*], [42 x i8*]* %s, i64 0, i64 1, !dbg !33
+  store i8* %call, i8** %arrayidx, align 8, !dbg !34
   %arraydecay = getelementptr inbounds [42 x i8*], [42 x i8*]* %s, i32 0, i32 0, !dbg !35
   call void @foo(i8** %arraydecay), !dbg !36
   ret i32 0, !dbg !37
@@ -70,12 +70,12 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !13 = !DILocalVariable(name: "s", arg: 1, scope: !7, file: !1, line: 4, type: !10)
 !14 = !DIExpression()
 !15 = !DILocation(line: 4, column: 11, scope: !7)
-!16 = !DILocalVariable(name: "tainted", scope: !7, file: !1, line: 6, type: !11)
+!16 = !DILocalVariable(name: "t1", scope: !7, file: !1, line: 6, type: !11)
 !17 = !DILocation(line: 6, column: 11, scope: !7)
-!18 = !DILocation(line: 6, column: 21, scope: !7)
-!19 = !DILocalVariable(name: "not_tainted", scope: !7, file: !1, line: 7, type: !11)
+!18 = !DILocation(line: 6, column: 16, scope: !7)
+!19 = !DILocalVariable(name: "nt1", scope: !7, file: !1, line: 7, type: !11)
 !20 = !DILocation(line: 7, column: 11, scope: !7)
-!21 = !DILocation(line: 7, column: 25, scope: !7)
+!21 = !DILocation(line: 7, column: 17, scope: !7)
 !22 = !DILocation(line: 8, column: 1, scope: !7)
 !23 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 11, type: !24, isLocal: false, isDefinition: true, scopeLine: 12, isOptimized: false, unit: !0, variables: !2)
 !24 = !DISubroutineType(types: !25)

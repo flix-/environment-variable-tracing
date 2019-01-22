@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #ifndef FLOWFUNCTIONWRAPPER_H
 #define FLOWFUNCTIONWRAPPER_H
 

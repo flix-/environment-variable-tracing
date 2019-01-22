@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #ifndef LINENUMBERSTORE_H
 #define LINENUMBERSTORE_H
 

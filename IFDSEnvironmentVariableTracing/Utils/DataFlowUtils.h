@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #ifndef DATAFLOWUTILS_H
 #define DATAFLOWUTILS_H
 
@@ -36,6 +40,8 @@ public:
    */
   static const std::vector<const llvm::Value*> getSubsetMemoryLocationSeq(const llvm::Value* memLocationMatr,
                                                                           const ExtendedValue& fact);
+  static bool isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
+                                        const std::vector<const llvm::Value*> memLocationSeqFact);
 
   static const std::vector<const llvm::Value*> createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
                                                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,

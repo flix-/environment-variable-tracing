@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #include "LineNumberStore.h"
 
 namespace psr {

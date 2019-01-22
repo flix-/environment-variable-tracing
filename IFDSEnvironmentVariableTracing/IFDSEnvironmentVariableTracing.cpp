@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #include "IFDSEnvironmentVariableTracing.h"
 
 #include "LineNumberStore.h"
@@ -127,6 +131,10 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           DataFlowUtils::dumpMemoryLocation(ev);
         }
         else {
+          /*
+           * This case is relevant for byvalue passing of parameters because there is no
+           * explicit alloca and the argument is used instead.
+           */
           targetFacts.insert(fact);
         }
       }

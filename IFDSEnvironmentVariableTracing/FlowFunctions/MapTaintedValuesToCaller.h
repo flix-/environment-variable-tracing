@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #ifndef MAPTAINTEDVALUESTOCALLER_H
 #define MAPTAINTEDVALUESTOCALLER_H
 

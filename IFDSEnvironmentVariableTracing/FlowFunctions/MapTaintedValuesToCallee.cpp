@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #include "MapTaintedValuesToCallee.h"
 
 #include "../Utils/DataFlowUtils.h"
@@ -11,29 +15,67 @@ namespace psr {
 std::set<ExtendedValue>
 MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
-  std::set<ExtendedValue> mappedFormals;
+  std::set<ExtendedValue> targetFacts;
 
-  for (unsigned i = 0; i < callInst->getNumArgOperands(); i++) {
+  for (unsigned i = 0; i < callInst->getNumArgOperands(); ++i) {
     const auto actualArgument = callInst->getOperand(i);
-    /*
-     * If actual argument ends in the same memory location frame as
-     * fact add fact and map store instruction to formal argument.
-     */
-    bool isSameMemLocationFrame = DataFlowUtils::isMemoryLocationFrameEqual(fact, actualArgument);
-    if (isSameMemLocationFrame) {
-      const auto formalParameter = getNthFunctionArgument(destMthd, i);
+    const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
-      ExtendedValue ev = fact;
-      ev.setMemLocationFrame(formalParameter);
-      mappedFormals.insert(ev);
+    auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
+    if (argMemLocationSeq.empty()) continue;
+
+    /*
+     * If the struct is coerced / decayed then the indexes are not matching up
+     * anymore. E.g. if we have the following struct:
+     *
+     * struct s1 {
+     *   int a;
+     *   int b;
+     *   char *t1;
+     * };
+     *
+     * If we taint t1 we will have Alloca_x -> GEP 2 as our memory location.
+     *
+     * Now if a and b are coerced from i32, i32 to i64 we will have a struct
+     * that only contains two members (i64, i8*). This means that also the
+     * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
+     * the GEP value and pop it from the memory location and proceed as usual.
+     *
+     * The same applies for arrays as they are passed by pointer to the first
+     * element (decaying). This implies that we always have GEP 0 which does not
+     * make sense to compare to stored facts.
+     */
+    bool isCoerce = formalParameter->getName().contains_lower("coerce");
+    bool isArrayDecay = actualArgument->getName().contains_lower("arraydecay");
+
+    if (isCoerce || isArrayDecay) {
+      assert(argMemLocationSeq.size() > 1);
+      argMemLocationSeq.pop_back();
+    }
+
+    bool patchMemLocation = DataFlowUtils::isSubsetMemoryLocationSeq(argMemLocationSeq, fact.getMemLocationSeq());
+    if (patchMemLocation) {
+      ExtendedValue ev(fact);
+
+      std::vector<const llvm::Value*> dstMemLocationSeq;
+      dstMemLocationSeq.push_back(formalParameter);
+      const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
+                                                                                           dstMemLocationSeq,
+                                                                                           argMemLocationSeq.size());
+      ev.setMemLocationSeq(relocatedMemLocationSeq);
+      targetFacts.insert(ev);
 
       lineNumberStore.addLineNumber(callInst);
 
-      llvm::outs() << "Mapped" << "\n"; ev.getValue()->print(llvm::outs()); llvm::outs() << "\n" << "to" << "\n"; ev.getMemLocationFrame()->print(llvm::outs()); llvm::outs() << "\n";
+      llvm::outs() << "[TRACK] Patched memory location (call)" << "\n";
+      llvm::outs() << "[TRACK] Source:" << "\n";
+      DataFlowUtils::dumpMemoryLocation(fact);
+      llvm::outs() << "[TRACK] Destination:" << "\n";
+      DataFlowUtils::dumpMemoryLocation(ev);
     }
   }
 
-  return { mappedFormals };
+  return targetFacts;
 }
 
 } // namespace

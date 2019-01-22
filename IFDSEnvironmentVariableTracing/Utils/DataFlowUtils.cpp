@@ -1,3 +1,7 @@
+/**
+  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  */
+
 #include "DataFlowUtils.h"
 
 #include <algorithm>
@@ -33,18 +37,25 @@ static bool
 isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
                const llvm::GetElementPtrInst* memLocationInstGEP) {
 
-  bool hasSameNumOfOperands = memLocationFactGEP->getNumOperands() == memLocationInstGEP->getNumOperands();
-  if (!hasSameNumOfOperands) return false;
+  /*
+   * Because of array decaying we cannot take the type into consideration
+   * here as the array loses its type and dimension. This is important when
+   * we pass an array to a function and create the callees memory addresses
+   * based on the one from the caller. The callee will have the GEP instances
+   * from the caller which includes the original type and dimension but memory
+   * locations created within the callees context do not. Also the number of
+   * operands will change. If the amount of operands is not equal We will only
+   * compare indices starting from the rightmost one until we reach the beginning
+   * in one of the GEP's. If the number of operands is equal we automatically
+   * compare all indices.
+   */
+  unsigned int numIndicesToCompare = std::min<>(memLocationFactGEP->getNumOperands(),
+                                                memLocationInstGEP->getNumOperands()) - 1;
 
-  // Compare Pointer Type
-  const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
-  const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
-  if (gepFactOperandType != gepInstOperandType) return false;
+  for (unsigned int i = 1; i <= numIndicesToCompare; ++i) {
+    const auto *gepFactIndice = memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - i);
+    const auto *gepInstIndice = memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - i);
 
-  // Compare Indices
-  for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
-    const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
-    const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
     if (gepFactIndice != gepInstIndice) return false;
   }
 
@@ -203,20 +214,29 @@ DataFlowUtils::isMemoryLocationFrameEqual(const ExtendedValue& fact,
   return true;
 }
 
+bool
+DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
+                                         const std::vector<const llvm::Value*> memLocationSeqFact) {
+
+    if (memLocationSeqInst.empty()) return false;
+    if (memLocationSeqFact.empty()) return false;
+
+    std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(), memLocationSeqFact.size());
+
+    return isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
+                                            memLocationSeqFact,
+                                            n);
+}
+
 const std::vector<const llvm::Value*>
 DataFlowUtils::getSubsetMemoryLocationSeq(const llvm::Value* memLocationMatr,
                                           const ExtendedValue& fact) {
 
   const auto memLocationSeqInst = getMemoryLocationSeqFromMatr(memLocationMatr);
-  if (memLocationSeqInst.empty()) return EMPTY_SEQ;
-
   const auto memLocationSeqFact = getMemoryLocationSeqFromFact(fact);
-  if (memLocationSeqFact.empty()) return EMPTY_SEQ;
 
-  std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(), memLocationSeqFact.size());
-  bool isMemLocationSubsetOfTaintedMemLocation = isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
-                                                                                  memLocationSeqFact,
-                                                                                  n);
+  bool isMemLocationSubsetOfTaintedMemLocation = isSubsetMemoryLocationSeq(memLocationSeqInst,
+                                                                           memLocationSeqFact);
   if (!isMemLocationSubsetOfTaintedMemLocation) return EMPTY_SEQ;
 
   return memLocationSeqInst;
