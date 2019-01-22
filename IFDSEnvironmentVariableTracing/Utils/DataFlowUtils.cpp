@@ -37,26 +37,52 @@ static bool
 isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
                const llvm::GetElementPtrInst* memLocationInstGEP) {
 
-  /*
-   * Because of array decaying we cannot take the type into consideration
-   * here as the array loses its type and dimension. This is important when
-   * we pass an array to a function and create the callees memory addresses
-   * based on the one from the caller. The callee will have the GEP instances
-   * from the caller which includes the original type and dimension but memory
-   * locations created within the callees context do not. Also the number of
-   * operands will change. If the amount of operands is not equal We will only
-   * compare indices starting from the rightmost one until we reach the beginning
-   * in one of the GEP's. If the number of operands is equal we automatically
-   * compare all indices.
-   */
-  unsigned int numIndicesToCompare = std::min<>(memLocationFactGEP->getNumOperands(),
-                                                memLocationInstGEP->getNumOperands()) - 1;
+  bool isNumIndicesEqual = memLocationFactGEP->getNumIndices() == memLocationInstGEP->getNumIndices();
 
-  for (unsigned int i = 1; i <= numIndicesToCompare; ++i) {
-    const auto *gepFactIndice = memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - i);
-    const auto *gepInstIndice = memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - i);
+  if (isNumIndicesEqual) {
+    // Compare pointer type
+    const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
+    const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
+    if (gepFactOperandType != gepInstOperandType) return false;
 
-    if (gepFactIndice != gepInstIndice) return false;
+    // Compare Indices
+    for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
+      const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
+      const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
+      if (gepFactIndice != gepInstIndice) return false;
+    }
+  }
+  else {
+    /*
+     * For now just expect this to be the result of array decaying...
+     *
+     * If we pass an array as an argument it is decayed to a pointer and loses type and
+     * size information. When we transfer the array from caller to callee we copy the GEP
+     * instruction from the caller as this is the only information we have. This GEP instruction
+     * carries type information:
+     *
+     * %arrayidx = getelementptr inbounds [42 x i32], [42 x i32]* %a, i64 0, i64 5
+     *
+     * However every GEP instruction for that array in the callee refers to the array as a pointer
+     * to the first element and performs pointer arithmetic in order to step through the elements.
+     * Thus the same location in the callee would be:
+     *
+     * %arrayidx = getelementptr inbounds i32, i32* %0, i64 5
+     *
+     * In order to be 100% accurate here we would also need to compare the pointer types...
+     */
+    const auto nonDecayedArrayGEP = memLocationFactGEP->getNumIndices() > memLocationInstGEP->getNumIndices() ?
+                                    memLocationFactGEP :
+                                    memLocationInstGEP;
+
+    if (const auto nonDecayedArrayGEPPtrIndex = llvm::dyn_cast<llvm::ConstantInt>(nonDecayedArrayGEP->getOperand(1))) {
+      if (!nonDecayedArrayGEPPtrIndex->isZero()) return false;
+    } else {
+      return false;
+    }
+
+    return memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - 1) ==
+           memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - 1);
   }
 
   return true;
