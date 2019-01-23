@@ -61,7 +61,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
       lineNumberStore.addLineNumber(callInst);
 
-      llvm::outs() << "[TRACK] Patched memory location (call)" << "\n";
+      llvm::outs() << "[TRACK] Relocated memory location (call)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
       DataFlowUtils::dumpMemoryLocation(fact);
       llvm::outs() << "[TRACK] Destination:" << "\n";

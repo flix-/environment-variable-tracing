@@ -107,15 +107,18 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto srcValue = storeInst->getValueOperand();
       const auto dstMemLocationMatr = storeInst->getPointerOperand();
 
-      bool isSrcValueArgument = llvm::isa<llvm::Argument>(srcValue);
+      bool isPossibleCallerPatch = llvm::isa<llvm::Argument>(srcValue);
+      bool isPossibleCalleePatch = llvm::isa<llvm::ExtractValueInst>(srcValue) ||
+                                   (llvm::isa<llvm::CallInst>(srcValue) && srcValue == fact.getCallee());
+
       bool isSrcValuePointer = srcValue->getType()->isPointerTy() && !llvm::isa<llvm::CallInst>(srcValue);
 
       std::set<ExtendedValue> targetFacts;
 
       /*
-       * Patch memory location frame if value is an argument
+       * Patch memory location frame from caller to callee
        */
-      if (isSrcValueArgument) {
+      if (isPossibleCallerPatch) {
         bool patchMemLocationFrame = fact.getMemLocationFrame() == srcValue;
         if (patchMemLocationFrame) {
           ExtendedValue ev(fact);
@@ -135,6 +138,37 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
            * This case is relevant for byvalue passing of parameters because there is no
            * explicit alloca and the argument is used instead.
            */
+          targetFacts.insert(fact);
+        }
+      }
+      /*
+       * Patch memory location frame from callee to caller
+       */
+      else
+      if (isPossibleCalleePatch) {
+        bool isMemLocationFromRet = fact.isReturnValue();
+        if (isMemLocationFromRet) {
+          const auto dstMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
+
+          bool patchMemLocationFrame = dstMemLocationFrame != nullptr;
+          if (patchMemLocationFrame) {
+            ExtendedValue ev(fact);
+            ev.setMemLocationFrame(dstMemLocationFrame);
+            ev.resetCallee();
+
+            targetFacts.insert(ev);
+
+            llvm::outs() << "[TRACK] Patched memory location frame (ret)" << "\n";
+            llvm::outs() << "[TRACK] Source:" << "\n";
+            DataFlowUtils::dumpMemoryLocation(fact);
+            llvm::outs() << "[TRACK] Destination:" << "\n";
+            DataFlowUtils::dumpMemoryLocation(ev);
+          }
+          else {
+            targetFacts.insert(fact);
+          }
+        }
+        else {
           targetFacts.insert(fact);
         }
       }

@@ -15,13 +15,24 @@ namespace psr {
 std::set<ExtendedValue>
 MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
+  std::set<ExtendedValue> targetFacts;
+
   const auto returnValue = retInst->getReturnValue();
-  if (!returnValue) return { };
+  if (!returnValue) return targetFacts;
 
-  bool isReturnValueTainted = DataFlowUtils::isValueTainted(fact, returnValue);
-  if (isReturnValueTainted) return { ExtendedValue(callInst) };
+  bool isReturnValueTainted = DataFlowUtils::isValueTainted(fact, returnValue) ||
+                              DataFlowUtils::isMemoryLocationFrameEqual(fact, returnValue);
 
-  return { };
+  if (isReturnValueTainted) {
+    ExtendedValue evRetInst(fact);
+    evRetInst.setCallee(callInst);
+    targetFacts.insert(evRetInst);
+
+    lineNumberStore.addLineNumber(callInst);
+    lineNumberStore.addLineNumber(retInst);
+  }
+
+  return targetFacts;
 }
 
 } // namespace

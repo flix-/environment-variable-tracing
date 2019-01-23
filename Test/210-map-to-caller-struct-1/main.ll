@@ -36,17 +36,18 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture writeonly, i8* nocapture r
 define i32 @main() #0 !dbg !22 {
 entry:
   %retval = alloca i32, align 4
-  %s = alloca %struct.s1, align 8
-  %s2 = alloca %struct.s1, align 8
+  %s11 = alloca %struct.s1, align 8
+  %s12 = alloca %struct.s1, align 8
   %coerce = alloca %struct.s1, align 8
+  %not_tainted = alloca i32, align 4
   %tainted2 = alloca i8*, align 8
   store i32 0, i32* %retval, align 4
-  call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !25, metadata !18), !dbg !26
+  call void @llvm.dbg.declare(metadata %struct.s1* %s11, metadata !25, metadata !18), !dbg !26
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !27
-  %tainted = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !28
+  %tainted = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !28
   store i8* %call, i8** %tainted, align 8, !dbg !29
-  call void @llvm.dbg.declare(metadata %struct.s1* %s2, metadata !30, metadata !18), !dbg !31
-  %0 = bitcast %struct.s1* %s to { i32, i8* }*, !dbg !32
+  call void @llvm.dbg.declare(metadata %struct.s1* %s12, metadata !30, metadata !18), !dbg !31
+  %0 = bitcast %struct.s1* %s11 to { i32, i8* }*, !dbg !32
   %1 = getelementptr inbounds { i32, i8* }, { i32, i8* }* %0, i32 0, i32 0, !dbg !32
   %2 = load i32, i32* %1, align 8, !dbg !32
   %3 = getelementptr inbounds { i32, i8* }, { i32, i8* }* %0, i32 0, i32 1, !dbg !32
@@ -59,14 +60,18 @@ entry:
   %8 = getelementptr inbounds { i32, i8* }, { i32, i8* }* %5, i32 0, i32 1, !dbg !32
   %9 = extractvalue { i32, i8* } %call1, 1, !dbg !32
   store i8* %9, i8** %8, align 8, !dbg !32
-  %10 = bitcast %struct.s1* %s2 to i8*, !dbg !32
+  %10 = bitcast %struct.s1* %s12 to i8*, !dbg !32
   %11 = bitcast %struct.s1* %coerce to i8*, !dbg !32
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 16, i32 8, i1 false), !dbg !32
-  call void @llvm.dbg.declare(metadata i8** %tainted2, metadata !33, metadata !18), !dbg !34
-  %tainted3 = getelementptr inbounds %struct.s1, %struct.s1* %s2, i32 0, i32 1, !dbg !35
-  %12 = load i8*, i8** %tainted3, align 8, !dbg !35
-  store i8* %12, i8** %tainted2, align 8, !dbg !34
-  ret i32 0, !dbg !36
+  call void @llvm.dbg.declare(metadata i32* %not_tainted, metadata !33, metadata !18), !dbg !34
+  %a = getelementptr inbounds %struct.s1, %struct.s1* %s12, i32 0, i32 0, !dbg !35
+  %12 = load i32, i32* %a, align 8, !dbg !35
+  store i32 %12, i32* %not_tainted, align 4, !dbg !34
+  call void @llvm.dbg.declare(metadata i8** %tainted2, metadata !36, metadata !18), !dbg !37
+  %tainted3 = getelementptr inbounds %struct.s1, %struct.s1* %s12, i32 0, i32 1, !dbg !38
+  %13 = load i8*, i8** %tainted3, align 8, !dbg !38
+  store i8* %13, i8** %tainted2, align 8, !dbg !37
+  ret i32 0, !dbg !39
 }
 
 declare i8* @getenv(i8*) #3
@@ -81,7 +86,7 @@ attributes #3 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !llvm.ident = !{!6}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "clang version 5.0.1 (tags/RELEASE_501/final 348479)", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !2)
-!1 = !DIFile(filename: "main.c", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/210-map-to-caller-variable-2")
+!1 = !DIFile(filename: "main.c", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/210-map-to-caller-struct-1")
 !2 = !{}
 !3 = !{i32 2, !"Dwarf Version", i32 4}
 !4 = !{i32 2, !"Debug Info Version", i32 3}
@@ -105,15 +110,18 @@ attributes #3 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !22 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 15, type: !23, isLocal: false, isDefinition: true, scopeLine: 16, isOptimized: false, unit: !0, variables: !2)
 !23 = !DISubroutineType(types: !24)
 !24 = !{!13}
-!25 = !DILocalVariable(name: "s", scope: !22, file: !1, line: 17, type: !10)
+!25 = !DILocalVariable(name: "s11", scope: !22, file: !1, line: 17, type: !10)
 !26 = !DILocation(line: 17, column: 15, scope: !22)
-!27 = !DILocation(line: 18, column: 17, scope: !22)
-!28 = !DILocation(line: 18, column: 7, scope: !22)
-!29 = !DILocation(line: 18, column: 15, scope: !22)
-!30 = !DILocalVariable(name: "s2", scope: !22, file: !1, line: 20, type: !10)
+!27 = !DILocation(line: 18, column: 19, scope: !22)
+!28 = !DILocation(line: 18, column: 9, scope: !22)
+!29 = !DILocation(line: 18, column: 17, scope: !22)
+!30 = !DILocalVariable(name: "s12", scope: !22, file: !1, line: 20, type: !10)
 !31 = !DILocation(line: 20, column: 15, scope: !22)
-!32 = !DILocation(line: 21, column: 10, scope: !22)
-!33 = !DILocalVariable(name: "tainted", scope: !22, file: !1, line: 22, type: !15)
-!34 = !DILocation(line: 22, column: 11, scope: !22)
-!35 = !DILocation(line: 22, column: 24, scope: !22)
-!36 = !DILocation(line: 24, column: 5, scope: !22)
+!32 = !DILocation(line: 21, column: 11, scope: !22)
+!33 = !DILocalVariable(name: "not_tainted", scope: !22, file: !1, line: 23, type: !13)
+!34 = !DILocation(line: 23, column: 9, scope: !22)
+!35 = !DILocation(line: 23, column: 27, scope: !22)
+!36 = !DILocalVariable(name: "tainted", scope: !22, file: !1, line: 24, type: !15)
+!37 = !DILocation(line: 24, column: 11, scope: !22)
+!38 = !DILocation(line: 24, column: 25, scope: !22)
+!39 = !DILocation(line: 26, column: 5, scope: !22)

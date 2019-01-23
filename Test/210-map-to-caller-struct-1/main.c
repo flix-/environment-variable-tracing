@@ -14,12 +14,14 @@ foo(struct s1 s)
 int
 main()
 {
-    struct s1 s;
-    s.tainted = getenv("gude");
+    struct s1 s11;
+    s11.tainted = getenv("gude");
 
-    struct s1 s2;
-    s2 = foo(s);
-    char *tainted = s2.tainted;
+    struct s1 s12;
+    s12 = foo(s11);
+
+    int not_tainted = s12.a;
+    char *tainted = s12.tainted;
 
     return 0;
 }

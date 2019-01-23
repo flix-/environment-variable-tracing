@@ -167,9 +167,7 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
     bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
     if (isSeqPoisoned) return memLocationSeq;
 
-    bool isArrayDecay = gepInst->getName().contains_lower("arraydecay");
-    if (!isArrayDecay) memLocationSeq.push_back(gepInst);
-
+    memLocationSeq.push_back(gepInst);
     return memLocationSeq;
   }
 
@@ -185,8 +183,15 @@ normalizeMemoryLocationSeq(std::vector<const llvm::Value*> memLocationSeq) {
 
   assert(!memLocationSeq.empty());
 
+  // Remove poison pill
   bool isSeqPoisoned = memLocationSeq.back() == POISON_PILL;
   if (isSeqPoisoned) memLocationSeq.pop_back();
+
+  if (memLocationSeq.empty()) return memLocationSeq;
+
+  // Remove array decay
+  bool isBackArrayDecay = memLocationSeq.back()->getName().contains_lower("arraydecay");
+  if (isBackArrayDecay) memLocationSeq.pop_back();
 
   return memLocationSeq;
 }
