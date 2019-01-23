@@ -40,15 +40,9 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
      * that only contains two members (i64, i8*). This means that also the
      * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
      * the GEP value and pop it from the memory location and proceed as usual.
-     *
-     * The same applies for arrays as they are passed by pointer to the first
-     * element (decaying). This implies that we always have GEP 0 which does not
-     * make sense to compare to stored facts.
      */
     bool isCoerce = formalParameter->getName().contains_lower("coerce");
-    bool isArrayDecay = actualArgument->getName().contains_lower("arraydecay");
-
-    if (isCoerce || isArrayDecay) {
+    if (isCoerce) {
       assert(argMemLocationSeq.size() > 1);
       argMemLocationSeq.pop_back();
     }

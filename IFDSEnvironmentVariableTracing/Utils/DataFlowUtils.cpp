@@ -34,22 +34,38 @@ isUnionBitCast(const llvm::BitCastInst* bitCastInst) {
 }
 
 static bool
+isConstantIntEqual(const llvm::ConstantInt* ci1,
+                   const llvm::ConstantInt* ci2) {
+
+  // Compare numerical value without type
+  //return ci1->getSExtValue() == ci2->getSExtValue();
+
+  // Compare with type
+  return ci1 == ci2;
+}
+
+static bool
 isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
                const llvm::GetElementPtrInst* memLocationInstGEP) {
+
+  bool haveAllConstantIndices = memLocationFactGEP->hasAllConstantIndices() &&
+                                memLocationInstGEP->hasAllConstantIndices();
+  if (!haveAllConstantIndices) return false;
 
   bool isNumIndicesEqual = memLocationFactGEP->getNumIndices() == memLocationInstGEP->getNumIndices();
 
   if (isNumIndicesEqual) {
     // Compare pointer type
-    const auto gepFactOperandType = memLocationFactGEP->getOperand(0)->getType();
-    const auto gepInstOperandType = memLocationInstGEP->getOperand(0)->getType();
-    if (gepFactOperandType != gepInstOperandType) return false;
+    const auto gepFactPtrType = memLocationFactGEP->getPointerOperandType();
+    const auto gepInstPtrType = memLocationInstGEP->getPointerOperandType();
+    if (gepFactPtrType != gepInstPtrType) return false;
 
-    // Compare Indices
+    // Compare indices
     for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
-      const auto *gepFactIndice = memLocationFactGEP->getOperand(i);
-      const auto *gepInstIndice = memLocationInstGEP->getOperand(i);
-      if (gepFactIndice != gepInstIndice) return false;
+      const auto *gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(i));
+      const auto *gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(i));
+
+      if (!isConstantIntEqual(gepFactIndex, gepInstIndex)) return false;
     }
   }
   else {
@@ -81,8 +97,10 @@ isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
       return false;
     }
 
-    return memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - 1) ==
-           memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - 1);
+    const auto *gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - 1));
+    const auto *gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - 1));
+
+    return isConstantIntEqual(gepFactIndex, gepInstIndex);
   }
 
   return true;
@@ -149,7 +167,9 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
     bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
     if (isSeqPoisoned) return memLocationSeq;
 
-    memLocationSeq.push_back(gepInst);
+    bool isArrayDecay = gepInst->getName().contains_lower("arraydecay");
+    if (!isArrayDecay) memLocationSeq.push_back(gepInst);
+
     return memLocationSeq;
   }
 
