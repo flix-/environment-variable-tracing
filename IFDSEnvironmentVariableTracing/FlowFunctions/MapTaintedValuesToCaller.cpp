@@ -20,12 +20,15 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   const auto returnValue = retInst->getReturnValue();
   if (!returnValue) return targetFacts;
 
-  bool isReturnValueTainted = DataFlowUtils::isValueTainted(fact, returnValue) ||
-                              DataFlowUtils::isMemoryLocationFrameEqual(fact, returnValue);
+  const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(returnValue, fact);
+
+  bool isReturnValueTainted = !srcMemLocationSeq.empty();
 
   if (isReturnValueTainted) {
     ExtendedValue evRetInst(fact);
     evRetInst.setCallee(callInst);
+    evRetInst.setRelocationSkipPartsCount(srcMemLocationSeq.size());
+
     targetFacts.insert(evRetInst);
 
     lineNumberStore.addLineNumber(callInst);

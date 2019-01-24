@@ -45,12 +45,14 @@ public:
 
   static const std::vector<const llvm::Value*> createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
                                                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,
-                                                                                std::size_t srcLength);
+                                                                                std::size_t relocationSkipPartsCount);
 
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
+
+  static bool isCalleePatch(const llvm::Value* storeInstSrcValue, ExtendedValue& fact);
 
   static bool isMemoryLocation(const ExtendedValue& ev);
   static void dumpMemoryLocation(const ExtendedValue& ev);

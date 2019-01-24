@@ -108,8 +108,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto dstMemLocationMatr = storeInst->getPointerOperand();
 
       bool isPossibleCallerPatch = llvm::isa<llvm::Argument>(srcValue);
-      bool isPossibleCalleePatch = llvm::isa<llvm::ExtractValueInst>(srcValue) ||
-                                   (llvm::isa<llvm::CallInst>(srcValue) && srcValue == fact.getCallee());
+      bool isCalleePatch = DataFlowUtils::isCalleePatch(srcValue, fact);
 
       bool isSrcValuePointer = srcValue->getType()->isPointerTy() && !llvm::isa<llvm::CallInst>(srcValue);
 
@@ -119,24 +118,28 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        * Patch memory location frame from caller to callee
        */
       if (isPossibleCallerPatch) {
-        bool patchMemLocationFrame = fact.getMemLocationFrame() == srcValue;
-        if (patchMemLocationFrame) {
-          ExtendedValue ev(fact);
-          const auto patchedMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
-          ev.setMemLocationFrame(patchedMemLocationFrame);
+        bool isMemoryLocationFrameEqual = fact.getMemLocationFrame() == srcValue;
+        if (isMemoryLocationFrameEqual) {
+          const auto dstMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
 
-          targetFacts.insert(ev);
+          bool patchMemLocationFrame = dstMemLocationFrame != nullptr;
+          if (patchMemLocationFrame) {
+            ExtendedValue ev(fact);
+            ev.setMemLocationFrame(dstMemLocationFrame);
 
-          llvm::outs() << "[TRACK] Patched memory location (store)" << "\n";
-          llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(fact);
-          llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(ev);
+            targetFacts.insert(ev);
+
+            llvm::outs() << "[TRACK] Patched memory location (arg)" << "\n";
+            llvm::outs() << "[TRACK] Source:" << "\n";
+            DataFlowUtils::dumpMemoryLocation(fact);
+            llvm::outs() << "[TRACK] Destination:" << "\n";
+            DataFlowUtils::dumpMemoryLocation(ev);
+          }
         }
         else {
           /*
            * This case is relevant for byvalue passing of parameters because there is no
-           * explicit alloca and the argument is used instead.
+           * explicit alloca and the argument is used as memory location frame instead.
            */
           targetFacts.insert(fact);
         }
@@ -145,31 +148,32 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        * Patch memory location frame from callee to caller
        */
       else
-      if (isPossibleCalleePatch) {
-        bool isMemLocationFromRet = fact.isReturnValue();
-        if (isMemLocationFromRet) {
-          const auto dstMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
+      if (isCalleePatch) {
+        auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-          bool patchMemLocationFrame = dstMemLocationFrame != nullptr;
-          if (patchMemLocationFrame) {
-            ExtendedValue ev(fact);
-            ev.setMemLocationFrame(dstMemLocationFrame);
-            ev.resetCallee();
-
-            targetFacts.insert(ev);
-
-            llvm::outs() << "[TRACK] Patched memory location frame (ret)" << "\n";
-            llvm::outs() << "[TRACK] Source:" << "\n";
-            DataFlowUtils::dumpMemoryLocation(fact);
-            llvm::outs() << "[TRACK] Destination:" << "\n";
-            DataFlowUtils::dumpMemoryLocation(ev);
+        bool patchMemLocationFrame = !dstMemLocationSeq.empty();
+        if (patchMemLocationFrame) {
+          bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcValue);
+          if (isExtractValue) {
+            assert(dstMemLocationSeq.size() > 1);
+            dstMemLocationSeq.pop_back();
           }
-          else {
-            targetFacts.insert(fact);
-          }
-        }
-        else {
-          targetFacts.insert(fact);
+
+          ExtendedValue ev(fact);
+          const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
+                                                                                               dstMemLocationSeq,
+                                                                                               fact.getRelocationSkipPartsCount());
+          ev.setMemLocationSeq(relocatedMemLocationSeq);
+          ev.resetCallee();
+          ev.resetRelocationSkipPartsCount();
+
+          targetFacts.insert(ev);
+
+          llvm::outs() << "[TRACK] Patched memory location frame (ret)" << "\n";
+          llvm::outs() << "[TRACK] Source:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(fact);
+          llvm::outs() << "[TRACK] Destination:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(ev);
         }
       }
       /*

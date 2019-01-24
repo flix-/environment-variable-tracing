@@ -303,7 +303,7 @@ DataFlowUtils::isValueTainted(const ExtendedValue& fact,
 const std::vector<const llvm::Value*>
 DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
                                                 const std::vector<const llvm::Value*> dstMemLocationSeq,
-                                                std::size_t srcLength) {
+                                                std::size_t relocationSkipPartsCount) {
   /*
    * relocatedDstMemLocationSeq := <prefix> <suffix>
    * prefix := dstMemLocationSeq
@@ -312,7 +312,7 @@ DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Va
 
   std::vector<const llvm::Value*> relocatedDstMemLocationSeq = dstMemLocationSeq;
 
-  for (std::size_t i = srcLength; i < taintedMemLocationSeq.size(); ++i) {
+  for (std::size_t i = relocationSkipPartsCount; i < taintedMemLocationSeq.size(); ++i) {
     relocatedDstMemLocationSeq.push_back(taintedMemLocationSeq[i]);
   }
 
@@ -432,6 +432,22 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
          !llvm::isa<llvm::MemTransferInst>(instruction) &&
          !llvm::isa<llvm::BranchInst>(instruction) &&
          !llvm::isa<llvm::SwitchInst>(instruction);
+}
+
+bool
+DataFlowUtils::isCalleePatch(const llvm::Value* storeInstSrcValue, ExtendedValue& fact) {
+
+  if (const auto extractValueInst = llvm::dyn_cast<llvm::ExtractValueInst>(storeInstSrcValue)) {
+    bool isCalleeEqual = extractValueInst->getAggregateOperand() == fact.getCallee();
+    if (isCalleeEqual) return true;
+  }
+  else
+  if (const auto callInst = llvm::dyn_cast<llvm::CallInst>(storeInstSrcValue)) {
+    bool isCalleeEqual = callInst == fact.getCallee();
+    if (isCalleeEqual) return true;
+  }
+
+  return false;
 }
 
 bool
