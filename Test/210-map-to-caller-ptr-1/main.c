@@ -1,27 +1,18 @@
-extern char* getenv(const char *name);
+extern char *getenv(const char *name);
 
-struct s1 {
-    char *t1;
-    char *nt1;
-};
-
-struct s1 *
-foo(struct s1 *s1)
+char *
+foo(char *s)
 {
-    s1->t1 = getenv("gude");
-
-    return s1;
+    return s;
 }
 
 int
 main()
 {
-    struct s1 *s1;
+    char *s = getenv("gude");
+    char *t = foo(s);
 
-    s1 = foo(s1);
-
-    char *t1 = s1->t1;
-    char *nt1 = s1->nt1;
+    char *t1 = t;
 
     return 0;
 }

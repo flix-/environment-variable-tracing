@@ -107,6 +107,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto srcValue = storeInst->getValueOperand();
       const auto dstMemLocationMatr = storeInst->getPointerOperand();
 
+      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+      auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+
       bool isPossibleCallerPatch = llvm::isa<llvm::Argument>(srcValue);
       bool isCalleePatch = DataFlowUtils::isCalleePatch(srcValue, fact);
 
@@ -118,12 +121,12 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        * Patch memory location frame from caller to callee
        */
       if (isPossibleCallerPatch) {
-        bool isMemoryLocationFrameEqual = fact.getMemLocationFrame() == srcValue;
+        bool isMemoryLocationFrameEqual = DataFlowUtils::getMemoryLocationFrameFromFact(fact) == srcValue;
         if (isMemoryLocationFrameEqual) {
           const auto dstMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
 
-          bool patchMemLocationFrame = dstMemLocationFrame != nullptr;
-          if (patchMemLocationFrame) {
+          bool genFact = dstMemLocationFrame != nullptr;
+          if (genFact) {
             ExtendedValue ev(fact);
             ev.setMemLocationFrame(dstMemLocationFrame);
 
@@ -145,27 +148,24 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         }
       }
       /*
-       * Patch memory location frame from callee to caller
+       * Patch memory location sequence from callee to caller
        */
       else
       if (isCalleePatch) {
-        auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-
-        bool patchMemLocationFrame = !dstMemLocationSeq.empty();
-        if (patchMemLocationFrame) {
+        bool genFact = !dstMemLocationSeq.empty();
+        if (genFact) {
           bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcValue);
           if (isExtractValue) {
             assert(dstMemLocationSeq.size() > 1);
             dstMemLocationSeq.pop_back();
           }
 
+          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
+                                                                                     factMemLocationSeq);
+
           ExtendedValue ev(fact);
-          const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
-                                                                                               dstMemLocationSeq,
-                                                                                               fact.getRelocationSkipPartsCount());
           ev.setMemLocationSeq(relocatedMemLocationSeq);
           ev.resetCallee();
-          ev.resetRelocationSkipPartsCount();
 
           targetFacts.insert(ev);
 
@@ -185,19 +185,18 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        */
       else
       if (isSrcValuePointer) {
-        const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcValue, fact);
-        const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
+        const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
 
-        bool genFact = !srcMemLocationSeq.empty();
-        bool killFact = !dstMemLocationSeq.empty() || !DataFlowUtils::isMemoryLocation(fact);
+        bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
+        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) || !DataFlowUtils::isMemoryLocation(fact);
 
         if (genFact) {
-          const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+          const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
+                                                                                                srcMemLocationSeq);
+          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
+                                                                                     relocatableMemLocationSeq);
 
           ExtendedValue ev(fact);
-          const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
-                                                                                               dstMemLocationSeq,
-                                                                                               srcMemLocationSeq.size());
           ev.setMemLocationSeq(relocatedMemLocationSeq);
 
           targetFacts.insert(ev);
@@ -516,24 +515,21 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
 
-      const auto srcMemLocationMatr = memTransferInst->getRawSource();
-      const auto dstMemLocationMatr = memTransferInst->getRawDest();
+      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+      const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawSource());
+      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
 
-      const auto srcMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(srcMemLocationMatr, fact);
-      const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
-
-      bool genFact = !srcMemLocationSeq.empty();
-      bool killFact = !dstMemLocationSeq.empty();
+      bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
+      bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
 
       std::set<ExtendedValue> targetFacts;
 
       if (genFact) {
-        const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-
+        const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
+                                                                                              srcMemLocationSeq);
+        const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
+                                                                                   relocatableMemLocationSeq);
         ExtendedValue ev(fact);
-        const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
-                                                                                             dstMemLocationSeq,
-                                                                                             srcMemLocationSeq.size());
         ev.setMemLocationSeq(relocatedMemLocationSeq);
 
         targetFacts.insert(ev);
@@ -568,9 +564,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       const auto dstMemLocationMatr = memSetInst->getRawDest();
 
-      const auto dstMemLocationSeq = DataFlowUtils::getSubsetMemoryLocationSeq(dstMemLocationMatr, fact);
+      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-      bool killFact = !dstMemLocationSeq.empty();
+      bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
       if (killFact) return { };
 
       return { fact };

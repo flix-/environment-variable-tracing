@@ -206,19 +206,16 @@ DataFlowUtils::getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr) 
   return memLocationSeq;
 }
 
-static std::vector<const llvm::Value*>
-getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact) {
+const std::vector<const llvm::Value*>
+DataFlowUtils::getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact) {
 
   return memLocationFact.getMemLocationSeq();
 }
 
-static const llvm::Value*
-getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
+const llvm::Value*
+DataFlowUtils::getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
 
-  const auto memLocationSeq = getMemoryLocationSeqFromFact(memLocationFact);
-  if (memLocationSeq.empty()) return nullptr;
-
-  return memLocationSeq.front();
+  return memLocationFact.getMemLocationFrame();
 }
 
 const llvm::Value*
@@ -279,20 +276,6 @@ DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> m
                                             n);
 }
 
-const std::vector<const llvm::Value*>
-DataFlowUtils::getSubsetMemoryLocationSeq(const llvm::Value* memLocationMatr,
-                                          const ExtendedValue& fact) {
-
-  const auto memLocationSeqInst = getMemoryLocationSeqFromMatr(memLocationMatr);
-  const auto memLocationSeqFact = getMemoryLocationSeqFromFact(fact);
-
-  bool isMemLocationSubsetOfTaintedMemLocation = isSubsetMemoryLocationSeq(memLocationSeqInst,
-                                                                           memLocationSeqFact);
-  if (!isMemLocationSubsetOfTaintedMemLocation) return EMPTY_SEQ;
-
-  return memLocationSeqInst;
-}
-
 bool
 DataFlowUtils::isValueTainted(const ExtendedValue& fact,
                               const llvm::Value* inst) {
@@ -301,22 +284,29 @@ DataFlowUtils::isValueTainted(const ExtendedValue& fact,
 }
 
 const std::vector<const llvm::Value*>
-DataFlowUtils::createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
-                                                const std::vector<const llvm::Value*> dstMemLocationSeq,
-                                                std::size_t relocationSkipPartsCount) {
-  /*
-   * relocatedDstMemLocationSeq := <prefix> <suffix>
-   * prefix := dstMemLocationSeq
-   * suffix := taintedMemLocationSeq - first srcLength parts
-   */
+DataFlowUtils::getRelocatableMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
+                                               const std::vector<const llvm::Value*> srcMemLocationSeq) {
 
-  std::vector<const llvm::Value*> relocatedDstMemLocationSeq = dstMemLocationSeq;
+  std::vector<const llvm::Value*> relocatableMemLocationSeq;
 
-  for (std::size_t i = relocationSkipPartsCount; i < taintedMemLocationSeq.size(); ++i) {
-    relocatedDstMemLocationSeq.push_back(taintedMemLocationSeq[i]);
+  for (std::size_t i = srcMemLocationSeq.size(); i < taintedMemLocationSeq.size(); ++i) {
+    relocatableMemLocationSeq.push_back(taintedMemLocationSeq[i]);
   }
 
-  return relocatedDstMemLocationSeq;
+  return relocatableMemLocationSeq;
+}
+
+const std::vector<const llvm::Value*>
+DataFlowUtils::joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memLocationSeq1,
+                                      const std::vector<const llvm::Value*> memLocationSeq2) {
+
+  std::vector<const llvm::Value*> joinedMemoryLocationSeq;
+  joinedMemoryLocationSeq.reserve(memLocationSeq1.size() + memLocationSeq2.size());
+
+  joinedMemoryLocationSeq.insert(joinedMemoryLocationSeq.end(), memLocationSeq1.begin(), memLocationSeq1.end());
+  joinedMemoryLocationSeq.insert(joinedMemoryLocationSeq.end(), memLocationSeq2.begin(), memLocationSeq2.end());
+
+  return joinedMemoryLocationSeq;
 }
 
 static std::string

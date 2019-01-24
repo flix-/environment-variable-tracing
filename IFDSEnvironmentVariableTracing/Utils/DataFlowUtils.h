@@ -27,25 +27,17 @@ public:
                                          const llvm::Value* memLocationMatr);
 
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr);
+  static const std::vector<const llvm::Value*> getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact);
 
   static const llvm::Value* getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr);
+  static const llvm::Value* getMemoryLocationFrameFromFact(const ExtendedValue& fact);
 
-  /**
-   * @brief                 Determine whether the memory location sequence of @p memLocationMatr
-   *                        is a subset of the memory location sequence of @p fact.
-   * @param memLocationMatr Memory location matryoshka.
-   * @param fact            Fact holding a memory locations sequence.
-   * @return                The memory location sequence belonging to @p memLocationMatr if @p memLocationMatr
-   *                        is a subset of @p fact and an empty vector otherwise.
-   */
-  static const std::vector<const llvm::Value*> getSubsetMemoryLocationSeq(const llvm::Value* memLocationMatr,
-                                                                          const ExtendedValue& fact);
   static bool isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
                                         const std::vector<const llvm::Value*> memLocationSeqFact);
-
-  static const std::vector<const llvm::Value*> createRelocatedMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
-                                                                                const std::vector<const llvm::Value*> dstMemLocationSeq,
-                                                                                std::size_t relocationSkipPartsCount);
+  static const std::vector<const llvm::Value*> getRelocatableMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
+                                                                               const std::vector<const llvm::Value*> srcMemLocationSeq);
+  static const std::vector<const llvm::Value*> joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memLocationSeq1,
+                                                                      const std::vector<const llvm::Value*> memLocationSeq2);
 
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);

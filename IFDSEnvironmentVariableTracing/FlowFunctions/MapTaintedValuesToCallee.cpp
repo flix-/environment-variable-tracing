@@ -21,8 +21,8 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     const auto actualArgument = callInst->getOperand(i);
     const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
-    auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
-    if (argMemLocationSeq.empty()) continue;
+    auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
+    const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
 
     /*
      * If the struct is coerced / decayed then the indexes are not matching up
@@ -43,22 +43,22 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
      */
     bool isCoerce = formalParameter->getName().contains_lower("coerce");
     if (isCoerce) {
-      assert(argMemLocationSeq.size() > 1);
-      argMemLocationSeq.pop_back();
+      assert(srcMemLocationSeq.size() > 1);
+      srcMemLocationSeq.pop_back();
     }
 
-    bool patchMemLocation = DataFlowUtils::isSubsetMemoryLocationSeq(argMemLocationSeq, fact.getMemLocationSeq());
-    if (patchMemLocation) {
+    bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
+    if (genFact) {
+      const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
+                                                                                            srcMemLocationSeq);
+      std::vector<const llvm::Value*> dstMemLocationSeq{formalParameter};
+      const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
+                                                                                 relocatableMemLocationSeq);
+
       ExtendedValue ev(fact);
-
-      std::vector<const llvm::Value*> dstMemLocationSeq;
-      dstMemLocationSeq.push_back(formalParameter);
-      const auto relocatedMemLocationSeq = DataFlowUtils::createRelocatedMemoryLocationSeq(fact.getMemLocationSeq(),
-                                                                                           dstMemLocationSeq,
-                                                                                           argMemLocationSeq.size());
       ev.setMemLocationSeq(relocatedMemLocationSeq);
-      targetFacts.insert(ev);
 
+      targetFacts.insert(ev);
       lineNumberStore.addLineNumber(callInst);
 
       llvm::outs() << "[TRACK] Relocated memory location (call)" << "\n";
