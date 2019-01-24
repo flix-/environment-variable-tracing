@@ -23,8 +23,8 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
   const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(returnValue);
 
-  bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-  if (genFact) {
+  bool genMemLocationFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
+  if (genMemLocationFact) {
     const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
                                                                                           srcMemLocationSeq);
 
@@ -33,7 +33,17 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
     ev.setCallee(callInst);
 
     targetFacts.insert(ev);
+  } else {
+    bool genCallFact = DataFlowUtils::isValueTainted(fact, returnValue);
+    if (genCallFact) {
+      ExtendedValue ev(callInst);
 
+      targetFacts.insert(ev);
+    }
+  }
+
+  bool addLineNumbers = !targetFacts.empty();
+  if (addLineNumbers) {
     lineNumberStore.addLineNumber(callInst);
     lineNumberStore.addLineNumber(retInst);
   }
