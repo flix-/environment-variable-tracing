@@ -110,62 +110,58 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
       auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-      bool isPossibleCallerPatch = llvm::isa<llvm::Argument>(srcValue);
-      bool isCalleePatch = DataFlowUtils::isCalleePatch(srcValue, fact);
+      bool isArgumentPatch = DataFlowUtils::isPatchableArgument(srcValue, fact);
+      bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
 
-      bool isSrcValuePointer = srcValue->getType()->isPointerTy() && !llvm::isa<llvm::CallInst>(srcValue);
+      bool isSrcValueTrivial = DataFlowUtils::isPrimitiveType(srcValue->getType()) || llvm::isa<llvm::CallInst>(srcValue);
 
       std::set<ExtendedValue> targetFacts;
 
       /*
-       * Patch memory location frame from caller to callee
+       * Patch argument
        */
-      if (isPossibleCallerPatch) {
-        bool isMemoryLocationFrameEqual = DataFlowUtils::getMemoryLocationFrameFromFact(fact) == srcValue;
-        if (isMemoryLocationFrameEqual) {
-          const auto dstMemLocationFrame = DataFlowUtils::getMemoryLocationFrameFromMatr(dstMemLocationMatr);
-
-          bool genFact = dstMemLocationFrame != nullptr;
-          if (genFact) {
-            ExtendedValue ev(fact);
-            ev.setMemLocationFrame(dstMemLocationFrame);
-
-            targetFacts.insert(ev);
-
-            llvm::outs() << "[TRACK] Patched memory location (arg)" << "\n";
-            llvm::outs() << "[TRACK] Source:" << "\n";
-            DataFlowUtils::dumpMemoryLocation(fact);
-            llvm::outs() << "[TRACK] Destination:" << "\n";
-            DataFlowUtils::dumpMemoryLocation(ev);
+      if (isArgumentPatch) {
+        bool patchMemLocation = !dstMemLocationSeq.empty();
+        if (patchMemLocation) {
+          bool isArgCoerced = srcValue->getName().contains_lower("coerce");
+          if (isArgCoerced) {
+            assert(dstMemLocationSeq.size() > 1);
+            dstMemLocationSeq.pop_back();
           }
-        }
-        else {
-          /*
-           * This case is relevant for byvalue passing of parameters because there is no
-           * explicit alloca and the argument is used as memory location frame instead.
-           */
-          targetFacts.insert(fact);
+
+          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
+                                                                                     dstMemLocationSeq);
+
+          ExtendedValue ev(fact);
+          ev.setMemLocationSeq(patchedMemLocationSeq);
+
+          targetFacts.insert(ev);
+
+          llvm::outs() << "[TRACK] Patched memory location (arg)" << "\n";
+          llvm::outs() << "[TRACK] Source:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(fact);
+          llvm::outs() << "[TRACK] Destination:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(ev);
         }
       }
       /*
-       * Patch memory location sequence from callee to caller
+       * Patch return value
        */
       else
-      if (isCalleePatch) {
-        bool genFact = !dstMemLocationSeq.empty();
-        if (genFact) {
+      if (isReturnValuePatch) {
+        bool patchMemLocation = !dstMemLocationSeq.empty();
+        if (patchMemLocation) {
           bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcValue);
           if (isExtractValue) {
             assert(dstMemLocationSeq.size() > 1);
             dstMemLocationSeq.pop_back();
           }
 
-          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
-                                                                                     factMemLocationSeq);
+          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
+                                                                                     dstMemLocationSeq);
 
           ExtendedValue ev(fact);
-          ev.setMemLocationSeq(relocatedMemLocationSeq);
-          ev.resetCallee();
+          ev.setMemLocationSeq(patchedMemLocationSeq);
 
           targetFacts.insert(ev);
 
@@ -177,14 +173,40 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         }
       }
       /*
+       * We haven't got a pointer so we are only overwriting a primitive value that cannot have
+       * other subparts we need to consider. As we are only storing a primtive value the destination
+       * can only be a primitive. So it is sufficient to check the destination for equality and not
+       * for subparts (see above). As above we get clear our facts set from all non memory location
+       * facts. Note that if we copy a struct llvm IR will contain a memcpy instruction so we don't
+       * need to consider this case here.
+       */
+      else
+      if (isSrcValueTrivial) {
+        bool isSrcMemLocationTainted = DataFlowUtils::isValueTainted(fact, srcValue);
+        bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact, dstMemLocationMatr);
+
+        bool genFact = isSrcMemLocationTainted;
+        bool killFact = isDstMemLocationTainted || !DataFlowUtils::isMemoryLocation(fact);
+
+        if (genFact) {
+          ExtendedValue ev(storeInst);
+          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+          ev.setMemLocationSeq(memoryLocationSeq);
+
+          targetFacts.insert(ev);
+
+          lineNumberStore.addLineNumber(storeInst);
+        }
+        if (!killFact) targetFacts.insert(fact);
+      }
+      /*
        * If we got a pointer value then we need to find all tainted memory locations for that
        * pointer and create a new relocated address that relatively works from the memory
        * location destination. If the value is a pointer so is the desination as the store
        * instruction is defined as <store, ty val, *ty dst> that means we need to remove all
        * facts that started at the destination.
        */
-      else
-      if (isSrcValuePointer) {
+      else {
         const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
 
         bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
@@ -207,32 +229,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           DataFlowUtils::dumpMemoryLocation(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
           DataFlowUtils::dumpMemoryLocation(ev);
-        }
-        if (!killFact) targetFacts.insert(fact);
-      }
-      /*
-       * We haven't got a pointer so we are only overwriting a primitive value that cannot have
-       * other subparts we need to consider. As we are only storing a primtive value the destination
-       * can only be a primitive. So it is sufficient to check the destination for equality and not
-       * for subparts (see above). As above we get clear our facts set from all non memory location
-       * facts. Note that if we copy a struct llvm IR will contain a memcpy instruction so we don't
-       * need to consider this case here.
-       */
-      else {
-        bool isSrcMemLocationTainted = DataFlowUtils::isValueTainted(fact, srcValue);
-        bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact, dstMemLocationMatr);
-
-        bool genFact = isSrcMemLocationTainted;
-        bool killFact = isDstMemLocationTainted || !DataFlowUtils::isMemoryLocation(fact);
-
-        if (genFact) {
-          ExtendedValue ev(storeInst);
-          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-          ev.setMemLocationSeq(memoryLocationSeq);
-
-          targetFacts.insert(ev);
-
-          lineNumberStore.addLineNumber(storeInst);
         }
         if (!killFact) targetFacts.insert(fact);
       }
@@ -568,7 +564,11 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
       bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
-      if (killFact) return { };
+      if (killFact) {
+        lineNumberStore.addLineNumber(memSetInst);
+
+        return { };
+      }
 
       return { fact };
     };

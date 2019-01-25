@@ -18,55 +18,75 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
   std::set<ExtendedValue> targetFacts;
 
   for (unsigned i = 0; i < callInst->getNumArgOperands(); ++i) {
+
     const auto actualArgument = callInst->getOperand(i);
     const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
-    auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
-    const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+    bool isArgCoerced = formalParameter->getName().contains_lower("coerce");
 
-    /*
-     * If the struct is coerced / decayed then the indexes are not matching up
-     * anymore. E.g. if we have the following struct:
-     *
-     * struct s1 {
-     *   int a;
-     *   int b;
-     *   char *t1;
-     * };
-     *
-     * If we taint t1 we will have Alloca_x -> GEP 2 as our memory location.
-     *
-     * Now if a and b are coerced from i32, i32 to i64 we will have a struct
-     * that only contains two members (i64, i8*). This means that also the
-     * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
-     * the GEP value and pop it from the memory location and proceed as usual.
-     */
-    bool isCoerce = formalParameter->getName().contains_lower("coerce");
-    if (isCoerce) {
-      assert(srcMemLocationSeq.size() > 1);
-      srcMemLocationSeq.pop_back();
+    bool isArgTrivial = DataFlowUtils::isPrimitiveType(actualArgument->getType()) && !isArgCoerced;
+
+    if (isArgTrivial) {
+      bool isArgTainted = DataFlowUtils::isValueTainted(fact, actualArgument);
+      if (isArgTainted) {
+        ExtendedValue ev(formalParameter);
+        ev.setMemLocationSeq(std::vector<const llvm::Value*>{formalParameter});
+
+        targetFacts.insert(ev);
+      }
     }
+    else {
+      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+      auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
 
-    bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-    if (genFact) {
-      const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
-                                                                                            srcMemLocationSeq);
-      std::vector<const llvm::Value*> dstMemLocationSeq{formalParameter};
-      const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
-                                                                                 relocatableMemLocationSeq);
+      /*
+       * If the struct is coerced then the indexes are not matching up anymore.
+       * E.g. if we have the following struct:
+       *
+       * struct s1 {
+       *   int a;
+       *   int b;
+       *   char *t1;
+       * };
+       *
+       * If we taint t1 we will have Alloca_x -> GEP 2 as our memory location.
+       *
+       * Now if a and b are coerced from i32, i32 to i64 we will have a struct
+       * that only contains two members (i64, i8*). This means that also the
+       * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
+       * the GEP value and pop it from the memory location and proceed as usual.
+       */
+      if (isArgCoerced) {
+        assert(argMemLocationSeq.size() > 1);
+        argMemLocationSeq.pop_back();
+      }
 
-      ExtendedValue ev(fact);
-      ev.setMemLocationSeq(relocatedMemLocationSeq);
+      bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(argMemLocationSeq,
+                                                              factMemLocationSeq);
+      if (genFact) {
+        const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
+                                                                                              argMemLocationSeq);
+        std::vector<const llvm::Value*> patchablePart{formalParameter};
+        const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
+                                                                                   relocatableMemLocationSeq);
 
-      targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(callInst);
+        ExtendedValue ev(fact);
+        ev.setMemLocationSeq(patchableMemLocationSeq);
 
-      llvm::outs() << "[TRACK] Relocated memory location (call)" << "\n";
-      llvm::outs() << "[TRACK] Source:" << "\n";
-      DataFlowUtils::dumpMemoryLocation(fact);
-      llvm::outs() << "[TRACK] Destination:" << "\n";
-      DataFlowUtils::dumpMemoryLocation(ev);
+        targetFacts.insert(ev);
+
+        llvm::outs() << "[TRACK] Relocated memory location (caller -> callee)" << "\n";
+        llvm::outs() << "[TRACK] Source:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(fact);
+        llvm::outs() << "[TRACK] Destination:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(ev);
+      }
     }
+  }
+
+  bool addLineNumber = !targetFacts.empty();
+  if (addLineNumber) {
+    lineNumberStore.addLineNumber(callInst);
   }
 
   return targetFacts;

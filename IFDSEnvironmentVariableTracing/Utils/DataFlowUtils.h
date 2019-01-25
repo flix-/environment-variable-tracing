@@ -23,8 +23,6 @@ public:
 
   static bool isMemoryLocationTainted(const ExtendedValue& fact,
                                       const llvm::Value* memLocationMatr);
-  static bool isMemoryLocationFrameEqual(const ExtendedValue& fact,
-                                         const llvm::Value* memLocationMatr);
 
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr);
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact);
@@ -39,16 +37,22 @@ public:
   static const std::vector<const llvm::Value*> joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memLocationSeq1,
                                                                       const std::vector<const llvm::Value*> memLocationSeq2);
 
+  static const std::vector<const llvm::Value*> patchMemoryLocationFrame(const std::vector<const llvm::Value*> patchableMemLocationSeq,
+                                                                        const std::vector<const llvm::Value*> patchMemLocationSeq);
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
 
-  static bool isCalleePatch(const llvm::Value* storeInstSrcValue, ExtendedValue& fact);
+  static bool isPatchableArgument(const llvm::Value* storeInstSrcValue,
+                                  ExtendedValue& fact);
+  static bool isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
+                                     ExtendedValue& fact);
 
   static bool isMemoryLocation(const ExtendedValue& ev);
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
+  static bool isPrimitiveType(const llvm::Type* type);
 
 };
 
