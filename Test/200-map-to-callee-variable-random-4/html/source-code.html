@@ -135,6 +135,7 @@ Got branch instruction<br>
 getNormalFlowFunction()<br>
   %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63<br>
 <br>
@@ -146,6 +147,7 @@ Got branch instruction<br>
 getNormalFlowFunction()<br>
   %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !66, !phasar.instruction.id !67<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %1 = load %struct.s2*, %struct.s2** %s22, align 8, !dbg !66, !phasar.instruction.id !68<br>
 <br>
@@ -153,6 +155,7 @@ Got load instruction<br>
 getNormalFlowFunction()<br>
   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %1, i32 0, i32 1, !dbg !69, !phasar.instruction.id !70<br>
 <br>
+Got GEP instruction<br>
 getSummaryFlowFunction()<br>
   call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72<br>
 <br>
@@ -199,6 +202,7 @@ getSummaryFlowFunction()<br>
 getNormalFlowFunction()<br>
   %a = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 0, !dbg !32, !phasar.instruction.id !33<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %0 = load i32*, i32** %a, align 8, !dbg !32, !phasar.instruction.id !34<br>
 <br>
@@ -220,6 +224,7 @@ getSummaryFlowFunction()<br>
 getNormalFlowFunction()<br>
   %b = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 1, !dbg !39, !phasar.instruction.id !40<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41<br>
 <br>
@@ -234,6 +239,7 @@ getSummaryFlowFunction()<br>
 getNormalFlowFunction()<br>
   %t11 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !46, !phasar.instruction.id !47<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %2 = load i8*, i8** %t11, align 8, !dbg !46, !phasar.instruction.id !48<br>
 <br>
@@ -366,9 +372,9 @@ A:	%struct.s3* %s3, ID: foo.0<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32* %1, i32** %t2, align 8, !dbg !37, !phasar.instruction.id !42, ID: 12 in function: foo<br>
-D:	%1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41, ID: 11<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41, ID: 11<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%t1 = alloca i32*, align 8, !phasar.instruction.id !22, ID: 1<br>
@@ -378,12 +384,12 @@ A:	%struct.s3* %s3, ID: foo.0<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32* %0, i32** %t1, align 8, !dbg !30, !phasar.instruction.id !35, ID: 8 in function: foo<br>
-D:	%0 = load i32*, i32** %a, align 8, !dbg !32, !phasar.instruction.id !34, ID: 7<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%struct.s3* %s3, ID: foo.0<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%0 = load i32*, i32** %a, align 8, !dbg !32, !phasar.instruction.id !34, ID: 7<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %retval = alloca i32, align 4, !phasar.instruction.id !14, ID: 18 in function: main<br>

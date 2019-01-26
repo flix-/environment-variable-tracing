@@ -17,10 +17,14 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
   std::set<ExtendedValue> targetFacts;
 
+  long varArgIndex = 0L;
+
   for (unsigned i = 0; i < callInst->getNumArgOperands(); ++i) {
 
     const auto actualArgument = callInst->getOperand(i);
     const auto formalParameter = getNthFunctionArgument(destMthd, i);
+
+    bool isVarArg = formalParameter == nullptr;
 
     auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
 
@@ -28,7 +32,6 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
     if (isArgMemLocation) {
       const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-
       /*
        * If the struct is coerced then the indexes are not matching up anymore.
        * E.g. if we have the following struct:
@@ -46,7 +49,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
        * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
        * the GEP value and pop it from the memory location and proceed as usual.
        */
-      bool isArgCoerced = formalParameter->getName().contains_lower("coerce");
+      bool isArgCoerced = !isVarArg && formalParameter->getName().contains_lower("coerce");
       if (isArgCoerced) {
         assert(argMemLocationSeq.size() > 1);
         argMemLocationSeq.pop_back();
@@ -57,12 +60,19 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       if (genFact) {
         const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
                                                                                               argMemLocationSeq);
-        std::vector<const llvm::Value*> patchablePart{formalParameter};
+        std::vector<const llvm::Value*> patchablePart;
+        if (isVarArg) {
+          patchablePart.push_back(zeroValue.getValue());
+        } else {
+          patchablePart.push_back(formalParameter);
+        }
+
         const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                    relocatableMemLocationSeq);
 
         ExtendedValue ev(fact);
         ev.setMemLocationSeq(patchableMemLocationSeq);
+        if (isVarArg) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
 
@@ -76,12 +86,22 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     else {
       bool isArgTainted = DataFlowUtils::isValueTainted(fact, actualArgument);
       if (isArgTainted) {
-        ExtendedValue ev(formalParameter);
-        ev.setMemLocationSeq(std::vector<const llvm::Value*>{formalParameter});
+        std::vector<const llvm::Value*> patchablePart;
+        if (isVarArg) {
+          patchablePart.push_back(zeroValue.getValue());
+        } else {
+          patchablePart.push_back(formalParameter);
+        }
+
+        ExtendedValue ev(fact);
+        ev.setMemLocationSeq(patchablePart);
+        if (isVarArg) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
       }
     }
+
+    if (isVarArg) ++varArgIndex;
   }
 
   bool addLineNumber = !targetFacts.empty();

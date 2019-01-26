@@ -43,9 +43,11 @@ getSummaryFlowFunction()
 getNormalFlowFunction()
   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !34, !phasar.instruction.id !35
 
+Got GEP instruction
 getNormalFlowFunction()
   %t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !36, !phasar.instruction.id !37
 
+Got GEP instruction
 getNormalFlowFunction()
   store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39
 
@@ -56,6 +58,7 @@ getSummaryFlowFunction()
 getNormalFlowFunction()
   %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !49, !phasar.instruction.id !50
 
+Got GEP instruction
 getNormalFlowFunction()
   store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !51, !phasar.instruction.id !52
 
@@ -75,6 +78,7 @@ Got store instruction
 getNormalFlowFunction()
   %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !53, !phasar.instruction.id !54
 
+Got GEP instruction
 getNormalFlowFunction()
   %0 = load %struct.s2*, %struct.s2** %s22, align 8, !dbg !53, !phasar.instruction.id !55
 
@@ -125,7 +129,7 @@ getNormalFlowFunction()
   store %struct.s2* %s2, %struct.s2** %s2.addr, align 8, !phasar.instruction.id !30
 
 Got store instruction
-[TRACK] Patched memory location (arg)
+[TRACK] Patched memory location (arg / store)
 [TRACK] Source:
 [TRACK]   store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39
 [TRACK] %struct.s2* %s2
@@ -149,9 +153,11 @@ Got load instruction
 getNormalFlowFunction()
   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %0, i32 0, i32 1, !dbg !40, !phasar.instruction.id !41
 
+Got GEP instruction
 getNormalFlowFunction()
   %t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !42, !phasar.instruction.id !43
 
+Got GEP instruction
 getNormalFlowFunction()
   %1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44
 
@@ -179,6 +185,7 @@ Got load instruction
 getNormalFlowFunction()
   %t11 = getelementptr inbounds %struct.s2, %struct.s2* %2, i32 0, i32 0, !dbg !51, !phasar.instruction.id !52
 
+Got GEP instruction
 getNormalFlowFunction()
   %3 = load i8*, i8** %t11, align 8, !dbg !51, !phasar.instruction.id !53
 
@@ -197,9 +204,11 @@ Got load instruction
 getNormalFlowFunction()
   %s32 = getelementptr inbounds %struct.s2, %struct.s2* %4, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
 
+Got GEP instruction
 getNormalFlowFunction()
   %a = getelementptr inbounds %struct.s3, %struct.s3* %s32, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
 
+Got GEP instruction
 getNormalFlowFunction()
   %5 = load i32*, i32** %a, align 8, !dbg !62, !phasar.instruction.id !64
 
@@ -218,9 +227,11 @@ Got load instruction
 getNormalFlowFunction()
   %s33 = getelementptr inbounds %struct.s2, %struct.s2* %6, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72
 
+Got GEP instruction
 getNormalFlowFunction()
   %b = getelementptr inbounds %struct.s3, %struct.s3* %s33, i32 0, i32 1, !dbg !73, !phasar.instruction.id !74
 
+Got GEP instruction
 getNormalFlowFunction()
   %7 = load i32*, i32** %b, align 8, !dbg !73, !phasar.instruction.id !75
 
@@ -387,9 +398,9 @@ A:	%t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg 
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %1, i8** %also_tainted, align 8, !dbg !36, !phasar.instruction.id !45, ID: 13 in function: foo
-D:	%1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44, ID: 12
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	%1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44, ID: 12
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39, ID: 40
 A:	%s2.addr = alloca %struct.s2*, align 8, !phasar.instruction.id !25, ID: 1

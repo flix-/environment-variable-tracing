@@ -298,8 +298,21 @@ DataFlowUtils::joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memL
 }
 
 bool
-DataFlowUtils::isPatchableArgument(const llvm::Value* storeInstSrcValue,
+DataFlowUtils::isPatchableArgument(const llvm::Value* srcValue,
                                    ExtendedValue& fact) {
+
+  bool isVarArgFact = fact.isVarArg();
+  if (isVarArgFact) {
+    bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
+    if (!isIndexEqual) return false;
+
+    if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(srcValue)) {
+      bool isSrcVarArg = loadInst->getPointerOperand()->getName().contains_lower("vaarg.addr");
+      if (isSrcVarArg) return true;
+    }
+
+    return false;
+  }
 
   const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
   if (factMemLocationFrame == nullptr) return false;
@@ -307,10 +320,29 @@ DataFlowUtils::isPatchableArgument(const llvm::Value* storeInstSrcValue,
   if (const auto patchableArgument = llvm::dyn_cast<llvm::Argument>(factMemLocationFrame)) {
     if (patchableArgument->hasByValAttr()) return false;
 
-    if (const auto srcValueArgument = llvm::dyn_cast<llvm::Argument>(storeInstSrcValue)) {
+    if (const auto srcValueArgument = llvm::dyn_cast<llvm::Argument>(srcValue)) {
       bool isLinkEqual = srcValueArgument == patchableArgument;
       if (isLinkEqual) return true;
     }
+  }
+
+  return false;
+}
+
+bool
+DataFlowUtils::isPatchableArgument(const std::vector<const llvm::Value*> srcMemLocationSeq,
+                                   ExtendedValue& fact) {
+
+  if (srcMemLocationSeq.empty()) return false;
+
+  bool isVarArgFact = fact.isVarArg();
+  if (isVarArgFact) {
+    bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
+    if (!isIndexEqual) return false;
+
+    const auto memLocationFrameType = getTypeName(srcMemLocationSeq.front()->getType());
+    bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
+    if (isMemLocationFrameTypeVaList) return true;
   }
 
   return false;
@@ -472,6 +504,7 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
 
 bool
 DataFlowUtils::isMemoryLocationFact(const ExtendedValue& ev) {
+
   return !ev.getMemLocationSeq().empty();
 }
 

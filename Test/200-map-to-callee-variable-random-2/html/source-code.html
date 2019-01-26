@@ -97,9 +97,11 @@ getSummaryFlowFunction()<br>
 getNormalFlowFunction()<br>
   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !34, !phasar.instruction.id !35<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !36, !phasar.instruction.id !37<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39<br>
 <br>
@@ -110,6 +112,7 @@ getSummaryFlowFunction()<br>
 getNormalFlowFunction()<br>
   %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !49, !phasar.instruction.id !50<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !51, !phasar.instruction.id !52<br>
 <br>
@@ -129,6 +132,7 @@ Got store instruction<br>
 getNormalFlowFunction()<br>
   %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !53, !phasar.instruction.id !54<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %0 = load %struct.s2*, %struct.s2** %s22, align 8, !dbg !53, !phasar.instruction.id !55<br>
 <br>
@@ -179,7 +183,7 @@ getNormalFlowFunction()<br>
   store %struct.s2* %s2, %struct.s2** %s2.addr, align 8, !phasar.instruction.id !30<br>
 <br>
 Got store instruction<br>
-[TRACK] Patched memory location (arg)<br>
+[TRACK] Patched memory location (arg / store)<br>
 [TRACK] Source:<br>
 [TRACK]   store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39<br>
 [TRACK] %struct.s2* %s2<br>
@@ -203,9 +207,11 @@ Got load instruction<br>
 getNormalFlowFunction()<br>
   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %0, i32 0, i32 1, !dbg !40, !phasar.instruction.id !41<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !42, !phasar.instruction.id !43<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44<br>
 <br>
@@ -233,6 +239,7 @@ Got load instruction<br>
 getNormalFlowFunction()<br>
   %t11 = getelementptr inbounds %struct.s2, %struct.s2* %2, i32 0, i32 0, !dbg !51, !phasar.instruction.id !52<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %3 = load i8*, i8** %t11, align 8, !dbg !51, !phasar.instruction.id !53<br>
 <br>
@@ -251,9 +258,11 @@ Got load instruction<br>
 getNormalFlowFunction()<br>
   %s32 = getelementptr inbounds %struct.s2, %struct.s2* %4, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %a = getelementptr inbounds %struct.s3, %struct.s3* %s32, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %5 = load i32*, i32** %a, align 8, !dbg !62, !phasar.instruction.id !64<br>
 <br>
@@ -272,9 +281,11 @@ Got load instruction<br>
 getNormalFlowFunction()<br>
   %s33 = getelementptr inbounds %struct.s2, %struct.s2* %6, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %b = getelementptr inbounds %struct.s3, %struct.s3* %s33, i32 0, i32 1, !dbg !73, !phasar.instruction.id !74<br>
 <br>
+Got GEP instruction<br>
 getNormalFlowFunction()<br>
   %7 = load i32*, i32** %b, align 8, !dbg !73, !phasar.instruction.id !75<br>
 <br>
@@ -441,9 +452,9 @@ A:	%t1 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg 
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i8* %1, i8** %also_tainted, align 8, !dbg !36, !phasar.instruction.id !45, ID: 13 in function: foo<br>
-D:	%1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44, ID: 12<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%1 = load i8*, i8** %t1, align 8, !dbg !42, !phasar.instruction.id !44, ID: 12<br>
 <br>
 D:	store i8* %call, i8** %t1, align 8, !dbg !38, !phasar.instruction.id !39, ID: 40<br>
 A:	%s2.addr = alloca %struct.s2*, align 8, !phasar.instruction.id !25, ID: 1<br>

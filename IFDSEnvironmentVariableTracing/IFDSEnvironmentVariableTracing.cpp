@@ -135,10 +135,12 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
           ExtendedValue ev(fact);
           ev.setMemLocationSeq(patchedMemLocationSeq);
+          ev.resetVarArgIndex();
 
           targetFacts.insert(ev);
+          lineNumberStore.addLineNumber(storeInst);
 
-          llvm::outs() << "[TRACK] Patched memory location (arg)" << "\n";
+          llvm::outs() << "[TRACK] Patched memory location (arg / store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
           DataFlowUtils::dumpMemoryLocation(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
@@ -165,6 +167,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           ev.setMemLocationSeq(patchedMemLocationSeq);
 
           targetFacts.insert(ev);
+          lineNumberStore.addLineNumber(storeInst);
 
           llvm::outs() << "[TRACK] Patched memory location frame (ret)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
@@ -216,7 +219,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           ev.setMemLocationSeq(dstMemLocationSeq);
 
           targetFacts.insert(ev);
-
           lineNumberStore.addLineNumber(storeInst);
         }
         if (!killFact) targetFacts.insert(fact);
@@ -226,6 +228,42 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
     };
 
     return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, lineNumberStore, zeroValue());
+  }
+  /*
+   * GetElementPtr instruction
+   */
+  else
+  if (llvm::isa<llvm::GetElementPtrInst>(currentInst)) {
+    llvm::outs() << "Got GEP instruction" << "\n";
+
+    ComputeTargetsExtFunction gepInstFlowFunction = [](const llvm::Instruction* currentInst,
+                                                       ExtendedValue& fact,
+                                                       LineNumberStore& lineNumberStore,
+                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+
+      const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
+
+      bool isVarArgFact = fact.isVarArg();
+      if (!isVarArgFact) return { fact };
+
+      bool genFact = gepInst->getName().contains_lower("overflow_arg_area.next");
+      bool killFact = gepInst->getPointerOperand()->getName().contains_lower("reg_save_area");
+
+      if (genFact) {
+        ExtendedValue ev(fact);
+        ev.incrementCurrentVarArgIndex();
+
+        return { ev };
+      }
+      else
+      if (killFact) {
+        return { };
+      }
+
+      return { fact };
+    };
+
+    return std::make_shared<FlowFunctionWrapper>(currentInst, gepInstFlowFunction, lineNumberStore, zeroValue());
   }
   /*
    * Phi node instruction
@@ -504,29 +542,53 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawSource());
       const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
 
-      bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-      bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
+      bool isArgumentPatch = DataFlowUtils::isPatchableArgument(srcMemLocationSeq, fact);
 
       std::set<ExtendedValue> targetFacts;
 
-      if (genFact) {
-        const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
-                                                                                              srcMemLocationSeq);
-        const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
-                                                                                   relocatableMemLocationSeq);
+      /*
+       * Patch argument
+       */
+      if (isArgumentPatch) {
+        const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
+                                                                                   dstMemLocationSeq);
+
         ExtendedValue ev(fact);
-        ev.setMemLocationSeq(relocatedMemLocationSeq);
+        ev.setMemLocationSeq(patchedMemLocationSeq);
+        ev.resetVarArgIndex();
 
         targetFacts.insert(ev);
         lineNumberStore.addLineNumber(memTransferInst);
 
-        llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
+        llvm::outs() << "[TRACK] Patched memory location (arg / memcpy)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
         DataFlowUtils::dumpMemoryLocation(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";
         DataFlowUtils::dumpMemoryLocation(ev);
       }
-      if (!killFact) targetFacts.insert(fact);
+      else {
+        bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
+        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
+
+        if (genFact) {
+          const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
+                                                                                                srcMemLocationSeq);
+          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
+                                                                                     relocatableMemLocationSeq);
+          ExtendedValue ev(fact);
+          ev.setMemLocationSeq(relocatedMemLocationSeq);
+
+          targetFacts.insert(ev);
+          lineNumberStore.addLineNumber(memTransferInst);
+
+          llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
+          llvm::outs() << "[TRACK] Source:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(fact);
+          llvm::outs() << "[TRACK] Destination:" << "\n";
+          DataFlowUtils::dumpMemoryLocation(ev);
+        }
+        if (!killFact) targetFacts.insert(fact);
+      }
 
       return targetFacts;
     };

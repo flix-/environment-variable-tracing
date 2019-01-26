@@ -34,7 +34,9 @@ public:
   static const std::vector<const llvm::Value*> joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memLocationSeq1,
                                                                       const std::vector<const llvm::Value*> memLocationSeq2);
 
-  static bool isPatchableArgument(const llvm::Value* storeInstSrcValue,
+  static bool isPatchableArgument(const llvm::Value* srcValue,
+                                  ExtendedValue& fact);
+  static bool isPatchableArgument(const std::vector<const llvm::Value*> srcMemLocationSeq,
                                   ExtendedValue& fact);
   static bool isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
                                      ExtendedValue& fact);
