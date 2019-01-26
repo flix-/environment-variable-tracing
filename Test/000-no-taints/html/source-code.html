@@ -24,5 +24,96 @@ main()
 }
 
 </pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+init - makeIFDSEnvironmentVariableTracing<br>
+initialSeeds()<br>
+getNormalFlowFunction()<br>
+  %retval = alloca i32, align 4, !phasar.instruction.id !11<br>
+<br>
+Got operands checking instruction (alloca)<br>
+getNormalFlowFunction()<br>
+  %a = alloca i32, align 4, !phasar.instruction.id !12<br>
+<br>
+Got operands checking instruction (alloca)<br>
+getNormalFlowFunction()<br>
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !13<br>
+<br>
+Got store instruction<br>
+getSummaryFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !14, metadata !15), !dbg !16, !phasar.instruction.id !17<br>
+<br>
+getSummaryFlowFunction()<br>
+  %call = call i32 (...) @foo(), !dbg !18, !phasar.instruction.id !19<br>
+<br>
+getNormalFlowFunction()<br>
+  store i32 %call, i32* %a, align 4, !dbg !16, !phasar.instruction.id !20<br>
+<br>
+Got store instruction<br>
+getNormalFlowFunction()<br>
+  %0 = load i32, i32* %a, align 4, !dbg !21, !phasar.instruction.id !22<br>
+<br>
+Got load instruction<br>
+getCallToRetFlowFunction()<br>
+getCallToRetFlowFunction()<br>
+getCallFlowFunction()<br>
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !14, metadata !15), !dbg !16, !phasar.instruction.id !17<br>
+<br>
+getCallFlowFunction()<br>
+  %call = call i32 (...) @foo(), !dbg !18, !phasar.instruction.id !19<br>
+<br>
+### DUMP LLVMIFDSSolver results<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %0 = load i32, i32* %a, align 4, !dbg !21, !phasar.instruction.id !22, ID: 6 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %retval = alloca i32, align 4, !phasar.instruction.id !11, ID: 0 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: call void @llvm.dbg.declare(metadata i32* %a, metadata !14, metadata !15), !dbg !16, !phasar.instruction.id !17, ID: 3 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: store i32 %call, i32* %a, align 4, !dbg !16, !phasar.instruction.id !20, ID: 5 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: store i32 0, i32* %retval, align 4, !phasar.instruction.id !13, ID: 2 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %call = call i32 (...) @foo(), !dbg !18, !phasar.instruction.id !19, ID: 4 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: %a = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: ret i32 %0, !dbg !23, !phasar.instruction.id !24, ID: 7 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+<br>
+No IFDS report available!<br>
+</div>
 </body>
 </html>

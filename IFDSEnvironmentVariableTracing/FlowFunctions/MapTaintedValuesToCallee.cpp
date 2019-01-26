@@ -22,22 +22,12 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     const auto actualArgument = callInst->getOperand(i);
     const auto formalParameter = getNthFunctionArgument(destMthd, i);
 
-    bool isArgCoerced = formalParameter->getName().contains_lower("coerce");
+    auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
 
-    bool isArgTrivial = DataFlowUtils::isPrimitiveType(actualArgument->getType()) && !isArgCoerced;
+    bool isArgMemLocation = !argMemLocationSeq.empty();
 
-    if (isArgTrivial) {
-      bool isArgTainted = DataFlowUtils::isValueTainted(fact, actualArgument);
-      if (isArgTainted) {
-        ExtendedValue ev(formalParameter);
-        ev.setMemLocationSeq(std::vector<const llvm::Value*>{formalParameter});
-
-        targetFacts.insert(ev);
-      }
-    }
-    else {
+    if (isArgMemLocation) {
       const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-      auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
 
       /*
        * If the struct is coerced then the indexes are not matching up anymore.
@@ -56,6 +46,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
        * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
        * the GEP value and pop it from the memory location and proceed as usual.
        */
+      bool isArgCoerced = formalParameter->getName().contains_lower("coerce");
       if (isArgCoerced) {
         assert(argMemLocationSeq.size() > 1);
         argMemLocationSeq.pop_back();
@@ -80,6 +71,15 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
         DataFlowUtils::dumpMemoryLocation(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";
         DataFlowUtils::dumpMemoryLocation(ev);
+      }
+    }
+    else {
+      bool isArgTainted = DataFlowUtils::isValueTainted(fact, actualArgument);
+      if (isArgTainted) {
+        ExtendedValue ev(formalParameter);
+        ev.setMemLocationSeq(std::vector<const llvm::Value*>{formalParameter});
+
+        targetFacts.insert(ev);
       }
     }
   }

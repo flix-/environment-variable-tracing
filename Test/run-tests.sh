@@ -9,7 +9,7 @@ HTML_DIR='/home/sebastian/.qt-creator-workspace/Phasar/Test/.google-code-prettif
 LINES_FILE='line-numbers.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'
-HTML_INCLUDE_PHASAR_OUTPUT=0
+HTML_INCLUDE_PHASAR_OUTPUT=1
 
 OUT_HTML="html/source-code.html"
 OUT_CSS="html/css/mark-lines.css"

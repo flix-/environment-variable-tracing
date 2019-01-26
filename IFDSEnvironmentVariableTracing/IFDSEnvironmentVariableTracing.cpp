@@ -108,12 +108,13 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto dstMemLocationMatr = storeInst->getPointerOperand();
 
       const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+      const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
       auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
       bool isArgumentPatch = DataFlowUtils::isPatchableArgument(srcValue, fact);
       bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
 
-      bool isSrcValueTrivial = DataFlowUtils::isPrimitiveType(srcValue->getType()) || llvm::isa<llvm::CallInst>(srcValue);
+      bool isSrcMemLocation = !srcMemLocationSeq.empty();
 
       std::set<ExtendedValue> targetFacts;
 
@@ -173,44 +174,17 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         }
       }
       /*
-       * We haven't got a pointer so we are only overwriting a primitive value that cannot have
-       * other subparts we need to consider. As we are only storing a primtive value the destination
-       * can only be a primitive. So it is sufficient to check the destination for equality and not
-       * for subparts (see above). As above we get clear our facts set from all non memory location
-       * facts. Note that if we copy a struct llvm IR will contain a memcpy instruction so we don't
-       * need to consider this case here.
+       * If we got a memory location then we need to find all tainted memory locations for
+       * it and create a new relocated address that relatively works from the memory location
+       * destination. If the value is a pointer so is the desination as the store instruction
+       * is defined as <store, ty val, *ty dst> that means we need to remove all facts that
+       * started at the destination.
        */
       else
-      if (isSrcValueTrivial) {
-        bool isSrcMemLocationTainted = DataFlowUtils::isValueTainted(fact, srcValue);
-        bool isDstMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact, dstMemLocationMatr);
-
-        bool genFact = isSrcMemLocationTainted;
-        bool killFact = isDstMemLocationTainted || !DataFlowUtils::isMemoryLocation(fact);
-
-        if (genFact) {
-          ExtendedValue ev(storeInst);
-          const auto memoryLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-          ev.setMemLocationSeq(memoryLocationSeq);
-
-          targetFacts.insert(ev);
-
-          lineNumberStore.addLineNumber(storeInst);
-        }
-        if (!killFact) targetFacts.insert(fact);
-      }
-      /*
-       * If we got a pointer value then we need to find all tainted memory locations for that
-       * pointer and create a new relocated address that relatively works from the memory
-       * location destination. If the value is a pointer so is the desination as the store
-       * instruction is defined as <store, ty val, *ty dst> that means we need to remove all
-       * facts that started at the destination.
-       */
-      else {
-        const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
-
+      if (isSrcMemLocation) {
         bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) || !DataFlowUtils::isMemoryLocation(fact);
+        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
+                       !DataFlowUtils::isMemoryLocationFact(fact);
 
         if (genFact) {
           const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
@@ -229,6 +203,21 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           DataFlowUtils::dumpMemoryLocation(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
           DataFlowUtils::dumpMemoryLocation(ev);
+        }
+        if (!killFact) targetFacts.insert(fact);
+      }
+      else {
+        bool genFact = DataFlowUtils::isValueTainted(fact, srcValue);
+        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
+                       !DataFlowUtils::isMemoryLocationFact(fact);
+
+        if (genFact) {
+          ExtendedValue ev(storeInst);
+          ev.setMemLocationSeq(dstMemLocationSeq);
+
+          targetFacts.insert(ev);
+
+          lineNumberStore.addLineNumber(storeInst);
         }
         if (!killFact) targetFacts.insert(fact);
       }

@@ -17,28 +17,21 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
   std::set<ExtendedValue> targetFacts;
 
-  const auto returnValue = retInst->getReturnValue();
-  if (!returnValue) return targetFacts;
+  const auto retVal = retInst->getReturnValue();
+  if (!retVal) return targetFacts;
 
-  bool isReturnValueTrivial = DataFlowUtils::isPrimitiveType(returnValue->getType());
+  const auto retValMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(retVal);
 
-  if (isReturnValueTrivial) {
-    bool isReturnValueTainted = DataFlowUtils::isValueTainted(fact, returnValue);
-    if (isReturnValueTainted) {
-      ExtendedValue ev(callInst);
+  bool isRetValMemLocation = !retValMemLocationSeq.empty();
 
-      targetFacts.insert(ev);
-    }
-  }
-  else {
+  if (isRetValMemLocation) {
     const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-    const auto returnValueMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(returnValue);
 
-    bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(returnValueMemLocationSeq,
+    bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(retValMemLocationSeq,
                                                             factMemLocationSeq);
     if (genFact) {
       const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
-                                                                                            returnValueMemLocationSeq);
+                                                                                            retValMemLocationSeq);
       std::vector<const llvm::Value*> patchablePart{callInst};
       const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                  relocatableMemLocationSeq);
@@ -53,6 +46,14 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
       DataFlowUtils::dumpMemoryLocation(fact);
       llvm::outs() << "[TRACK] Destination:" << "\n";
       DataFlowUtils::dumpMemoryLocation(ev);
+    }
+  }
+  else {
+    bool isRetValTainted = DataFlowUtils::isValueTainted(fact, retVal);
+    if (isRetValTainted) {
+      ExtendedValue ev(callInst);
+
+      targetFacts.insert(ev);
     }
   }
 

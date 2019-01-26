@@ -213,19 +213,19 @@ DataFlowUtils::getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact
   return memLocationFact.getMemLocationSeq();
 }
 
-const llvm::Value*
-DataFlowUtils::getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
+static const llvm::Value*
+getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
 
-  const auto memLocationSeq = getMemoryLocationSeqFromFact(memLocationFact);
+  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(memLocationFact);
   if (memLocationSeq.empty()) return nullptr;
 
   return memLocationSeq.front();
 }
 
-const llvm::Value*
-DataFlowUtils::getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
+static const llvm::Value*
+getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
 
-  const auto memLocationSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
+  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationSeq.empty()) return nullptr;
 
   return memLocationSeq.front();
@@ -250,21 +250,12 @@ DataFlowUtils::isMemoryLocationTainted(const ExtendedValue& fact,
   return true;
 }
 
-//bool
-//DataFlowUtils::isMemoryLocationFrameEqual(const ExtendedValue& fact,
-//                                          const llvm::Value* memLocationMatr) {
+bool
+DataFlowUtils::isValueTainted(const ExtendedValue& fact,
+                              const llvm::Value* inst) {
 
-//  const auto memLocationFrameFact = getMemoryLocationFrameFromFact(fact);
-//  const auto memLocationFrameInst = getMemoryLocationFrameFromMatr(memLocationMatr);
-
-//  bool haveMemLocationFrame = memLocationFrameFact && memLocationFrameFact;
-//  if (!haveMemLocationFrame) return false;
-
-//  bool isSameMemLocationFrame = memLocationFrameFact == memLocationFrameInst;
-//  if (!isSameMemLocationFrame) return false;
-
-//  return true;
-//}
+  return fact.getValue() == inst;
+}
 
 bool
 DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
@@ -278,13 +269,6 @@ DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> m
     return isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
                                             memLocationSeqFact,
                                             n);
-}
-
-bool
-DataFlowUtils::isValueTainted(const ExtendedValue& fact,
-                              const llvm::Value* inst) {
-
-  return fact.getValue() == inst;
 }
 
 const std::vector<const llvm::Value*>
@@ -311,6 +295,48 @@ DataFlowUtils::joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memL
   joinedMemLocationSeq.insert(joinedMemLocationSeq.end(), memLocationSeq2.begin(), memLocationSeq2.end());
 
   return joinedMemLocationSeq;
+}
+
+bool
+DataFlowUtils::isPatchableArgument(const llvm::Value* storeInstSrcValue,
+                                   ExtendedValue& fact) {
+
+  const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
+  if (factMemLocationFrame == nullptr) return false;
+
+  if (const auto patchableArgument = llvm::dyn_cast<llvm::Argument>(factMemLocationFrame)) {
+    if (patchableArgument->hasByValAttr()) return false;
+
+    if (const auto srcValueArgument = llvm::dyn_cast<llvm::Argument>(storeInstSrcValue)) {
+      bool isLinkEqual = srcValueArgument == patchableArgument;
+      if (isLinkEqual) return true;
+    }
+  }
+
+  return false;
+}
+
+bool
+DataFlowUtils::isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
+                                      ExtendedValue& fact) {
+
+  const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
+  if (factMemLocationFrame == nullptr) return false;
+
+  if (const auto patchableCallInst = llvm::dyn_cast<llvm::CallInst>(factMemLocationFrame)) {
+
+    if (const auto srcValueExtractValueInst = llvm::dyn_cast<llvm::ExtractValueInst>(storeInstSrcValue)) {
+      bool isLinkEqual = srcValueExtractValueInst->getAggregateOperand() == patchableCallInst;
+      if (isLinkEqual) return true;
+    }
+    else
+    if (const auto srcValueCallInst = llvm::dyn_cast<llvm::CallInst>(storeInstSrcValue)) {
+      bool isLinkEqual = srcValueCallInst == patchableCallInst;
+      if (isLinkEqual) return true;
+    }
+  }
+
+  return false;
 }
 
 const std::vector<const llvm::Value*>
@@ -445,49 +471,7 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* instruction) {
 }
 
 bool
-DataFlowUtils::isPatchableArgument(const llvm::Value* storeInstSrcValue,
-                                   ExtendedValue& fact) {
-
-  const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
-  if (factMemLocationFrame == nullptr) return false;
-
-  if (const auto patchableArgument = llvm::dyn_cast<llvm::Argument>(factMemLocationFrame)) {
-    if (patchableArgument->hasByValAttr()) return false;
-
-    if (const auto srcValueArgument = llvm::dyn_cast<llvm::Argument>(storeInstSrcValue)) {
-      bool isLinkEqual = srcValueArgument == patchableArgument;
-      if (isLinkEqual) return true;
-    }
-  }
-
-  return false;
-}
-
-bool
-DataFlowUtils::isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
-                                      ExtendedValue& fact) {
-
-  const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
-  if (factMemLocationFrame == nullptr) return false;
-
-  if (const auto patchableCallInst = llvm::dyn_cast<llvm::CallInst>(factMemLocationFrame)) {
-
-    if (const auto srcValueExtractValueInst = llvm::dyn_cast<llvm::ExtractValueInst>(storeInstSrcValue)) {
-      bool isLinkEqual = srcValueExtractValueInst->getAggregateOperand() == patchableCallInst;
-      if (isLinkEqual) return true;
-    }
-    else
-    if (const auto srcValueCallInst = llvm::dyn_cast<llvm::CallInst>(storeInstSrcValue)) {
-      bool isLinkEqual = srcValueCallInst == patchableCallInst;
-      if (isLinkEqual) return true;
-    }
-  }
-
-  return false;
-}
-
-bool
-DataFlowUtils::isMemoryLocation(const ExtendedValue& ev) {
+DataFlowUtils::isMemoryLocationFact(const ExtendedValue& ev) {
   return !ev.getMemLocationSeq().empty();
 }
 
@@ -496,7 +480,7 @@ DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
 
   const auto value = ev.getValue();
 
-  bool isMemLocation = isMemoryLocation(ev);
+  bool isMemLocation = isMemoryLocationFact(ev);
   if (isMemLocation) {
     llvm::outs() << "[TRACK] "; value->print(llvm::outs()); llvm::outs() << "\n";
     for (const auto memLocationPart : ev.getMemLocationSeq()) {
@@ -513,14 +497,4 @@ DataFlowUtils::getTypeName(const llvm::Type* type) {
   type->print(typeRawOutputStream);
 
   return typeRawOutputStream.str();
-}
-
-bool
-DataFlowUtils::isPrimitiveType(const llvm::Type* type) {
-  return !type->isArrayTy() &&
-         !type->isStructTy() &&
-         !type->isVectorTy() &&
-         !type->isPointerTy() &&
-         !type->isAggregateType() &&
-         !type->isPtrOrPtrVectorTy();
 }
