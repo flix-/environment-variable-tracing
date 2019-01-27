@@ -58,13 +58,11 @@ getSummaryFlowFunction()
 getCallFlowFunction()
   call void @foo(i8* %0), !dbg !35, !phasar.instruction.id !36
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13
 [TRACK]   %tainted = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !28, !phasar.instruction.id !29
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK] i8* %tainted_foo
 getNormalFlowFunction()
   %tainted_foo.addr = alloca i8*, align 8, !phasar.instruction.id !13
@@ -78,12 +76,10 @@ getNormalFlowFunction()
   store i8* %tainted_foo, i8** %tainted_foo.addr, align 8, !phasar.instruction.id !15
 
 Got store instruction
-[TRACK] Patched memory location (arg / store)
+[TRACK] Patched memory location (arg/store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK] i8* %tainted_foo
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK]   %tainted_foo.addr = alloca i8*, align 8, !phasar.instruction.id !13
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %tainted_foo.addr, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
@@ -101,10 +97,8 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK]   %tainted_foo.addr = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK]   %also_tainted_foo = alloca i8*, align 8, !phasar.instruction.id !14
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
@@ -130,13 +124,11 @@ getCallFlowFunction()
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !35, metadata !17), !dbg !41, !phasar.instruction.id !42
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13
 [TRACK]   %tainted = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !28, !phasar.instruction.id !29
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31
 [TRACK] i8* %tainted_foo
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %tainted_foo.addr, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19

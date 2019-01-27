@@ -57,10 +57,8 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !14
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !15
 getNormalFlowFunction()
   %1 = load i8*, i8** %t1, align 8, !dbg !32, !phasar.instruction.id !33
@@ -76,13 +74,13 @@ getSummaryFlowFunction()
 getCallFlowFunction()
   call void (i32, ...) @foo(i32 1, i8* %1, i8* %2, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.1, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !15
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 1
+[TRACK] Current VarArg Index: -1
 getNormalFlowFunction()
   %n.addr = alloca i32, align 4, !phasar.instruction.id !13
 
@@ -291,12 +289,12 @@ getNormalFlowFunction()
   store i8* %11, i8** %t2, align 8, !dbg !112, !phasar.instruction.id !113
 
 Got store instruction
-[TRACK] Patched memory location (arg / store)
+[TRACK] Patched memory location (arg/store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 1
+[TRACK] Current VarArg Index: 1
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
 [TRACK]   %s215 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !108, !phasar.instruction.id !109
 [TRACK]   %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s215, i32 0, i32 1, !dbg !110, !phasar.instruction.id !111
@@ -408,12 +406,10 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
 [TRACK]   %s215 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !108, !phasar.instruction.id !109
 [TRACK]   %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s215, i32 0, i32 1, !dbg !110, !phasar.instruction.id !111
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %ut132 = alloca i8*, align 8, !phasar.instruction.id !17
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %ut2, metadata !159, metadata !21), !dbg !160, !phasar.instruction.id !161
@@ -495,13 +491,13 @@ getSummaryFlowFunction()
 getSummaryFlowFunction()
   call void (i32, ...) @foo(i32 1, i8* %1, i8* %2, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.1, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !14
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 0
+[TRACK] Current VarArg Index: -1
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !20, metadata !21), !dbg !22, !phasar.instruction.id !23
 
@@ -514,12 +510,12 @@ getSummaryFlowFunction()
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !45, metadata !21), !dbg !58, !phasar.instruction.id !59
 
-[TRACK] Patched memory location (arg / store)
+[TRACK] Patched memory location (arg/store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 0
+[TRACK] Current VarArg Index: 0
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
 [TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !81, !phasar.instruction.id !82
 [TRACK]   %t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !83, !phasar.instruction.id !84
@@ -544,12 +540,10 @@ getSummaryFlowFunction()
 
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
 [TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !81, !phasar.instruction.id !82
 [TRACK]   %t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !83, !phasar.instruction.id !84
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t129 = alloca i8*, align 8, !phasar.instruction.id !16
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %ut132, metadata !150, metadata !21), !dbg !151, !phasar.instruction.id !152
@@ -621,13 +615,13 @@ getSummaryFlowFunction()
   call void @llvm.va_end(i8* %arraydecay3738), !dbg !168, !phasar.instruction.id !171
 
 getCallToRetFlowFunction()
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !15
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 1
+[TRACK] Current VarArg Index: -1
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !20, metadata !21), !dbg !22, !phasar.instruction.id !23
 
@@ -652,13 +646,13 @@ getCallFlowFunction()
 getCallFlowFunction()
   call void @llvm.va_end(i8* %arraydecay3738), !dbg !168, !phasar.instruction.id !171
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !14
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25
 [TRACK] @zero_value = constant i2 0, align 4
+[TRACK] VarArg Index: 0
+[TRACK] Current VarArg Index: -1
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %t1, metadata !181, metadata !21), !dbg !182, !phasar.instruction.id !183
 
@@ -671,9 +665,13 @@ getCallFlowFunction()
 N: %n.addr = alloca i32, align 4, !phasar.instruction.id !13, ID: 2 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -695,9 +693,13 @@ D:	%1 = load i8*, i8** %t1, align 8, !dbg !32, !phasar.instruction.id !33, ID: 1
 N: %t129 = alloca i8*, align 8, !phasar.instruction.id !16, ID: 5 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -705,9 +707,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !14, ID: 3 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -715,9 +721,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -727,9 +737,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: store i32 %3, i32* %gp_offset_p, align 16, !dbg !60, !phasar.instruction.id !71, ID: 25 in function: foo
@@ -739,9 +753,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %1 = getelementptr i8, i8* %reg_save_area, i32 %gp_offset, !dbg !60, !phasar.instruction.id !68, ID: 22 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -749,9 +767,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !20, metadata !21), !dbg !22, !phasar.instruction.id !23, ID: 9 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -761,17 +783,25 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: store i32 %n, i32* %n.addr, align 4, !phasar.instruction.id !19, ID: 8 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -783,9 +813,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %ut2 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 7 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -793,19 +827,27 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %ut132 = alloca i8*, align 8, !phasar.instruction.id !17, ID: 6 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !24, metadata !21), !dbg !39, !phasar.instruction.id !40, ID: 10 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -813,9 +855,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !41, !phasar.instruction.id !42, ID: 11 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -825,9 +871,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: %t1 = alloca i8*, align 8, !phasar.instruction.id !14, ID: 104 in function: main
@@ -837,9 +887,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !45, metadata !21), !dbg !58, !phasar.instruction.id !59, ID: 14 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -847,9 +901,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !60, !phasar.instruction.id !61, ID: 15 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -857,9 +915,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !60, !phasar.instruction.id !62, ID: 16 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -867,19 +929,27 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %gp_offset = load i32, i32* %gp_offset_p, align 16, !dbg !60, !phasar.instruction.id !63, ID: 17 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: %fits_in_gp = icmp ule i32 %gp_offset, 40, !dbg !60, !phasar.instruction.id !64, ID: 18 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -887,9 +957,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %reg_save_area = load i8*, i8** %0, align 16, !dbg !60, !phasar.instruction.id !67, ID: 21 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -897,19 +971,27 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %overflow_arg_area = load i8*, i8** %overflow_arg_area_p, align 8, !dbg !60, !phasar.instruction.id !74, ID: 28 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !60, !phasar.instruction.id !65, ID: 19 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -917,9 +999,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %0 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 3, !dbg !60, !phasar.instruction.id !66, ID: 20 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -935,11 +1021,15 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %5 = load i8*, i8** %vaarg.addr, align 8, !dbg !60, !phasar.instruction.id !80, ID: 34 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 --- IFDS START RESULT RECORD ---
 N: br label %vaarg.end, !dbg !60, !phasar.instruction.id !72, ID: 26 in function: foo
@@ -949,9 +1039,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %overflow_arg_area_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 2, !dbg !60, !phasar.instruction.id !73, ID: 27 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -961,27 +1055,39 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	-1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	-1
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !60, !phasar.instruction.id !77, ID: 31 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 --- IFDS START RESULT RECORD ---
 N: br label %vaarg.end, !dbg !60, !phasar.instruction.id !78, ID: 32 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -989,9 +1095,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %vaarg.addr = phi i8** [ %2, %vaarg.in_reg ], [ %4, %vaarg.in_mem ], !dbg !60, !phasar.instruction.id !79, ID: 33 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -999,9 +1109,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !81, !phasar.instruction.id !82, ID: 35 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1009,19 +1123,27 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !83, !phasar.instruction.id !84, ID: 36 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %5, i8** %t1, align 8, !dbg !85, !phasar.instruction.id !86, ID: 37 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	0
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1029,6 +1151,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %arraydecay3 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !87, !phasar.instruction.id !88, ID: 38 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1041,6 +1165,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %gp_offset_p4 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay3, i32 0, i32 0, !dbg !87, !phasar.instruction.id !89, ID: 39 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1053,6 +1179,8 @@ A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg 
 N: %gp_offset5 = load i32, i32* %gp_offset_p4, align 16, !dbg !87, !phasar.instruction.id !90, ID: 40 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1065,6 +1193,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %fits_in_gp6 = icmp ule i32 %gp_offset5, 40, !dbg !87, !phasar.instruction.id !91, ID: 41 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1084,11 +1214,15 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 --- IFDS START RESULT RECORD ---
 N: %overflow_arg_area11 = load i8*, i8** %overflow_arg_area_p10, align 8, !dbg !87, !phasar.instruction.id !101, ID: 51 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1101,6 +1235,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: br i1 %fits_in_gp6, label %vaarg.in_reg7, label %vaarg.in_mem9, !dbg !87, !phasar.instruction.id !92, ID: 42 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1115,6 +1251,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1125,6 +1263,8 @@ A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg 
 N: %7 = getelementptr i8, i8* %reg_save_area8, i32 %gp_offset5, !dbg !87, !phasar.instruction.id !95, ID: 45 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1171,6 +1311,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 --- IFDS START RESULT RECORD ---
 N: br label %vaarg.end13, !dbg !87, !phasar.instruction.id !99, ID: 49 in function: foo
@@ -1185,6 +1327,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %overflow_arg_area_p10 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay3, i32 0, i32 2, !dbg !87, !phasar.instruction.id !100, ID: 50 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1197,6 +1341,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %10 = bitcast i8* %overflow_arg_area11 to i8**, !dbg !87, !phasar.instruction.id !102, ID: 52 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1209,6 +1355,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %overflow_arg_area.next12 = getelementptr i8, i8* %overflow_arg_area11, i32 8, !dbg !87, !phasar.instruction.id !103, ID: 53 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	0
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1221,6 +1369,8 @@ A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg 
 N: store i8* %overflow_arg_area.next12, i8** %overflow_arg_area_p10, align 8, !dbg !87, !phasar.instruction.id !104, ID: 54 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1233,6 +1383,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: br label %vaarg.end13, !dbg !87, !phasar.instruction.id !105, ID: 55 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1245,6 +1397,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %vaarg.addr14 = phi i8** [ %8, %vaarg.in_reg7 ], [ %10, %vaarg.in_mem9 ], !dbg !87, !phasar.instruction.id !106, ID: 56 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1257,6 +1411,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %s215 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !108, !phasar.instruction.id !109, ID: 58 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1269,6 +1425,8 @@ A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg 
 N: %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s215, i32 0, i32 1, !dbg !110, !phasar.instruction.id !111, ID: 59 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1281,6 +1439,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: store i8* %11, i8** %t2, align 8, !dbg !112, !phasar.instruction.id !113, ID: 60 in function: foo
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	@zero_value = constant i2 0, align 4, ID: -1
+VI:	1
+CI:	1
 
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 4
@@ -1968,7 +2128,9 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109 in function: main
-D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !23, !phasar.instruction.id !24, ID: 108
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !23, !phasar.instruction
+
+.id !24, ID: 108
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1989,9 +2151,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 --- IFDS START RESULT RECORD ---
 N: store i8* %0, i8** %t2, align 8, !dbg !27, !phasar.instruction.id !31, ID: 112 in function: main
 D:	store i8* %call, i8** %t1, align 8, !dbg !21, !phasar.instruction.id !25, ID: 109
-A:	%t1 = alloca i8*, align 8, !phasar.instruct
-
-ion.id !14, ID: 104
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !14, ID: 104
 
 D:	%0 = load i8*, i8** %t1, align 8, !dbg !29, !phasar.instruction.id !30, ID: 111
 

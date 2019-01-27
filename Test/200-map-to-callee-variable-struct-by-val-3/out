@@ -50,13 +50,11 @@ getSummaryFlowFunction()
 getCallFlowFunction()
   call void @foo(%struct.s1* byval align 8 %ms, i32 42), !dbg !34, !phasar.instruction.id !35
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !14
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31
 getNormalFlowFunction()
@@ -98,11 +96,9 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK]   %also_tainted = alloca i8*, align 8, !phasar.instruction.id !22
 getNormalFlowFunction()
   %1 = load i8*, i8** %also_tainted, align 8, !dbg !39, !phasar.instruction.id !40
@@ -118,10 +114,8 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK]   %also_tainted = alloca i8*, align 8, !phasar.instruction.id !22
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted11 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 2, !dbg !41, !phasar.instruction.id !42
 getNormalFlowFunction()
@@ -176,13 +170,11 @@ getCallFlowFunction()
 getCallFlowFunction()
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !14
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31
 getCallFlowFunction()

@@ -84,6 +84,10 @@ getSummaryFlowFunction()
 getSummaryFlowFunction()
   call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41
 
+[TRACK] Added patchable memory location (caller -> callee)
+[TRACK] Source:
+[TRACK] Destination:
+[TRACK] i32 %a
 getNormalFlowFunction()
   %a.addr = alloca i32, align 4, !phasar.instruction.id !14
 
@@ -96,12 +100,10 @@ getNormalFlowFunction()
   store i32 %a, i32* %a.addr, align 4, !phasar.instruction.id !16
 
 Got store instruction
-[TRACK] Patched memory location (arg / store)
+[TRACK] Patched memory location (arg/store)
 [TRACK] Source:
-[TRACK]   %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39
 [TRACK] i32 %a
 [TRACK] Destination:
-[TRACK]   %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39
 [TRACK]   %a.addr = alloca i32, align 4, !phasar.instruction.id !14
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20
@@ -119,10 +121,8 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39
 [TRACK]   %a.addr = alloca i32, align 4, !phasar.instruction.id !14
 [TRACK] Destination:
-[TRACK]   %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39
 [TRACK]   %t1 = alloca i32, align 4, !phasar.instruction.id !15
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
@@ -158,7 +158,12 @@ getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20
 
 getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23### DUMP LLVMIFDSSolver results
+  call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23
+
+[TRACK] Added patchable memory location (caller -> callee)
+[TRACK] Source:
+[TRACK] Destination:
+[TRACK] i32 %a### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1 in function: foo
 D:	%add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39, ID: 22
@@ -332,7 +337,6 @@ A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !16, ID: 11
 D:	%1 = load i32, i32* %is_env_set, align 4, !dbg !36, !phasar.instruction.id !37, ID: 21
 
 D:	
-
 %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39, ID: 22
 
 --- IFDS START RESULT RECORD ---

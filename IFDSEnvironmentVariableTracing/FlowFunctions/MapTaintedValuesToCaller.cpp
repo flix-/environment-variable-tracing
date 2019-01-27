@@ -41,7 +41,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
       targetFacts.insert(ev);
 
-      llvm::outs() << "[TRACK] Relocated memory location (caller <- callee)" << "\n";
+      llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
       DataFlowUtils::dumpMemoryLocation(fact);
       llvm::outs() << "[TRACK] Destination:" << "\n";
@@ -51,9 +51,18 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   else {
     bool isRetValTainted = DataFlowUtils::isValueTainted(fact, retVal);
     if (isRetValTainted) {
-      ExtendedValue ev(callInst);
+      std::vector<const llvm::Value*> patchablePart{callInst};
+
+      ExtendedValue ev(fact);
+      ev.setMemLocationSeq(patchablePart);
 
       targetFacts.insert(ev);
+
+      llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
+      llvm::outs() << "[TRACK] Source:" << "\n";
+      DataFlowUtils::dumpMemoryLocation(fact);
+      llvm::outs() << "[TRACK] Destination:" << "\n";
+      DataFlowUtils::dumpMemoryLocation(ev);
     }
   }
 

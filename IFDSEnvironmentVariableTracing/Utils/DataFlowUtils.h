@@ -6,6 +6,7 @@
 #define DATAFLOWUTILS_H
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <llvm/IR/Instructions.h>
@@ -34,15 +35,22 @@ public:
   static const std::vector<const llvm::Value*> joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memLocationSeq1,
                                                                       const std::vector<const llvm::Value*> memLocationSeq2);
 
-  static bool isPatchableArgument(const llvm::Value* srcValue,
-                                  ExtendedValue& fact);
-  static bool isPatchableArgument(const std::vector<const llvm::Value*> srcMemLocationSeq,
-                                  ExtendedValue& fact);
-  static bool isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
+  static bool isPatchableArgumentStore(const llvm::Value* srcValue,
+                                       ExtendedValue& fact);
+  static bool isPatchableArgumentMemcpy(const llvm::Value* srcValue,
+                                        const std::vector<const llvm::Value*> srcMemLocationSeq,
+                                        ExtendedValue& fact);
+  static bool isPatchableReturnValue(const llvm::Value* srcValue,
                                      ExtendedValue& fact);
   static const std::vector<const llvm::Value*> patchMemoryLocationFrame(const std::vector<const llvm::Value*> patchableMemLocationSeq,
                                                                         const std::vector<const llvm::Value*> patchMemLocationSeq);
 
+  static const std::vector<std::tuple<const llvm::Value*,
+                           const std::vector<const llvm::Value*>,
+                           const llvm::Value*>>
+              getSanitizedArgList(const llvm::CallInst* callInst,
+                                  const llvm::Function* destMthd,
+                                  ExtendedValue& zeroValue);
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 

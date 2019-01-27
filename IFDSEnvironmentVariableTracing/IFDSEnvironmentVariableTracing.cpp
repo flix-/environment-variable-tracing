@@ -111,7 +111,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
       auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-      bool isArgumentPatch = DataFlowUtils::isPatchableArgument(srcValue, fact);
+      bool isArgumentPatch = DataFlowUtils::isPatchableArgumentStore(srcValue, fact);
       bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
 
       bool isSrcMemLocation = !srcMemLocationSeq.empty();
@@ -140,7 +140,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           targetFacts.insert(ev);
           lineNumberStore.addLineNumber(storeInst);
 
-          llvm::outs() << "[TRACK] Patched memory location (arg / store)" << "\n";
+          llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
           DataFlowUtils::dumpMemoryLocation(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
@@ -169,7 +169,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           targetFacts.insert(ev);
           lineNumberStore.addLineNumber(storeInst);
 
-          llvm::outs() << "[TRACK] Patched memory location frame (ret)" << "\n";
+          llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
           DataFlowUtils::dumpMemoryLocation(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
@@ -542,7 +542,9 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawSource());
       const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
 
-      bool isArgumentPatch = DataFlowUtils::isPatchableArgument(srcMemLocationSeq, fact);
+      bool isArgumentPatch = DataFlowUtils::isPatchableArgumentMemcpy(memTransferInst->getRawSource(),
+                                                                      srcMemLocationSeq,
+                                                                      fact);
 
       std::set<ExtendedValue> targetFacts;
 
@@ -560,7 +562,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
         targetFacts.insert(ev);
         lineNumberStore.addLineNumber(memTransferInst);
 
-        llvm::outs() << "[TRACK] Patched memory location (arg / memcpy)" << "\n";
+        llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
         DataFlowUtils::dumpMemoryLocation(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";

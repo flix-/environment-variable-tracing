@@ -50,12 +50,10 @@ getSummaryFlowFunction()
 getCallFlowFunction()
   call void @foo(i8* %0), !dbg !26, !phasar.instruction.id !27
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK] i8* %tainted
 getNormalFlowFunction()
   %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13
@@ -69,12 +67,10 @@ getNormalFlowFunction()
   store i8* %tainted, i8** %tainted.addr, align 8, !phasar.instruction.id !15
 
 Got store instruction
-[TRACK] Patched memory location (arg / store)
+[TRACK] Patched memory location (arg/store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK] i8* %tainted
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK]   %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %tainted.addr, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
@@ -92,10 +88,8 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK]   %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK]   %also_tainted = alloca i8*, align 8, !phasar.instruction.id !14
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
@@ -127,12 +121,10 @@ getCallFlowFunction()
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %also_tainted, metadata !20, metadata !17), !dbg !21, !phasar.instruction.id !22
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23
 [TRACK] i8* %tainted### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1 in function: foo

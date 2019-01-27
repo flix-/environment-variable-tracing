@@ -6,6 +6,8 @@
 
 #include "../Utils/DataFlowUtils.h"
 
+#include <tuple>
+
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -19,54 +21,27 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
   long varArgIndex = 0L;
 
-  for (unsigned i = 0; i < callInst->getNumArgOperands(); ++i) {
+  const auto sanitizedArgList = DataFlowUtils::getSanitizedArgList(callInst,
+                                                                   destMthd,
+                                                                   zeroValue);
+  for (const auto& argParamTriple : sanitizedArgList) {
 
-    const auto actualArgument = callInst->getOperand(i);
-    const auto formalParameter = getNthFunctionArgument(destMthd, i);
+    const auto arg = std::get<0>(argParamTriple);
+    const auto argMemLocationSeq = std::get<1>(argParamTriple);
+    const auto param = std::get<2>(argParamTriple);
 
-    bool isVarArg = formalParameter == nullptr;
-
-    auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(actualArgument);
+    bool isVarArg = param == zeroValue.getValue();
 
     bool isArgMemLocation = !argMemLocationSeq.empty();
-
     if (isArgMemLocation) {
       const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-      /*
-       * If the struct is coerced then the indexes are not matching up anymore.
-       * E.g. if we have the following struct:
-       *
-       * struct s1 {
-       *   int a;
-       *   int b;
-       *   char *t1;
-       * };
-       *
-       * If we taint t1 we will have Alloca_x -> GEP 2 as our memory location.
-       *
-       * Now if a and b are coerced from i32, i32 to i64 we will have a struct
-       * that only contains two members (i64, i8*). This means that also the
-       * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
-       * the GEP value and pop it from the memory location and proceed as usual.
-       */
-      bool isArgCoerced = !isVarArg && formalParameter->getName().contains_lower("coerce");
-      if (isArgCoerced) {
-        assert(argMemLocationSeq.size() > 1);
-        argMemLocationSeq.pop_back();
-      }
 
       bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(argMemLocationSeq,
                                                               factMemLocationSeq);
       if (genFact) {
         const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
                                                                                               argMemLocationSeq);
-        std::vector<const llvm::Value*> patchablePart;
-        if (isVarArg) {
-          patchablePart.push_back(zeroValue.getValue());
-        } else {
-          patchablePart.push_back(formalParameter);
-        }
-
+        std::vector<const llvm::Value*> patchablePart{param};
         const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                    relocatableMemLocationSeq);
 
@@ -76,7 +51,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
         targetFacts.insert(ev);
 
-        llvm::outs() << "[TRACK] Relocated memory location (caller -> callee)" << "\n";
+        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
         DataFlowUtils::dumpMemoryLocation(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";
@@ -84,20 +59,21 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       }
     }
     else {
-      bool isArgTainted = DataFlowUtils::isValueTainted(fact, actualArgument);
+      bool isArgTainted = DataFlowUtils::isValueTainted(fact, arg);
       if (isArgTainted) {
-        std::vector<const llvm::Value*> patchablePart;
-        if (isVarArg) {
-          patchablePart.push_back(zeroValue.getValue());
-        } else {
-          patchablePart.push_back(formalParameter);
-        }
+        std::vector<const llvm::Value*> patchablePart{param};
 
         ExtendedValue ev(fact);
         ev.setMemLocationSeq(patchablePart);
         if (isVarArg) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
+
+        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
+        llvm::outs() << "[TRACK] Source:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(fact);
+        llvm::outs() << "[TRACK] Destination:" << "\n";
+        DataFlowUtils::dumpMemoryLocation(ev);
       }
     }
 

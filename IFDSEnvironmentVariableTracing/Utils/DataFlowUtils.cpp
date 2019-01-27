@@ -14,6 +14,8 @@
 
 #include <llvm/Support/raw_ostream.h>
 
+#include <phasar/Utils/LLVMShorthands.h>
+
 using namespace psr;
 
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
@@ -151,7 +153,9 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   }
 
   if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(memLocationPart)) {
-    memLocationSeq = getMemoryLocationSeqFromMatrRec(bitCastInst->getOperand(0));
+    const auto oneUp = bitCastInst->getOperand(0);
+
+    memLocationSeq = getMemoryLocationSeqFromMatrRec(oneUp);
     bool poisonSeq = isUnionBitCast(bitCastInst);
 
     if (!poisonSeq) return memLocationSeq;
@@ -160,11 +164,15 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   }
   else
   if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationPart)) {
-    return getMemoryLocationSeqFromMatrRec(loadInst->getOperand(0));
+    const auto oneUp = loadInst->getOperand(0);
+
+    return getMemoryLocationSeqFromMatrRec(oneUp);
   }
   else
   if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationPart)) {
-    memLocationSeq = getMemoryLocationSeqFromMatrRec(gepInst->getPointerOperand());
+    const auto oneUp = gepInst->getPointerOperand();
+
+    memLocationSeq = getMemoryLocationSeqFromMatrRec(oneUp);
     bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
     if (isSeqPoisoned) return memLocationSeq;
 
@@ -298,8 +306,8 @@ DataFlowUtils::joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memL
 }
 
 bool
-DataFlowUtils::isPatchableArgument(const llvm::Value* srcValue,
-                                   ExtendedValue& fact) {
+DataFlowUtils::isPatchableArgumentStore(const llvm::Value* srcValue,
+                                        ExtendedValue& fact) {
 
   bool isVarArgFact = fact.isVarArg();
   if (isVarArgFact) {
@@ -330,26 +338,33 @@ DataFlowUtils::isPatchableArgument(const llvm::Value* srcValue,
 }
 
 bool
-DataFlowUtils::isPatchableArgument(const std::vector<const llvm::Value*> srcMemLocationSeq,
-                                   ExtendedValue& fact) {
-
-  if (srcMemLocationSeq.empty()) return false;
+DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
+                                         const std::vector<const llvm::Value*> srcMemLocationSeq,
+                                         ExtendedValue& fact) {
 
   bool isVarArgFact = fact.isVarArg();
-  if (isVarArgFact) {
-    bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
-    if (!isIndexEqual) return false;
+  if (!isVarArgFact) return false;
 
+  bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
+  if (!isIndexEqual) return false;
+
+  bool isSrcMemLocation = !srcMemLocationSeq.empty();
+  if (isSrcMemLocation) {
     const auto memLocationFrameType = getTypeName(srcMemLocationSeq.front()->getType());
     bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
     if (isMemLocationFrameTypeVaList) return true;
+  }
+  else
+  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(srcValue)) {
+    bool isSrcVarArg = bitCastInst->getOperand(0)->getName().contains_lower("vaarg.addr");
+    if (isSrcVarArg) return true;
   }
 
   return false;
 }
 
 bool
-DataFlowUtils::isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
+DataFlowUtils::isPatchableReturnValue(const llvm::Value* srcValue,
                                       ExtendedValue& fact) {
 
   const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
@@ -357,12 +372,12 @@ DataFlowUtils::isPatchableReturnValue(const llvm::Value* storeInstSrcValue,
 
   if (const auto patchableCallInst = llvm::dyn_cast<llvm::CallInst>(factMemLocationFrame)) {
 
-    if (const auto srcValueExtractValueInst = llvm::dyn_cast<llvm::ExtractValueInst>(storeInstSrcValue)) {
+    if (const auto srcValueExtractValueInst = llvm::dyn_cast<llvm::ExtractValueInst>(srcValue)) {
       bool isLinkEqual = srcValueExtractValueInst->getAggregateOperand() == patchableCallInst;
       if (isLinkEqual) return true;
     }
     else
-    if (const auto srcValueCallInst = llvm::dyn_cast<llvm::CallInst>(storeInstSrcValue)) {
+    if (const auto srcValueCallInst = llvm::dyn_cast<llvm::CallInst>(srcValue)) {
       bool isLinkEqual = srcValueCallInst == patchableCallInst;
       if (isLinkEqual) return true;
     }
@@ -385,6 +400,90 @@ DataFlowUtils::patchMemoryLocationFrame(const std::vector<const llvm::Value*> pa
   patchedMemLocationSeq.insert(patchedMemLocationSeq.end(), std::next(patchableMemLocationSeq.begin()), patchableMemLocationSeq.end());
 
   return patchedMemLocationSeq;
+}
+
+static long
+getNumCoercedArgs(const llvm::Value* value) {
+  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(value)) {
+    return -4711;
+  }
+
+  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(value)) {
+    const auto oneUp = bitCastInst->getOperand(0);
+
+    long ret = getNumCoercedArgs(oneUp);
+    if (ret == -4711) {
+      const auto dstType = bitCastInst->getDestTy()->getPointerElementType();
+
+      if (const auto structType = llvm::dyn_cast<llvm::StructType>(dstType)) {
+        return static_cast<long>(structType->getNumElements());
+      }
+      return -1;
+    }
+    return ret;
+  }
+  else
+  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
+    const auto oneUp = gepInst->getPointerOperand();
+    return getNumCoercedArgs(oneUp);
+  }
+  else
+  if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
+    const auto oneUp = loadInst->getPointerOperand();
+    return getNumCoercedArgs(oneUp);
+  }
+
+  return -1;
+}
+
+/*
+ * If the struct is coerced then the indexes are not matching up anymore.
+ * E.g. if we have the following struct:
+ *
+ * struct s1 {
+ *   int a;
+ *   int b;
+ *   char *t1;
+ * };
+ *
+ * If we taint t1 we will have Alloca_x -> GEP 2 as our memory location.
+ *
+ * Now if a and b are coerced from i32, i32 to i64 we will have a struct
+ * that only contains two members (i64, i8*). This means that also the
+ * GEP indexes are different (there is no GEP 2 anymore). So we just ignore
+ * the GEP value and pop it from the memory location and proceed as usual.
+ */
+const std::vector<std::tuple<const llvm::Value*,
+                             const std::vector<const llvm::Value*>,
+                             const llvm::Value*>>
+DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
+                                   const llvm::Function* destMthd,
+                                   ExtendedValue& zeroValue) {
+
+  std::vector<std::tuple<const llvm::Value*,
+              const std::vector<const llvm::Value*>,
+              const llvm::Value*>> sanitizedArgList;
+
+  for (unsigned i = 0; i < callInst->getNumArgOperands(); ++i) {
+    const auto arg = callInst->getOperand(i);
+    const auto param = getNthFunctionArgument(destMthd, i);
+
+    auto argMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(arg);
+
+    long numCoersedArgs = getNumCoercedArgs(arg);
+    bool isCoersedArg = numCoersedArgs > 0;
+
+    if (isCoersedArg) {
+      argMemLocationSeq.pop_back();
+      i += numCoersedArgs - 1;
+    }
+
+    const auto sanitizedParam = param != nullptr ? param : zeroValue.getValue();
+
+    sanitizedArgList.push_back({arg, argMemLocationSeq, sanitizedParam});
+  }
+
+  return sanitizedArgList;
 }
 
 static std::string
@@ -511,13 +610,15 @@ DataFlowUtils::isMemoryLocationFact(const ExtendedValue& ev) {
 void
 DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
 
-  const auto value = ev.getValue();
-
   bool isMemLocation = isMemoryLocationFact(ev);
   if (isMemLocation) {
-    llvm::outs() << "[TRACK] "; value->print(llvm::outs()); llvm::outs() << "\n";
     for (const auto memLocationPart : ev.getMemLocationSeq()) {
       llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+    }
+    bool isVarArg = ev.getVarArgIndex() > -1L;
+    if (isVarArg) {
+      llvm::outs() << "[TRACK] VarArg Index: " << ev.getVarArgIndex() << "\n";
+      llvm::outs() << "[TRACK] Current VarArg Index: " << ev.getCurrentVarArgIndex() << "\n";
     }
   }
 }

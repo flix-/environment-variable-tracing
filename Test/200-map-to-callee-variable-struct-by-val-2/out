@@ -50,13 +50,11 @@ getSummaryFlowFunction()
 getCallFlowFunction()
   call void @foo(%struct.s1* byval align 8 %ms, i32 42), !dbg !33, !phasar.instruction.id !34
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !13
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30
 getNormalFlowFunction()
@@ -102,11 +100,9 @@ getNormalFlowFunction()
 Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK]   %also_tainted = alloca i8*, align 8, !phasar.instruction.id !21
 getNormalFlowFunction()
   %tainted11 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 2, !dbg !39, !phasar.instruction.id !40
@@ -154,11 +150,9 @@ getCallToRetFlowFunction()
 getCallToRetFlowFunction()
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted2 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 3, !dbg !42, !phasar.instruction.id !43
 getSummaryFlowFunction()
@@ -166,11 +160,9 @@ getSummaryFlowFunction()
 
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted2 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 3, !dbg !42, !phasar.instruction.id !43
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK]   %also_tainted2 = alloca i8*, align 8, !phasar.instruction.id !22
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %nope, metadata !53, metadata !25), !dbg !54, !phasar.instruction.id !55
@@ -230,13 +222,11 @@ getCallFlowFunction()
 getCallFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %nope, metadata !53, metadata !25), !dbg !54, !phasar.instruction.id !55
 
-[TRACK] Relocated memory location (caller -> callee)
+[TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !13
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30
 [TRACK] Destination:
-[TRACK]   store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32
 [TRACK] %struct.s1* %fs
 [TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !29, !phasar.instruction.id !30### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
@@ -294,9 +284,9 @@ D:	store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !3
 A:	%struct.s1* %fs, ID: foo.0
 A:	%tainted2 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 3, !dbg !42, !phasar.instruction.id !43, ID: 14
 
-D:	%2 = load i8*, i8** %tainted22, align 8, !dbg !49, !phasar.instruction.id !51, ID: 18
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	%2 = load i8*, i8** %tainted22, align 8, !dbg !49, !phasar.instruction.id !51, ID: 18
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata %struct.s1* %fs, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27, ID: 5 in function: foo
@@ -308,9 +298,9 @@ A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2,
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %1, i8** %tainted2, align 8, !dbg !44, !phasar.instruction.id !45, ID: 15 in function: foo
-D:	@zero_value = constant i2 0, align 4, ID: -1
-
 D:	%1 = load i8*, i8** %tainted11, align 8, !dbg !39, !phasar.instruction.id !41, ID: 13
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32, ID: 30
 A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !21, ID: 2
@@ -405,9 +395,9 @@ A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !21, ID: 2
 
 --- IFDS START RESULT RECORD ---
 N: %tainted2 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 3, !dbg !42, !phasar.instruction.id !43, ID: 14 in function: foo
-D:	@zero_value = constant i2 0, align 4, ID: -1
-
 D:	%1 = load i8*, i8** %tainted11, align 8, !dbg !39, !phasar.instruction.id !41, ID: 13
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %tainted1, align 8, !dbg !31, !phasar.instruction.id !32, ID: 30
 A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !21, ID: 2
