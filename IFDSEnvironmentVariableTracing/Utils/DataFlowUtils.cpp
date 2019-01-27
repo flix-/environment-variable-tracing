@@ -413,9 +413,12 @@ getNumCoercedArgs(const llvm::Value* value) {
 
     long ret = getNumCoercedArgs(oneUp);
     if (ret == -4711) {
-      const auto dstType = bitCastInst->getDestTy()->getPointerElementType();
+      const auto dstType = bitCastInst->getDestTy();
+      if (!dstType->isPointerTy()) return -1;
 
-      if (const auto structType = llvm::dyn_cast<llvm::StructType>(dstType)) {
+      const auto elementType = dstType->getPointerElementType();
+
+      if (const auto structType = llvm::dyn_cast<llvm::StructType>(elementType)) {
         return static_cast<long>(structType->getNumElements());
       }
       return -1;
@@ -437,7 +440,20 @@ getNumCoercedArgs(const llvm::Value* value) {
 }
 
 /*
- * If the struct is coerced then the indexes are not matching up anymore.
+ * The purpose of this function is to provide a sanitized arg list.
+ * Sanitization comprises the following 2 steps:
+ *
+ * (1) Only keep one coerced argument and fix mem location sequence.
+ *     This is extremely important when using varargs as we would
+ *     increment the var args index for every coerced element although
+ *     we only need one index for the struct. The way we figure out the
+ *     amount of coerced args for a struct is to retrieve the bitcast
+ *     and count its members. Notes for fixing the mem location sequence
+ *     can be found below.
+ *
+ * (2) Provide a default formal parameter for varargs
+ *
+ * If the struct is coerced then the indexes are not matching anymore.
  * E.g. if we have the following struct:
  *
  * struct s1 {
@@ -458,7 +474,7 @@ const std::vector<std::tuple<const llvm::Value*,
                              const llvm::Value*>>
 DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
                                    const llvm::Function* destMthd,
-                                   ExtendedValue& zeroValue) {
+                                   const llvm::Value* zeroValue) {
 
   std::vector<std::tuple<const llvm::Value*,
               const std::vector<const llvm::Value*>,
@@ -478,7 +494,7 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
       i += numCoersedArgs - 1;
     }
 
-    const auto sanitizedParam = param != nullptr ? param : zeroValue.getValue();
+    const auto sanitizedParam = param != nullptr ? param : zeroValue;
 
     sanitizedArgList.push_back({arg, argMemLocationSeq, sanitizedParam});
   }

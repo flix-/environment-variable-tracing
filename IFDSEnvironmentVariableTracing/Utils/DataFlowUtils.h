@@ -50,7 +50,7 @@ public:
                            const llvm::Value*>>
               getSanitizedArgList(const llvm::CallInst* callInst,
                                   const llvm::Function* destMthd,
-                                  ExtendedValue& zeroValue);
+                                  const llvm::Value* zeroValue);
   static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
   static std::string getBBLabel(const llvm::Instruction* instruction);
 

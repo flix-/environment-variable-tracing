@@ -23,7 +23,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
   const auto sanitizedArgList = DataFlowUtils::getSanitizedArgList(callInst,
                                                                    destMthd,
-                                                                   zeroValue);
+                                                                   zeroValue.getValue());
   for (const auto& argParamTriple : sanitizedArgList) {
 
     const auto arg = std::get<0>(argParamTriple);
