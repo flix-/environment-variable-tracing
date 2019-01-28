@@ -36,7 +36,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
       const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                  relocatableMemLocationSeq);
 
-      ExtendedValue ev(fact);
+      ExtendedValue ev(callInst);
       ev.setMemLocationSeq(patchableMemLocationSeq);
 
       targetFacts.insert(ev);
@@ -53,7 +53,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
     if (isRetValTainted) {
       std::vector<const llvm::Value*> patchablePart{callInst};
 
-      ExtendedValue ev(fact);
+      ExtendedValue ev(callInst);
       ev.setMemLocationSeq(patchablePart);
 
       targetFacts.insert(ev);

@@ -60,8 +60,6 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !16<br>
 <br>
 Got store instruction<br>
-[TRACK]:i32 0<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20<br>
 <br>
@@ -99,8 +97,6 @@ getNormalFlowFunction()<br>
   store i32 %lor.ext, i32* %taint, align 4, !dbg !19, !phasar.instruction.id !37<br>
 <br>
 Got store instruction<br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
 getNormalFlowFunction()<br>
   br i1 %tobool, label %lor.rhs, label %land.lhs.true, !dbg !24, !phasar.instruction.id !25<br>
@@ -125,12 +121,6 @@ getCallToRetFlowFunction()<br>
 getSummaryFlowFunction()<br>
   %call3 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32<br>
 <br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !38, metadata !18), !dbg !39, !phasar.instruction.id !40<br>
 <br>
@@ -142,28 +132,18 @@ getNormalFlowFunction()<br>
   store i32 %1, i32* %a, align 4, !dbg !39, !phasar.instruction.id !43<br>
 <br>
 Got store instruction<br>
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !41, !phasar.instruction.id !42<br>
-[TRACK]: srcMemLocation: 1<br>
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
 [TRACK] Destination:<br>
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !15<br>
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !41, !phasar.instruction.id !42<br>
-[TRACK]: srcMemLocation: 1<br>
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
 getCallToRetFlowFunction()<br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27<br>
 <br>
 getSummaryFlowFunction()<br>
   %call3 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32<br>
 <br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call3 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32<br>
 <br>
@@ -171,14 +151,9 @@ getCallToRetFlowFunction()<br>
 getSummaryFlowFunction()<br>
   %call3 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32<br>
 <br>
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !29, !phasar.instruction.id !36<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !38, metadata !18), !dbg !39, !phasar.instruction.id !40<br>
 <br>
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !41, !phasar.instruction.id !42<br>
-[TRACK]: srcMemLocation: 1<br>
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !14<br>
 getSummaryFlowFunction()<br>
   %call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27<br>
 <br>

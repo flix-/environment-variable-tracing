@@ -34,8 +34,6 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
 
 Got store instruction
-[TRACK]:i32 0
-[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
 
@@ -62,8 +60,6 @@ getNormalFlowFunction()
   store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31
 
 Got store instruction
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
-[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34
 
@@ -75,9 +71,6 @@ getNormalFlowFunction()
   store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37
 
 Got store instruction
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
-[TRACK]: srcMemLocation: 1
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 getCallToRetFlowFunction()
 getNormalFlowFunction()
   br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24
@@ -94,28 +87,14 @@ getNormalFlowFunction()
   br label %lor.end, !dbg !23, !phasar.instruction.id !28
 
 Got branch instruction
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
-[TRACK]: srcMemLocation: 0
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
-[TRACK]: srcMemLocation: 0
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
-[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34
 
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
-[TRACK]: srcMemLocation: 1
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 [TRACK] Destination:
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14
-[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36
-[TRACK]: srcMemLocation: 1
-[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
-[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30
-[TRACK]: srcMemLocation: 0
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()

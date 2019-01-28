@@ -34,8 +34,6 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
 
 Got store instruction
-[TRACK]:i32 0
-[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !19), !dbg !20, !phasar.instruction.id !21
 
@@ -46,8 +44,6 @@ getNormalFlowFunction()
   store i8* %call, i8** %tainted, align 8, !dbg !20, !phasar.instruction.id !24
 
 Got store instruction
-[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23
-[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %0 = load i8*, i8** %tainted, align 8, !dbg !25, !phasar.instruction.id !26
 
@@ -67,9 +63,6 @@ getNormalFlowFunction()
   store i8* %1, i8** %not_tainted, align 8, !dbg !30, !phasar.instruction.id !34
 
 Got store instruction
-[TRACK]:  %1 = load i8*, i8** %tainted, align 8, !dbg !32, !phasar.instruction.id !33
-[TRACK]: srcMemLocation: 1
-[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !13
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
 getSummaryFlowFunction()
@@ -77,8 +70,6 @@ getSummaryFlowFunction()
 
 Got memset instruction
 getCallToRetFlowFunction()
-[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !22, !phasar.instruction.id !23
-[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 3, i32 1, i1 false), !dbg !27, !phasar.instruction.id !28
 
@@ -86,9 +77,6 @@ Got memset instruction
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !29, metadata !19), !dbg !30, !phasar.instruction.id !31
 
-[TRACK]:  %1 = load i8*, i8** %tainted, align 8, !dbg !32, !phasar.instruction.id !33
-[TRACK]: srcMemLocation: 1
-[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !13
 getCallToRetFlowFunction()
 getCallFlowFunction()
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 3, i32 1, i1 false), !dbg !27, !phasar.instruction.id !28

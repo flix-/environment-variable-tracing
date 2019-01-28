@@ -61,8 +61,6 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !14<br>
 <br>
 Got store instruction<br>
-[TRACK]:i32 0<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18<br>
 <br>
@@ -74,8 +72,6 @@ getNormalFlowFunction()<br>
   store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25<br>
 <br>
 Got store instruction<br>
-[TRACK]:i32 42<br>
-[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %do.body1, !dbg !26, !llvm.loop !27, !phasar.instruction.id !29<br>
 <br>
@@ -84,8 +80,6 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %rc, align 4, !dbg !30, !phasar.instruction.id !32<br>
 <br>
 Got store instruction<br>
-[TRACK]:i32 1<br>
-[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %do.cond, !dbg !33, !phasar.instruction.id !34<br>
 <br>
@@ -101,8 +95,6 @@ getNormalFlowFunction()<br>
   br i1 %tobool, label %do.body1, label %do.end, !dbg !33, !llvm.loop !27, !phasar.instruction.id !38<br>
 <br>
 Got branch instruction<br>
-[TRACK]:i32 1<br>
-[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br i1 %tobool, label %do.body1, label %do.end, !dbg !33, !llvm.loop !27, !phasar.instruction.id !38<br>
 <br>
@@ -122,8 +114,6 @@ getNormalFlowFunction()<br>
   br i1 %tobool4, label %do.body, label %do.end5, !dbg !39, !llvm.loop !20, !phasar.instruction.id !44<br>
 <br>
 Got branch instruction<br>
-[TRACK]:i32 42<br>
-[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br i1 %tobool4, label %do.body, label %do.end5, !dbg !39, !llvm.loop !20, !phasar.instruction.id !44<br>
 <br>
@@ -136,13 +126,9 @@ getCallToRetFlowFunction()<br>
 getSummaryFlowFunction()<br>
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !35, !phasar.instruction.id !36<br>
 <br>
-[TRACK]:i32 1<br>
-[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call3 = call i32 (...) @foo(), !dbg !41, !phasar.instruction.id !42<br>
 <br>
-[TRACK]:i32 42<br>
-[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
 getSummaryFlowFunction()<br>
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !35, !phasar.instruction.id !36<br>
