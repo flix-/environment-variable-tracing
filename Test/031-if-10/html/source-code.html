@@ -90,6 +90,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !17<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !18, metadata !19), !dbg !20, !phasar.instruction.id !21<br>
 <br>
@@ -106,6 +108,8 @@ getNormalFlowFunction()<br>
   store i32 %call, i32* %taint, align 4, !dbg !26, !phasar.instruction.id !30<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   %0 = load i32, i32* %taint, align 4, !dbg !31, !phasar.instruction.id !33<br>
 <br>
@@ -133,6 +137,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %rc, align 4, !dbg !44, !phasar.instruction.id !46<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end, !dbg !47, !phasar.instruction.id !48<br>
 <br>
@@ -148,6 +154,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %a, align 4, !dbg !73, !phasar.instruction.id !75<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   %1 = load i32, i32* %untainted, align 4, !dbg !76, !phasar.instruction.id !78<br>
 <br>
@@ -164,6 +172,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %a, align 4, !dbg !82, !phasar.instruction.id !84<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end14, !dbg !85, !phasar.instruction.id !86<br>
 <br>
@@ -180,6 +190,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %a, align 4, !dbg !87, !phasar.instruction.id !89<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end14, !phasar.instruction.id !90<br>
 <br>
@@ -193,6 +205,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %rc, align 4, !dbg !49, !phasar.instruction.id !51<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end, !phasar.instruction.id !52<br>
 <br>
@@ -217,6 +231,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %rc, align 4, !dbg !62, !phasar.instruction.id !64<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end9, !dbg !65, !phasar.instruction.id !66<br>
 <br>
@@ -233,6 +249,8 @@ getNormalFlowFunction()<br>
   store i32 1, i32* %rc, align 4, !dbg !67, !phasar.instruction.id !69<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end9, !phasar.instruction.id !70<br>
 <br>
@@ -244,37 +262,93 @@ getSummaryFlowFunction()<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call5 = call i32 (...) @foo(), !dbg !55, !phasar.instruction.id !58<br>
 <br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call1 = call i32 (...) @foo(), !dbg !37, !phasar.instruction.id !40<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call5 = call i32 (...) @foo(), !dbg !55, !phasar.instruction.id !58<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call1 = call i32 (...) @foo(), !dbg !37, !phasar.instruction.id !40<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !72, metadata !19), !dbg !73, !phasar.instruction.id !74<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   %call5 = call i32 (...) @foo(), !dbg !55, !phasar.instruction.id !58<br>
 <br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 1<br>
+[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
 getCallToRetFlowFunction()<br>
 getCallToRetFlowFunction()<br>

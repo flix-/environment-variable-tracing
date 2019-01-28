@@ -30,6 +30,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18
 
@@ -41,6 +43,8 @@ getNormalFlowFunction()
   store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25
 
 Got store instruction
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %do.body1, !dbg !26, !llvm.loop !27, !phasar.instruction.id !29
 
@@ -49,6 +53,8 @@ getNormalFlowFunction()
   store i32 1, i32* %rc, align 4, !dbg !30, !phasar.instruction.id !32
 
 Got store instruction
+[TRACK]:i32 1
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %do.cond, !dbg !33, !phasar.instruction.id !34
 
@@ -64,6 +70,8 @@ getNormalFlowFunction()
   br i1 %tobool, label %do.body1, label %do.end, !dbg !33, !llvm.loop !27, !phasar.instruction.id !38
 
 Got branch instruction
+[TRACK]:i32 1
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br i1 %tobool, label %do.body1, label %do.end, !dbg !33, !llvm.loop !27, !phasar.instruction.id !38
 
@@ -83,6 +91,8 @@ getNormalFlowFunction()
   br i1 %tobool4, label %do.body, label %do.end5, !dbg !39, !llvm.loop !20, !phasar.instruction.id !44
 
 Got branch instruction
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br i1 %tobool4, label %do.body, label %do.end5, !dbg !39, !llvm.loop !20, !phasar.instruction.id !44
 
@@ -95,9 +105,13 @@ getCallToRetFlowFunction()
 getSummaryFlowFunction()
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !35, !phasar.instruction.id !36
 
+[TRACK]:i32 1
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   %call3 = call i32 (...) @foo(), !dbg !41, !phasar.instruction.id !42
 
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getCallToRetFlowFunction()
 getSummaryFlowFunction()
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !35, !phasar.instruction.id !36

@@ -71,6 +71,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !24<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata %struct.s1** %s1, metadata !25, metadata !26), !dbg !27, !phasar.instruction.id !28<br>
 <br>
@@ -85,6 +87,8 @@ getNormalFlowFunction()<br>
   store %struct.s1* %0, %struct.s1** %s1, align 8, !dbg !27, !phasar.instruction.id !33<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %0 = bitcast i8* %call to %struct.s1*, !dbg !31, !phasar.instruction.id !32<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   %1 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !34, !phasar.instruction.id !36<br>
 <br>
@@ -112,6 +116,8 @@ getNormalFlowFunction()<br>
   store i8* %call1, i8** %t1, align 8, !dbg !49, !phasar.instruction.id !50<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !43, !phasar.instruction.id !44<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   %3 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !51, !phasar.instruction.id !53<br>
 <br>
@@ -131,6 +137,8 @@ getNormalFlowFunction()<br>
   store i32 4711, i32* %a, align 4, !dbg !60, !phasar.instruction.id !62<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 4711<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %if.end3, !dbg !63, !phasar.instruction.id !64<br>
 <br>
@@ -139,6 +147,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !dbg !65, !phasar.instruction.id !66<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %return, !dbg !65, !phasar.instruction.id !67<br>
 <br>
@@ -153,9 +163,15 @@ getNormalFlowFunction()<br>
 <br>
 Got branch instruction<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !43, !phasar.instruction.id !44<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !58, metadata !26), !dbg !60, !phasar.instruction.id !61<br>
 <br>
+[TRACK]:i32 4711<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br i1 %tobool, label %if.end, label %if.then, !dbg !38, !phasar.instruction.id !39<br>
 <br>
@@ -164,6 +180,8 @@ getNormalFlowFunction()<br>
   store i32 -1, i32* %retval, align 4, !dbg !40, !phasar.instruction.id !41<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 -1<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br label %return, !dbg !40, !phasar.instruction.id !42<br>
 <br>

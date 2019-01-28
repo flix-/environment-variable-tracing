@@ -34,6 +34,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
 
@@ -63,6 +65,10 @@ getNormalFlowFunction()
   store i32 %cond, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !32
 
 Got store instruction
+[TRACK]:  %cond = phi i32 [ %call1, %cond.true ], [ %call2, %cond.false ], !dbg !20, !phasar.instruction.id !31
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %cond = phi i32 [ %call1, %cond.true ], [ %call2, %cond.false ], !dbg !20, !phasar.instruction.id !31
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a, metadata !33, metadata !17), !dbg !34, !phasar.instruction.id !35
 
@@ -74,16 +80,27 @@ getNormalFlowFunction()
   store i32 %0, i32* %a, align 4, !dbg !34, !phasar.instruction.id !38
 
 Got store instruction
+[TRACK]:  %0 = load i32, i32* %taint, align 4, !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 1
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 [TRACK] Destination:
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14
+[TRACK]:  %0 = load i32, i32* %taint, align 4, !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 1
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
+[TRACK]:  %cond = phi i32 [ %call1, %cond.true ], [ %call2, %cond.false ], !dbg !20, !phasar.instruction.id !31
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a, metadata !33, metadata !17), !dbg !34, !phasar.instruction.id !35
 
+[TRACK]:  %0 = load i32, i32* %taint, align 4, !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 1
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
 getNormalFlowFunction()
   br i1 %cmp, label %cond.true, label %cond.false, !dbg !20, !phasar.instruction.id !24
 

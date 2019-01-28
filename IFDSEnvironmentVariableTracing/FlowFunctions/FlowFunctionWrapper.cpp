@@ -19,17 +19,18 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
   if (isBranchOrSwitchFact) {
     std::string basicBlockLabel = DataFlowUtils::getBBLabel(currentInst);
 
-    bool isEndOfTaintedBlock = basicBlockLabel == fact.getEndOfTaintedBlockLabel();
+    /*
+     * We are removing the tainted branch instruction from facts if the instruction's
+     * basic block label matches the one of the trainted branch end block. Note that
+     * we remove it after the phi node making sure that the phi node is auto added
+     * whenever we came from a tainted branch.
+     */
+    bool isEndOfTaintedBlock = !llvm::isa<llvm::PHINode>(currentInst) &&
+                               basicBlockLabel == fact.getEndOfTaintedBlockLabel();
     if (isEndOfTaintedBlock) return { };
 
     lineNumberStore.addLineNumber(currentInst);
 
-    /*
-     * Although the facts are not needed within the tainted branch e.g. in
-     * order to figure out if we push a store instruction we need to have
-     * them for phi node instructions that contain a constant. If so we are
-     * tracking back and need to find the tainted temporaries (see phi node).
-     */
     bool isAutoGEN = DataFlowUtils::isAutoGENInTaintedBlock(currentInst);
     if (isAutoGEN) return { fact, ExtendedValue(currentInst) };
 

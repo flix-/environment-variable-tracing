@@ -30,6 +30,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18
 
@@ -41,6 +43,8 @@ getNormalFlowFunction()
   store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25
 
 Got store instruction
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %do.cond, !dbg !26, !phasar.instruction.id !27
 
@@ -56,6 +60,8 @@ getNormalFlowFunction()
   br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31
 
 Got branch instruction
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31
 
@@ -67,6 +73,8 @@ Got load instruction
 getSummaryFlowFunction()
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
 
+[TRACK]:i32 42
+[TRACK]: srcMemLocation: 0
 getCallToRetFlowFunction()
 getSummaryFlowFunction()
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29

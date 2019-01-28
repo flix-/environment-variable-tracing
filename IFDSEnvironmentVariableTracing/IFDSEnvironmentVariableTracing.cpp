@@ -231,6 +231,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
   }
   /*
    * GetElementPtr instruction
+   *
+   * Sole purpose is to track increments of var arg indexes.
    */
   else
   if (llvm::isa<llvm::GetElementPtrInst>(currentInst)) {
@@ -267,6 +269,10 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
   }
   /*
    * Phi node instruction
+   *
+   * Every Phi node that appears after a tainted branch is automatically added
+   * through the flow function wrapper. We need to consider the case here that
+   * the branch itself is not tainted but one of its values.
    */
   else
   if (llvm::isa<llvm::PHINode>(currentInst)) {
@@ -279,51 +285,17 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
       const auto phiNodeInst = llvm::cast<llvm::PHINode>(currentInst);
 
-      const auto trueConstant = llvm::ConstantInt::getTrue(phiNodeInst->getContext());
-      const auto falseConstant = llvm::ConstantInt::getFalse(phiNodeInst->getContext());
-
       for (const auto block : phiNodeInst->blocks()) {
         const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
-        /*
-         * We need special treatment if the value v of the <v, bb> pairs is not an
-         * instruction but a constant (true / false). This is necessary to correctly
-         * implement the boolean operators && and ||. E.g. the phi node of an || operation
-         * looks as follows:
-         *
-         * %1 = phi i1 [ true, %entry ], [ %tobool2, %lor.rhs ]
-         *
-         * If the left hand side of the || operation has been a tainted value we cannot identify
-         * this fact based on the phi node itself...
-         *
-         * Whenever we encounter true or false in a <v, bb> pair of a phi node we are backtracking
-         * to the basic block and check the branch instruction for a tainted value.
-         */
-        if (const auto constant = llvm::dyn_cast<llvm::Constant>(incomingValue)) {
-          if (constant == trueConstant || constant == falseConstant) {
-            const auto terminatorInst = block->getTerminator();
 
-            for (const auto &use : terminatorInst->operands()) {
-              bool isTainted = DataFlowUtils::isValueTainted(fact, use.get()) ||
-                               DataFlowUtils::isMemoryLocationTainted(fact, use.get());
-              if (isTainted) {
-                lineNumberStore.addLineNumber(phiNodeInst);
-                return { fact, ExtendedValue(phiNodeInst) };
-              }
-            }
-          }
-        }
-        /*
-         * If it's not a constant check whether value is tainted...
-         */
-        else {
-          bool isTainted = DataFlowUtils::isValueTainted(fact, incomingValue) ||
-                           DataFlowUtils::isMemoryLocationTainted(fact, incomingValue);
-          if (isTainted) {
-            lineNumberStore.addLineNumber(phiNodeInst);
-            return { fact, ExtendedValue(phiNodeInst) };
-          }
+        bool isTainted = DataFlowUtils::isValueTainted(fact, incomingValue) ||
+                         DataFlowUtils::isMemoryLocationTainted(fact, incomingValue);
+        if (isTainted) {
+          lineNumberStore.addLineNumber(phiNodeInst);
+          return { fact, ExtendedValue(phiNodeInst) };
         }
       }
+
       return { fact };
     };
 

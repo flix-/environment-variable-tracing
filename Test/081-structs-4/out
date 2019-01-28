@@ -34,6 +34,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !16
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !17, metadata !34), !dbg !35, !phasar.instruction.id !36
 
@@ -48,6 +50,8 @@ getNormalFlowFunction()
   store i8* %call, i8** %a, align 8, !dbg !41, !phasar.instruction.id !42
 
 Got store instruction
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
 
@@ -80,6 +84,10 @@ getNormalFlowFunction()
   store i8* %0, i8** %arrayidx4, align 8, !dbg !55, !phasar.instruction.id !56
 
 Got store instruction
+[TRACK]:  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
@@ -122,6 +130,14 @@ getNormalFlowFunction()
   store i8* %1, i8** %a5, align 8, !dbg !58, !phasar.instruction.id !70
 
 Got store instruction
+[TRACK]:  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+[TRACK]   %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+[TRACK]   %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+[TRACK]   %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+[TRACK]   %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
 getNormalFlowFunction()
   %b11 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !71, !phasar.instruction.id !72
 
@@ -146,6 +162,8 @@ getNormalFlowFunction()
   store i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0), i8** %arrayidx15, align 8, !dbg !80, !phasar.instruction.id !81
 
 Got store instruction
+[TRACK]:i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0)
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
 
@@ -174,10 +192,26 @@ getNormalFlowFunction()
   store i8* %2, i8** %a5, align 8, !dbg !92, !phasar.instruction.id !93
 
 Got store instruction
+[TRACK]:  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+[TRACK]   %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+[TRACK]   %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+[TRACK]   %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+[TRACK]   %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
 getCallToRetFlowFunction()
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59
 
+[TRACK]:  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+[TRACK]   %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+[TRACK]   %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+[TRACK]   %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+[TRACK]   %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
@@ -188,10 +222,58 @@ getSummaryFlowFunction()
 [TRACK]   %arrayidx4 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a3, i64 0, i64 0, !dbg !50, !phasar.instruction.id !54
 [TRACK] Destination:
 [TRACK]   %a5 = alloca i8*, align 8, !phasar.instruction.id !15
+[TRACK]:i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0)
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+[TRACK]   %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+[TRACK]   %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+[TRACK]   %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+[TRACK]   %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
+[TRACK]:i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0)
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+[TRACK]   %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+[TRACK]   %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+[TRACK]   %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+[TRACK]   %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
+[TRACK]:  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
 getCallToRetFlowFunction()
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %0 = load i8*, i8** %a1, align 8, !dbg !43, !phasar.instruction.id !45
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !43, !phasar.instruction.id !44
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %a5, metadata !57, metadata !34), !dbg !58, !phasar.instruction.id !59
 
+[TRACK]:  %1 = load i8*, i8** %arrayidx10, align 8, !dbg !64, !phasar.instruction.id !69
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b6 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !60, !phasar.instruction.id !61
+[TRACK]   %a7 = getelementptr inbounds %struct.b, %struct.b* %b6, i32 0, i32 0, !dbg !62, !phasar.instruction.id !63
+[TRACK]   %arrayidx8 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a7, i64 0, i64 0, !dbg !64, !phasar.instruction.id !65
+[TRACK]   %a9 = getelementptr inbounds %struct.c, %struct.c* %arrayidx8, i32 0, i32 0, !dbg !66, !phasar.instruction.id !67
+[TRACK]   %arrayidx10 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a9, i64 0, i64 0, !dbg !64, !phasar.instruction.id !68
+[TRACK]:i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.1, i32 0, i32 0)
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %2 = load i8*, i8** %arrayidx20, align 8, !dbg !86, !phasar.instruction.id !91
+[TRACK]: srcMemLocation: 1
+[TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14
+[TRACK]   %b16 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !82, !phasar.instruction.id !83
+[TRACK]   %a17 = getelementptr inbounds %struct.b, %struct.b* %b16, i32 0, i32 0, !dbg !84, !phasar.instruction.id !85
+[TRACK]   %arrayidx18 = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a17, i64 0, i64 0, !dbg !86, !phasar.instruction.id !87
+[TRACK]   %a19 = getelementptr inbounds %struct.c, %struct.c* %arrayidx18, i32 0, i32 0, !dbg !88, !phasar.instruction.id !89
+[TRACK]   %arrayidx20 = getelementptr inbounds [2 x i8*], [2 x i8*]* %a19, i64 0, i64 0, !dbg !86, !phasar.instruction.id !90
 getCallToRetFlowFunction()
 getCallFlowFunction()
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !37, !phasar.instruction.id !38

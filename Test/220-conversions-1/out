@@ -1,0 +1,200 @@
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+init - makeIFDSEnvironmentVariableTracing
+initialSeeds()
+getNormalFlowFunction()
+  %retval = alloca i32, align 4, !phasar.instruction.id !12
+
+Got operands checking instruction (alloca)
+getNormalFlowFunction()
+  %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+
+Got operands checking instruction (alloca)
+getNormalFlowFunction()
+  store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
+
+Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
+getSummaryFlowFunction()
+  call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !15, metadata !23), !dbg !24, !phasar.instruction.id !25
+
+getSummaryFlowFunction()
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27
+
+getNormalFlowFunction()
+  %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29
+
+Got GEP instruction
+getNormalFlowFunction()
+  store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31
+
+Got store instruction
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27
+[TRACK]: srcMemLocation: 0
+getNormalFlowFunction()
+  %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33
+
+Got GEP instruction
+getNormalFlowFunction()
+  %0 = load i8*, i8** %t11, align 8, !dbg !32, !phasar.instruction.id !34
+
+Got load instruction
+getNormalFlowFunction()
+  %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36
+
+Got operands checking instruction (ptrtoint)
+getNormalFlowFunction()
+  %a = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !37, !phasar.instruction.id !38
+
+Got GEP instruction
+getNormalFlowFunction()
+  store i32 %1, i32* %a, align 8, !dbg !39, !phasar.instruction.id !40
+
+Got store instruction
+[TRACK]:  %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33
+[TRACK]:  %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33
+[TRACK]:  %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33
+[TRACK] Relocated memory location (store)
+[TRACK] Source:
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29
+[TRACK] Destination:
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %a = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !37, !phasar.instruction.id !38
+getCallToRetFlowFunction()
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27
+[TRACK]: srcMemLocation: 0
+[TRACK]:  %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33
+getCallToRetFlowFunction()
+getCallFlowFunction()
+  call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !15, metadata !23), !dbg !24, !phasar.instruction.id !25
+
+getCallFlowFunction()
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27### DUMP LLVMIFDSSolver results
+--- IFDS START RESULT RECORD ---
+N: %0 = load i8*, i8** %t11, align 8, !dbg !32, !phasar.instruction.id !34, ID: 9 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+--- IFDS START RESULT RECORD ---
+N: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: store i32 %1, i32* %a, align 8, !dbg !39, !phasar.instruction.id !40, ID: 12 in function: main
+D:	%0 = load i8*, i8** %t11, align 8, !dbg !32, !phasar.instruction.id !34, ID: 9
+
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+D:	%1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36, ID: 10
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !15, metadata !23), !dbg !24, !phasar.instruction.id !25, ID: 4 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !26, !phasar.instruction.id !27, ID: 5 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: store i32 0, i32* %retval, align 4, !phasar.instruction.id !14, ID: 3 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36, ID: 10 in function: main
+D:	%0 = load i8*, i8** %t11, align 8, !dbg !32, !phasar.instruction.id !34, ID: 9
+
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %t11 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !32, !phasar.instruction.id !33, ID: 8 in function: main
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %a = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !37, !phasar.instruction.id !38, ID: 11 in function: main
+D:	%0 = load i8*, i8** %t11, align 8, !dbg !32, !phasar.instruction.id !34, ID: 9
+
+D:	store i8* %call, i8** %t1, align 8
+
+, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+D:	%1 = ptrtoint i8* %0 to i32, !dbg !35, !phasar.instruction.id !36, ID: 10
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: ret i32 0, !dbg !41, !phasar.instruction.id !42, ID: 13 in function: main
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !28, !phasar.instruction.id !29, ID: 6
+
+D:	store i8* %call, i8** %t1, align 8, !dbg !30, !phasar.instruction.id !31, ID: 7
+A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13, ID: 2
+A:	%a = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !37, !phasar.instruction.id !38, ID: 11
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+
+No IFDS report available!

@@ -71,6 +71,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !14<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata %union.a* %f, metadata !44, metadata !25), !dbg !45, !phasar.instruction.id !46<br>
 <br>
@@ -89,6 +91,8 @@ getNormalFlowFunction()<br>
   store i8* %call, i8** %tainted, align 8, !dbg !34, !phasar.instruction.id !35<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   %coerce.dive = getelementptr inbounds %union.a, %union.a* %f, i32 0, i32 0, !dbg !36, !phasar.instruction.id !37<br>
 <br>
@@ -124,6 +128,9 @@ getNormalFlowFunction()<br>
   store i8* %ua.coerce, i8** %coerce.dive, align 8, !phasar.instruction.id !23<br>
 <br>
 Got store instruction<br>
+[TRACK]:i8* %ua.coerce<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK] i8* %ua.coerce<br>
 [TRACK] Patched memory location (arg/store)<br>
 [TRACK] Source:<br>
 [TRACK] i8* %ua.coerce<br>
@@ -147,6 +154,15 @@ getNormalFlowFunction()<br>
   store i8* %0, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !34<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %0 = load i8*, i8** %foo, align 8, !dbg !31, !phasar.instruction.id !33<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20<br>
+[TRACK]:  %0 = load i8*, i8** %foo, align 8, !dbg !31, !phasar.instruction.id !33<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20<br>
+[TRACK]:  %0 = load i8*, i8** %foo, align 8, !dbg !31, !phasar.instruction.id !33<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20<br>
@@ -160,15 +176,23 @@ getSummaryFlowFunction()<br>
   call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39<br>
 <br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39<br>
 <br>
+[TRACK]:i8* %ua.coerce<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK] i8* %ua.coerce<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata %union.a* %ua, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27<br>
 <br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !28, metadata !25), !dbg !29, !phasar.instruction.id !30<br>
 <br>
+[TRACK]:  %0 = load i8*, i8** %foo, align 8, !dbg !31, !phasar.instruction.id !33<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20<br>
 getCallToRetFlowFunction()<br>
 getCallFlowFunction()<br>
   %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>

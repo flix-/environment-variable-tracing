@@ -38,6 +38,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !16
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !17, metadata !27), !dbg !28, !phasar.instruction.id !29
 
@@ -52,6 +54,8 @@ getNormalFlowFunction()
   store i8* %call, i8** %t1, align 8, !dbg !34, !phasar.instruction.id !35
 
 Got store instruction
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
 
@@ -67,6 +71,8 @@ getNormalFlowFunction()
   store i8* %call1, i8** %t2, align 8, !dbg !42, !phasar.instruction.id !43
 
 Got store instruction
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %t12 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45
 
@@ -103,12 +109,21 @@ getNormalFlowFunction()
   store i8* %1, i8** %t13, align 8, !dbg !50, !phasar.instruction.id !57
 
 Got store instruction
+[TRACK]:  %1 = load i8*, i8** %t25, align 8, !dbg !54, !phasar.instruction.id !56
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %s24 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !52, !phasar.instruction.id !53
+[TRACK]   %t25 = getelementptr inbounds %struct.s2, %struct.s2* %s24, i32 0, i32 0, !dbg !54, !phasar.instruction.id !55
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
 getCallToRetFlowFunction()
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
 
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 3, i32 8, i1 false), !dbg !46, !phasar.instruction.id !48
 
@@ -116,6 +131,11 @@ Got memset instruction
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %t13, metadata !49, metadata !27), !dbg !50, !phasar.instruction.id !51
 
+[TRACK]:  %1 = load i8*, i8** %t25, align 8, !dbg !54, !phasar.instruction.id !56
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %s24 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !52, !phasar.instruction.id !53
+[TRACK]   %t25 = getelementptr inbounds %struct.s2, %struct.s2* %s24, i32 0, i32 0, !dbg !54, !phasar.instruction.id !55
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
@@ -138,10 +158,25 @@ getNormalFlowFunction()
   store i8* %2, i8** %ut1, align 8, !dbg !59, !phasar.instruction.id !64
 
 Got store instruction
+[TRACK]:  %2 = load i8*, i8** %t16, align 8, !dbg !61, !phasar.instruction.id !63
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t16 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !61, !phasar.instruction.id !62
 getCallToRetFlowFunction()
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %ut1, metadata !58, metadata !27), !dbg !59, !phasar.instruction.id !60
 
+[TRACK]:  %2 = load i8*, i8** %t16, align 8, !dbg !61, !phasar.instruction.id !63
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t16 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !61, !phasar.instruction.id !62
+[TRACK]:  %1 = load i8*, i8** %t25, align 8, !dbg !54, !phasar.instruction.id !56
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %s24 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !52, !phasar.instruction.id !53
+[TRACK]   %t25 = getelementptr inbounds %struct.s2, %struct.s2* %s24, i32 0, i32 0, !dbg !54, !phasar.instruction.id !55
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !36, !phasar.instruction.id !37
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 3, i32 8, i1 false), !dbg !46, !phasar.instruction.id !48
 
@@ -149,9 +184,18 @@ Got memset instruction
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %t13, metadata !49, metadata !27), !dbg !50, !phasar.instruction.id !51
 
+[TRACK]:  %1 = load i8*, i8** %t25, align 8, !dbg !54, !phasar.instruction.id !56
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %s24 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !52, !phasar.instruction.id !53
+[TRACK]   %t25 = getelementptr inbounds %struct.s2, %struct.s2* %s24, i32 0, i32 0, !dbg !54, !phasar.instruction.id !55
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i8** %ut1, metadata !58, metadata !27), !dbg !59, !phasar.instruction.id !60
 
+[TRACK]:  %2 = load i8*, i8** %t16, align 8, !dbg !61, !phasar.instruction.id !63
+[TRACK]: srcMemLocation: 1
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
+[TRACK]   %t16 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !61, !phasar.instruction.id !62
 getCallToRetFlowFunction()
 getCallFlowFunction()
   call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 3, i32 8, i1 false), !dbg !46, !phasar.instruction.id !48

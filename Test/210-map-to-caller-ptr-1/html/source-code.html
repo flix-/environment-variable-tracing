@@ -70,6 +70,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !16<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %s, metadata !32, metadata !16), !dbg !33, !phasar.instruction.id !34<br>
 <br>
@@ -80,6 +82,8 @@ getNormalFlowFunction()<br>
   store i8* %call, i8** %s, align 8, !dbg !21, !phasar.instruction.id !25<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !23, !phasar.instruction.id !24<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %t, metadata !38, metadata !16), !dbg !39, !phasar.instruction.id !40<br>
 <br>
@@ -106,6 +110,9 @@ getNormalFlowFunction()<br>
   store i8* %s, i8** %s.addr, align 8, !phasar.instruction.id !14<br>
 <br>
 Got store instruction<br>
+[TRACK]:i8* %s<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK] i8* %s<br>
 [TRACK] Patched memory location (arg/store)<br>
 [TRACK] Source:<br>
 [TRACK] i8* %s<br>
@@ -129,6 +136,8 @@ getNormalFlowFunction()<br>
   store i8* %call1, i8** %t, align 8, !dbg !27, !phasar.instruction.id !33<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
+[TRACK]: srcMemLocation: 0<br>
 [TRACK] Patched memory location (ret/store)<br>
 [TRACK] Source:<br>
 [TRACK]   %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
@@ -145,33 +154,56 @@ getNormalFlowFunction()<br>
   store i8* %1, i8** %t1, align 8, !dbg !35, !phasar.instruction.id !39<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %1 = load i8*, i8** %t, align 8, !dbg !37, !phasar.instruction.id !38<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
 [TRACK] Destination:<br>
 [TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[TRACK]:  %1 = load i8*, i8** %t, align 8, !dbg !37, !phasar.instruction.id !38<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
 getCallToRetFlowFunction()<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %t1, metadata !46, metadata !16), !dbg !47, !phasar.instruction.id !48<br>
 <br>
+[TRACK]:  %1 = load i8*, i8** %t, align 8, !dbg !37, !phasar.instruction.id !38<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
 getSummaryFlowFunction()<br>
   %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
 <br>
+[TRACK]:  %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
+[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !23, !phasar.instruction.id !24<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %t, metadata !38, metadata !16), !dbg !39, !phasar.instruction.id !40<br>
 <br>
 getSummaryFlowFunction()<br>
   %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
 <br>
+[TRACK]:i8* %s<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK] i8* %s<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %s.addr, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18<br>
 <br>
+[TRACK]:  %call1 = call i8* @foo(i8* %0), !dbg !31, !phasar.instruction.id !32<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %t1, metadata !46, metadata !16), !dbg !47, !phasar.instruction.id !48<br>
 <br>
+[TRACK]:  %1 = load i8*, i8** %t, align 8, !dbg !37, !phasar.instruction.id !38<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
 getCallToRetFlowFunction()<br>
 getCallFlowFunction()<br>
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !23, !phasar.instruction.id !24<br>

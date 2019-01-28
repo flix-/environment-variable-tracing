@@ -34,6 +34,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !24
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata %struct.s1** %s1, metadata !25, metadata !26), !dbg !27, !phasar.instruction.id !28
 
@@ -48,6 +50,8 @@ getNormalFlowFunction()
   store %struct.s1* %0, %struct.s1** %s1, align 8, !dbg !27, !phasar.instruction.id !33
 
 Got store instruction
+[TRACK]:  %0 = bitcast i8* %call to %struct.s1*, !dbg !31, !phasar.instruction.id !32
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %1 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !34, !phasar.instruction.id !36
 
@@ -75,6 +79,8 @@ getNormalFlowFunction()
   store i8* %call1, i8** %t1, align 8, !dbg !49, !phasar.instruction.id !50
 
 Got store instruction
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !43, !phasar.instruction.id !44
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   %3 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !51, !phasar.instruction.id !53
 
@@ -94,6 +100,8 @@ getNormalFlowFunction()
   store i32 4711, i32* %a, align 4, !dbg !60, !phasar.instruction.id !62
 
 Got store instruction
+[TRACK]:i32 4711
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %if.end3, !dbg !63, !phasar.instruction.id !64
 
@@ -102,6 +110,8 @@ getNormalFlowFunction()
   store i32 0, i32* %retval, align 4, !dbg !65, !phasar.instruction.id !66
 
 Got store instruction
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %return, !dbg !65, !phasar.instruction.id !67
 
@@ -116,9 +126,15 @@ getNormalFlowFunction()
 
 Got branch instruction
 getCallToRetFlowFunction()
+[TRACK]:  %call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !43, !phasar.instruction.id !44
+[TRACK]: srcMemLocation: 0
 getSummaryFlowFunction()
   call void @llvm.dbg.declare(metadata i32* %a, metadata !58, metadata !26), !dbg !60, !phasar.instruction.id !61
 
+[TRACK]:i32 4711
+[TRACK]: srcMemLocation: 0
+[TRACK]:i32 0
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br i1 %tobool, label %if.end, label %if.then, !dbg !38, !phasar.instruction.id !39
 
@@ -127,6 +143,8 @@ getNormalFlowFunction()
   store i32 -1, i32* %retval, align 4, !dbg !40, !phasar.instruction.id !41
 
 Got store instruction
+[TRACK]:i32 -1
+[TRACK]: srcMemLocation: 0
 getNormalFlowFunction()
   br label %return, !dbg !40, !phasar.instruction.id !42
 

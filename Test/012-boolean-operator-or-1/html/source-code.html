@@ -60,6 +60,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !15<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19<br>
 <br>
@@ -86,6 +88,8 @@ getNormalFlowFunction()<br>
   store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24<br>
 <br>
@@ -102,9 +106,8 @@ getNormalFlowFunction()<br>
 <br>
 Got branch instruction<br>
 getCallToRetFlowFunction()<br>
-getSummaryFlowFunction()<br>
-  %call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26<br>
-<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34<br>
 <br>
@@ -116,16 +119,36 @@ getNormalFlowFunction()<br>
   store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
 [TRACK] Destination:<br>
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14<br>
+[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
+getSummaryFlowFunction()<br>
+  %call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26<br>
+<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
 getCallToRetFlowFunction()<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34<br>
 <br>
+[TRACK]:  %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36<br>
+[TRACK]: srcMemLocation: 1<br>
+[TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
 getSummaryFlowFunction()<br>
   %call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26<br>
 <br>
@@ -147,13 +170,16 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %lor.ext = zext i1 %0 to i32, !dbg !23, !phasar.instruction.id !30, ID: 13 in function: main<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
+D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%0 = phi i1 [ true, %entry ], [ %tobool2, %lor.rhs ], !phasar.instruction.id !29, ID: 12<br>
 <br>
 D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -221,12 +247,12 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	@zero_value = constant <br>
+<br>
+i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
-N: %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !ph<br>
-<br>
-asar.instruction.id !27, ID: 10 in function: main<br>
+N: %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10 in function: main<br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
 L:	lor.end<br>
 <br>

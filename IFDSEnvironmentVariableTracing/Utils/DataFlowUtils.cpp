@@ -29,14 +29,6 @@ isMemoryLocationFrame(const llvm::Value* memLocationPart) {
 }
 
 static bool
-isUnionBitCast(const llvm::BitCastInst* bitCastInst) {
-
-  std::string typeName = DataFlowUtils::getTypeName(bitCastInst->getSrcTy());
-
-  return typeName.find("union") != std::string::npos;
-}
-
-static bool
 isConstantIntEqual(const llvm::ConstantInt* ci1,
                    const llvm::ConstantInt* ci2) {
 
@@ -141,6 +133,17 @@ isFirstNMemoryLocationPartsEqual(std::vector<const llvm::Value*> memLocationSeqF
   return true;
 }
 
+static bool
+isUnionBitCast(const llvm::CastInst* castInst) {
+
+  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(castInst)) {
+    std::string typeName = DataFlowUtils::getTypeName(bitCastInst->getSrcTy());
+
+    return typeName.find("union") != std::string::npos;
+  }
+  return false;
+}
+
 static std::vector<const llvm::Value*>
 getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
 
@@ -149,34 +152,31 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   bool isMemLocationFrame = isMemoryLocationFrame(memLocationPart);
   if (isMemLocationFrame) {
     memLocationSeq.push_back(memLocationPart);
+
     return memLocationSeq;
   }
 
-  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(memLocationPart)) {
-    const auto oneUp = bitCastInst->getOperand(0);
+  if (const auto castInst = llvm::dyn_cast<llvm::CastInst>(memLocationPart)) {
+    memLocationSeq = getMemoryLocationSeqFromMatrRec(castInst->getOperand(0));
 
-    memLocationSeq = getMemoryLocationSeqFromMatrRec(oneUp);
-    bool poisonSeq = isUnionBitCast(bitCastInst);
-
+    bool poisonSeq = isUnionBitCast(castInst);
     if (!poisonSeq) return memLocationSeq;
 
     // FALLTHROUGH
   }
   else
   if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationPart)) {
-    const auto oneUp = loadInst->getOperand(0);
-
-    return getMemoryLocationSeqFromMatrRec(oneUp);
+    return getMemoryLocationSeqFromMatrRec(loadInst->getOperand(0));
   }
   else
   if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationPart)) {
-    const auto oneUp = gepInst->getPointerOperand();
+    memLocationSeq = getMemoryLocationSeqFromMatrRec(gepInst->getPointerOperand());
 
-    memLocationSeq = getMemoryLocationSeqFromMatrRec(oneUp);
     bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
     if (isSeqPoisoned) return memLocationSeq;
 
     memLocationSeq.push_back(gepInst);
+
     return memLocationSeq;
   }
 
@@ -269,14 +269,14 @@ bool
 DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
                                          const std::vector<const llvm::Value*> memLocationSeqFact) {
 
-    if (memLocationSeqInst.empty()) return false;
-    if (memLocationSeqFact.empty()) return false;
+  if (memLocationSeqInst.empty()) return false;
+  if (memLocationSeqFact.empty()) return false;
 
-    std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(), memLocationSeqFact.size());
+  std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(), memLocationSeqFact.size());
 
-    return isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
-                                            memLocationSeqFact,
-                                            n);
+  return isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
+                                          memLocationSeqFact,
+                                          n);
 }
 
 const std::vector<const llvm::Value*>
@@ -409,9 +409,8 @@ getNumCoercedArgs(const llvm::Value* value) {
   }
 
   if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(value)) {
-    const auto oneUp = bitCastInst->getOperand(0);
+    long ret = getNumCoercedArgs(bitCastInst->getOperand(0));
 
-    long ret = getNumCoercedArgs(oneUp);
     if (ret == -4711) {
       const auto dstType = bitCastInst->getDestTy();
       if (!dstType->isPointerTy()) return -1;
@@ -423,17 +422,16 @@ getNumCoercedArgs(const llvm::Value* value) {
       }
       return -1;
     }
+
     return ret;
   }
   else
   if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(value)) {
-    const auto oneUp = gepInst->getPointerOperand();
-    return getNumCoercedArgs(oneUp);
+    return getNumCoercedArgs(gepInst->getPointerOperand());
   }
   else
   if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(value)) {
-    const auto oneUp = loadInst->getPointerOperand();
-    return getNumCoercedArgs(oneUp);
+    return getNumCoercedArgs(loadInst->getPointerOperand());
   }
 
   return -1;

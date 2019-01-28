@@ -57,6 +57,8 @@ getNormalFlowFunction()<br>
   store i32 0, i32* %retval, align 4, !phasar.instruction.id !13<br>
 <br>
 Got store instruction<br>
+[TRACK]:i32 0<br>
+[TRACK]: srcMemLocation: 0<br>
 getSummaryFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i32* %no_taint, metadata !14, metadata !15), !dbg !16, !phasar.instruction.id !17<br>
 <br>
@@ -83,6 +85,8 @@ getNormalFlowFunction()<br>
   store i32 %lor.ext, i32* %no_taint, align 4, !dbg !16, !phasar.instruction.id !29<br>
 <br>
 Got store instruction<br>
+[TRACK]:  %lor.ext = zext i1 %0 to i32, !dbg !21, !phasar.instruction.id !28<br>
+[TRACK]: srcMemLocation: 0<br>
 getNormalFlowFunction()<br>
   br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !21, !phasar.instruction.id !22<br>
 <br>
