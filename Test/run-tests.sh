@@ -5,7 +5,6 @@ CFLAGS='-g -S -emit-llvm'
 SRC_IN='main.c'
 IR_OUT='main.ll'
 
-HTML_DIR='/home/sebastian/.qt-creator-workspace/Phasar/Test/.google-code-prettify'
 LINES_FILE='line-numbers.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'
@@ -116,8 +115,8 @@ do
     echo "Creating html skeleton"
     rm -rf html
     mkdir -p html/css
-    ln -s ${HTML_DIR} html/google-code-prettify
-    ln -s ${HTML_DIR}/css/custom.css html/css/
+    ln -s ../../.google-code-prettify html/google-code-prettify
+    ln -s ../../../.google-code-prettify/css/custom.css html/css/
 
     echo "Compiling to IR"
     ${CC} ${CFLAGS} ${SRC_IN} -o ${IR_OUT}
