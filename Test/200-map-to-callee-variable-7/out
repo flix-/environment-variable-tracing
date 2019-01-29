@@ -179,16 +179,16 @@ getCallFlowFunction()
 --- IFDS START RESULT RECORD ---
 N: %a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1 in function: foo
 D:	@zero_value = constant i2 0, align 4, ID: -1
-
-D:	i32 %a, ID: foo.0
 A:	i32 %a, ID: foo.0
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %0 = load i32, i32* %a.addr, align 4, !dbg !24, !phasar.instruction.id !25, ID: 6 in function: foo
 D:	@zero_value = constant i2 0, align 4, ID: -1
-
-D:	i32 %a, ID: foo.0
 A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %s1 = alloca %struct.s1, align 4, !phasar.instruction.id !15, ID: 10 in function: main
@@ -208,50 +208,50 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20, ID: 4 in function: foo
-D:	i32 %a, ID: foo.0
-A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
 
 --- IFDS START RESULT RECORD ---
 N: store i32 %0, i32* %t1, align 4, !dbg !22, !phasar.instruction.id !26, ID: 7 in function: foo
 D:	%0 = load i32, i32* %a.addr, align 4, !dbg !24, !phasar.instruction.id !25, ID: 6
 
-D:	i32 %a, ID: foo.0
-A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
 
 --- IFDS START RESULT RECORD ---
 N: store i32 %a, i32* %a.addr, align 4, !phasar.instruction.id !16, ID: 3 in function: foo
-D:	i32 %a, ID: foo.0
-A:	i32 %a, ID: foo.0
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	i32 %a, ID: foo.0
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23, ID: 5 in function: foo
-D:	i32 %a, ID: foo.0
-A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
 
 --- IFDS START RESULT RECORD ---
 N: %t1 = alloca i32, align 4, !phasar.instruction.id !15, ID: 2 in function: foo
 D:	@zero_value = constant i2 0, align 4, ID: -1
-
-D:	i32 %a, ID: foo.0
 A:	i32 %a, ID: foo.0
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: ret void, !dbg !27, !phasar.instruction.id !28, ID: 8 in function: foo
-D:	i32 %a, ID: foo.0
-A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
-
-D:	i32 %a, ID: foo.0
-A:	%t1 = alloca i32, align 4, !phasar.instruction.id !15, ID: 2
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%a.addr = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i32, align 4, !phasar.instruction.id !15, ID: 2
 
 --- IFDS START RESULT RECORD ---
 N: %tainted = alloca i8*, align 8, !phasar.instruction.id !16, ID: 11 in function: main
@@ -350,12 +350,12 @@ D:	store i8* %call, i8** %tainted, align 8, !dbg !31, !phasar.instruction.id !35
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !16, ID: 11
 
 --- IFDS START RESULT RECORD ---
-N: %a2 = getelementptr inbounds %struct.s2, %struct.s2* %s21, i32 0, i32 0, !dbg !49, !phasar.instruction.id !50, ID: 24 in function: main
+N: %a2 = getelementptr inbounds %struct.s2, %struc
+t.s2* %s21, i32 0, i32 0, !dbg !49, !phasar.instruction.id !50, ID: 24 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i8* %call, i8** %tainted, align 8, !dbg !31, !phasar.instruction.id !35, ID: 16
-A:	%tainted = al
-loca i8*, align 8, !phasar.instruction.id !16, ID: 11
+A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !16, ID: 11
 
 D:	store i32 %conv, i32* %a, align 4, !dbg !45, !phasar.instruction.id !46, ID: 22
 A:	%s1 = alloca %struct.s1, align 4, !phasar.instruction.id !15, ID: 10

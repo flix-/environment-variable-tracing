@@ -23,7 +23,6 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   const auto retValMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(retVal);
 
   bool isRetValMemLocation = !retValMemLocationSeq.empty();
-
   if (isRetValMemLocation) {
     const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
 
@@ -36,6 +35,12 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
       const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                  relocatableMemLocationSeq);
 
+      /*
+       * We need to set this to call inst because we can have the case where we
+       * only return the call inst in the mem location sequence (which is not a
+       * a memory address). We then land in the else branch below and need to find
+       * the call instance (see test case 230-function-ptr-2).
+       */
       ExtendedValue ev(callInst);
       ev.setMemLocationSeq(patchableMemLocationSeq);
 
