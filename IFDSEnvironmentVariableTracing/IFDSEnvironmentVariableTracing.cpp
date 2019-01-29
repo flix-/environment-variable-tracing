@@ -647,7 +647,7 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
 void
 IFDSEnvironmentVariableTracing::printReport() {
   std::ofstream writer(LINE_NUMBERS_OUTPUT_FILE);
-  for (const auto lineNumber : lineNumberStore.getLineNumbers()) {
+  for (const auto& lineNumber : lineNumberStore.getLineNumbers()) {
     writer << lineNumber << "\n";
   }
 }

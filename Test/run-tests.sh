@@ -6,6 +6,7 @@ SRC_IN='main.c'
 IR_OUT='main.ll'
 
 LINES_FILE='line-numbers.txt'
+LINES_FILE_STRIPPED='line-numbers-stripped.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'
 HTML_INCLUDE_PHASAR_OUTPUT=1
@@ -51,7 +52,7 @@ function create_html {
     rm -f ${OUT_CSS}
     while read -r line || [[ -n "${line}" ]]; do
         echo "li.L${line} { background-color: grey; }" >> ${OUT_CSS}
-    done < "${LINES_FILE}"
+    done < "${LINES_FILE_STRIPPED}"
 }
 
 function create_summary_start {
@@ -109,6 +110,8 @@ fi
 
 for test_dir in ${DIRECTORY}
 do
+    test_dir=$(echo ${test_dir} | sed 's:/*$::')
+
     echo "Handling ${test_dir}"
     cd ${test_dir}
 
@@ -125,7 +128,12 @@ do
     ${PHASAR_BIN} -m ${IR_OUT} -M 0 -D plugin --analysis-plugin ${PHASAR_PLUGIN} > ${PHASAR_OUTPUT_FILE} 2>&1
 
     echo "Checking result"
-    diff ${LINES_FILE} ${EXPECTED_LINES_FILE} > /dev/null 2>&1
+
+    sed 's/^[^:]*://' ${LINES_FILE} > ${LINES_FILE_STRIPPED}
+    sort -g ${LINES_FILE_STRIPPED} > ${LINES_FILE_STRIPPED}.tmp
+    mv ${LINES_FILE_STRIPPED}.tmp ${LINES_FILE_STRIPPED}
+
+    diff ${EXPECTED_LINES_FILE} ${LINES_FILE_STRIPPED} > /dev/null 2>&1
     RC=$?
     TEST_RESULT=""
     if [ $RC -eq 0 ]; then

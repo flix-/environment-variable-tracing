@@ -6,6 +6,7 @@
 #define LINENUMBERSTORE_H
 
 #include <set>
+#include <string>
 
 #include <llvm/IR/Instruction.h>
 
@@ -16,11 +17,10 @@ public:
   LineNumberStore();
 
   long addLineNumber(const llvm::Instruction* instruction);
-  long removeLineNumber(const llvm::Instruction* instruction);
-  std::set<unsigned int> getLineNumbers(void);
+  std::set<std::string> getLineNumbers(void);
 
 private:
-  std::set<unsigned int> lineNumbers;
+  std::set<std::string> lineNumbers;
 };
 
 } // namespace
