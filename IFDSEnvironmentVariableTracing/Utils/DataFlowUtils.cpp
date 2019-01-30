@@ -10,6 +10,8 @@
 #include <stack>
 #include <string>
 
+#include "llvm/Analysis/PostDominators.h"
+
 #include <llvm/IR/IntrinsicInst.h>
 
 #include <llvm/Support/raw_ostream.h>
@@ -540,6 +542,9 @@ getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
       if (branchInst->isConditional()) branchInstStack.push(branchInst);
     }
 
+    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
+    if (!hasSuccessor) return "";
+
     terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
 
     const auto bbLabel = terminatorInstPtr->getParent()->getName();
@@ -551,6 +556,21 @@ getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
   const auto endOfBranchLabel = terminatorInstPtr->getParent()->getName();
 
   return endOfBranchLabel;
+}
+
+static std::string
+getEndOfBranchLabelNew(const llvm::BranchInst *branchInst) {
+
+  llvm::BasicBlock* branchInstBB = const_cast<llvm::BasicBlock*>(branchInst->getParent());
+  llvm::Function* f = branchInstBB->getParent();
+
+  llvm::PostDominatorTreeWrapperPass postDomAnalysis;
+
+  postDomAnalysis.runOnFunction(*f);
+
+  const auto& postDomTree = postDomAnalysis.getPostDomTree();
+
+  return "";
 }
 
 static std::string
@@ -576,6 +596,9 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
     if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
       switchInstStack.push(switchInst);
     }
+
+    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
+    if (!hasSuccessor) return "";
 
     terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
 

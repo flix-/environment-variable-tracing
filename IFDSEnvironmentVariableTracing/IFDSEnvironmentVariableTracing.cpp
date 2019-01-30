@@ -322,14 +322,16 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition);
         if (isBranchTainted) {
           const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
+          bool foundEndOfTaintedBranchLabel = !endOfTaintedBranchLabel.empty();
 
-          ExtendedValue ev(branchInst);
-          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+          if (foundEndOfTaintedBranchLabel) {
+            ExtendedValue ev(branchInst);
+            ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
 
-          lineNumberStore.addLineNumber(branchInst);
+            lineNumberStore.addLineNumber(branchInst);
 
-          // Do not keep temporary fact...
-          return { ev };
+            return { ev };
+          }
         }
       }
 
@@ -360,14 +362,16 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition);
       if (isSwitchTainted) {
         const auto endOfTaintedSwitchLabel = DataFlowUtils::getEndOfBlockLabel(switchInst);
+        bool foundEndOfTaintedSwitchLabel = !endOfTaintedSwitchLabel.empty();
 
-        ExtendedValue ev(switchInst);
-        ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
+        if (foundEndOfTaintedSwitchLabel) {
+          ExtendedValue ev(switchInst);
+          ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
 
-        lineNumberStore.addLineNumber(switchInst);
+          lineNumberStore.addLineNumber(switchInst);
 
-        // Do not keep temporary fact
-        return { ev };
+          return { ev };
+        }
       }
 
       return { fact };
@@ -638,9 +642,11 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
   llvm::outs() << "initialSeeds()" << "\n";
 
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
-  for (auto &entryPoint : this->EntryPoints) {
-    seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(), std::set<ExtendedValue>({ zeroValue() })));
+  for (const auto& entryPoint : this->EntryPoints) {
+    seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
+                                  std::set<ExtendedValue>({ zeroValue() })));
   }
+
   return seedMap;
 }
 
