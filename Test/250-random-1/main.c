@@ -4,10 +4,12 @@
 int
 foo(char *t, char *ut) {
 
-    if (t == NULL || ut == NULL) {
-        do {
-        } while (0);
-    }
+
+        if (t == NULL || ut == NULL) {
+            do {
+            } while (0);
+        }
+
 
     int a = 0;
 

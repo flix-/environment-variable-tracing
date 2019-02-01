@@ -10,10 +10,7 @@
 #include <stack>
 #include <string>
 
-#include "llvm/Analysis/PostDominators.h"
-
 #include <llvm/IR/IntrinsicInst.h>
-
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -22,6 +19,7 @@ using namespace psr;
 
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
 static const std::vector<const llvm::Value*> EMPTY_SEQ;
+static const std::string EMPTY_STRING;
 
 static bool
 isMemoryLocationFrame(const llvm::Value* memLocationPart) {
@@ -520,57 +518,7 @@ getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
   if (bbLabel1.contains_lower("end")) return bbLabel1;
   if (bbLabel2.contains_lower("end")) return bbLabel2;
 
-  /*
-   * The way we determine the basic block where the branch merges
-   * when we have an else part is as follows:
-   *
-   * Starting with the branch instruction whenever we encounter a
-   * conditional branch instruction (beginning of a new branch)
-   * we push it on the stack. Then we follow one side of the branch
-   * (here left side). Whenever we encounter a basic block with an
-   * "end" label (end of a branch) we pop the stack as this means
-   * the branch instruction has merged. If we pop our initial branch
-   * instruction the stack is empty and we have reached the merge
-   * block of the branch. terminatorInstPtr will point to the
-   * basic block where the branch instruction has merged.
-   */
-  std::stack<const llvm::BranchInst*> branchInstStack;
-
-  const llvm::TerminatorInst* terminatorInstPtr = branchInst;
-  do {
-    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInstPtr)) {
-      if (branchInst->isConditional()) branchInstStack.push(branchInst);
-    }
-
-    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
-    if (!hasSuccessor) return "";
-
-    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
-
-    const auto bbLabel = terminatorInstPtr->getParent()->getName();
-    bool isEnd = bbLabel.contains_lower("end");
-    if (isEnd) branchInstStack.pop();
-
-  } while (!branchInstStack.empty());
-
-  const auto endOfBranchLabel = terminatorInstPtr->getParent()->getName();
-
-  return endOfBranchLabel;
-}
-
-static std::string
-getEndOfBranchLabelNew(const llvm::BranchInst *branchInst) {
-
-  llvm::BasicBlock* branchInstBB = const_cast<llvm::BasicBlock*>(branchInst->getParent());
-  llvm::Function* f = branchInstBB->getParent();
-
-  llvm::PostDominatorTreeWrapperPass postDomAnalysis;
-
-  postDomAnalysis.runOnFunction(*f);
-
-  const auto& postDomTree = postDomAnalysis.getPostDomTree();
-
-  return "";
+  return EMPTY_STRING;
 }
 
 static std::string
@@ -585,31 +533,7 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
   bool isEpilogLabel = defaultLabel.contains_lower("epilog");
   if (isEpilogLabel) return defaultLabel;
 
-  /*
-   * If there is a default set use algorithm as described for branch
-   * instructions (see above).
-   */
-  std::stack<const llvm::SwitchInst*> switchInstStack;
-
-  const llvm::TerminatorInst* terminatorInstPtr = switchInst;
-  do {
-    if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
-      switchInstStack.push(switchInst);
-    }
-
-    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
-    if (!hasSuccessor) return "";
-
-    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
-
-    const auto bbLabel = terminatorInstPtr->getParent()->getName();
-    bool isEpilog = bbLabel.contains_lower("epilog");
-    if (isEpilog) switchInstStack.pop();
-  } while (!switchInstStack.empty());
-
-  const auto endOfSwitchLabel = terminatorInstPtr->getParent()->getName();
-
-  return endOfSwitchLabel;
+  return EMPTY_STRING;
 }
 
 std::string
@@ -623,7 +547,7 @@ DataFlowUtils::getEndOfBlockLabel(const llvm::Instruction* instruction) {
     return getEndOfSwitchLabel(switchInst);
   }
 
-  return std::string();
+  return EMPTY_STRING;
 }
 
 std::string
