@@ -518,6 +518,23 @@ getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
   if (bbLabel1.contains_lower("end")) return bbLabel1;
   if (bbLabel2.contains_lower("end")) return bbLabel2;
 
+  /*
+   * Support for ternary operator
+   */
+  const auto function = branchInst->getParent()->getParent();
+  for (const auto& bb : *function) {
+    for (const auto& phiNode : bb.phis()) {
+      for (const auto& phiNodeBlock : phiNode.blocks()) {
+        for (const auto& operand : branchInst->operands()) {
+          if (const auto basicBlockInst = llvm::dyn_cast<llvm::BasicBlock>(operand)) {
+            bool isMatch = phiNodeBlock == basicBlockInst;
+            if (isMatch) return phiNode.getParent()->getName();
+          }
+        }
+      }
+    }
+  }
+
   return EMPTY_STRING;
 }
 

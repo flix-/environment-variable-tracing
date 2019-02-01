@@ -211,13 +211,6 @@ getCallFlowFunction()<br>
 getCallFlowFunction()<br>
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29<br>
 <br>
-[TRACK] Added patchable memory location (caller -> callee)<br>
-[TRACK] Source:<br>
-[TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
-[TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31<br>
-[TRACK] Destination:<br>
-[TRACK] %struct.s1* %fs<br>
-[TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31<br>
 getCallFlowFunction()<br>
   call void @llvm.dbg.declare(metadata %struct.s1* %fs, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27<br>
 <br>
@@ -228,7 +221,15 @@ getCallFlowFunction()<br>
   call void @llvm.dbg.declare(metadata i8** %also_tainted, metadata !32, metadata !25), !dbg !33, !phasar.instruction.id !34<br>
 <br>
 getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !49, metadata !25), !dbg !50, !phasar.instruction.id !51### DUMP LLVMIFDSSolver results<br>
+  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !49, metadata !25), !dbg !50, !phasar.instruction.id !51<br>
+<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK]   %ms = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
+[TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31<br>
+[TRACK] Destination:<br>
+[TRACK] %struct.s1* %fs<br>
+[TRACK]   %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31### DUMP LLVMIFDSSolver results<br>
 --- IFDS START RESULT RECORD ---<br>
 N: %not_tainted = alloca i8*, align 8, !phasar.instruction.id !23, ID: 4 in function: foo<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
@@ -394,7 +395,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 A:	%also_tainted = alloca i8*, a<br>
-<br>
 lign 8, !phasar.instruction.id !22, ID: 3<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
@@ -429,31 +429,31 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 27 in function: main<br>
-D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 26<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 26<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33, ID: 28 in function: main<br>
-D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 26<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 26<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @foo(%struct.s1* byval align 8 %ms, i32 42), !dbg !34, !phasar.instruction.id !35, ID: 29 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33, ID: 28<br>
 A:	%ms = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 23<br>
 A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 27<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: ret i32 0, !dbg !36, !phasar.instruction.id !37, ID: 30 in function: main<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	store i8* %call, i8** %tainted1, align 8, !dbg !32, !phasar.instruction.id !33, ID: 28<br>
 A:	%ms = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 23<br>
 A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 27<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 <br>
 No IFDS report available!<br>
