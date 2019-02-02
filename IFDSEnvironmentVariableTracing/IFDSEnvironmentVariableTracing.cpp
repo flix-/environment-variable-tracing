@@ -26,7 +26,7 @@
 
 namespace psr {
 
-static const char* LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
+static std::string LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
 static const char* GETENV_CALL = "getenv";
 
 
@@ -50,7 +50,12 @@ __attribute__((destructor)) void fini() {
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) { }
+    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
+
+  if (!entryPoints.empty()) LINE_NUMBERS_OUTPUT_FILE = entryPoints.front() + "-line-numbers.txt";
+
+  llvm::outs() << "Line numbers output file: " << LINE_NUMBERS_OUTPUT_FILE << "\n";
+}
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
@@ -644,7 +649,7 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
   for (const auto& entryPoint : this->EntryPoints) {
     seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
-                                  std::set<ExtendedValue>({ zeroValue() })));
+                                  std::set<ExtendedValue>({zeroValue()})));
   }
 
   return seedMap;
