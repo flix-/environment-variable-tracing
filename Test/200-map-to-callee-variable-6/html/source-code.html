@@ -50,150 +50,21 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-init - makeIFDSEnvironmentVariableTracing<br>
-initialSeeds()<br>
-getNormalFlowFunction()<br>
-  %retval = alloca i32, align 4, !phasar.instruction.id !14<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  %tainted = alloca i8*, align 8, !phasar.instruction.id !15<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  %is_env_set = alloca i32, align 4, !phasar.instruction.id !16<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !17<br>
-<br>
-Got store instruction<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !36, metadata !18), !dbg !39, !phasar.instruction.id !40<br>
-<br>
-getSummaryFlowFunction()<br>
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !24, !phasar.instruction.id !25<br>
-<br>
-getNormalFlowFunction()<br>
-  store i8* %call, i8** %tainted, align 8, !dbg !22, !phasar.instruction.id !26<br>
-<br>
-Got store instruction<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %is_env_set, metadata !44, metadata !18), !dbg !45, !phasar.instruction.id !46<br>
-<br>
-getNormalFlowFunction()<br>
-  %0 = load i8*, i8** %tainted, align 8, !dbg !30, !phasar.instruction.id !31<br>
-<br>
-Got load instruction<br>
-getNormalFlowFunction()<br>
-  %cmp = icmp ne i8* %0, null, !dbg !32, !phasar.instruction.id !33<br>
-<br>
-Got operands checking instruction (icmp)<br>
-getNormalFlowFunction()<br>
-  %conv = zext i1 %cmp to i32, !dbg !32, !phasar.instruction.id !34<br>
-<br>
-Got operands checking instruction (zext)<br>
-getNormalFlowFunction()<br>
-  store i32 %conv, i32* %is_env_set, align 4, !dbg !28, !phasar.instruction.id !35<br>
-<br>
-Got store instruction<br>
-getNormalFlowFunction()<br>
-  %1 = load i32, i32* %is_env_set, align 4, !dbg !36, !phasar.instruction.id !37<br>
-<br>
-Got load instruction<br>
-getNormalFlowFunction()<br>
-  %add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39<br>
-<br>
-Got operands checking instruction (add)<br>
-getSummaryFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
-getCallFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
-getCallToRetFlowFunction()<br>
-getSummaryFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
-getSummaryFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
+Line numbers output file: main-line-numbers.txt<br>
 [TRACK] Added patchable memory location (caller -> callee)<br>
 [TRACK] Source:<br>
 [TRACK] Destination:<br>
 [TRACK] i32 %a<br>
-getNormalFlowFunction()<br>
-  %a.addr = alloca i32, align 4, !phasar.instruction.id !14<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  %t1 = alloca i32, align 4, !phasar.instruction.id !15<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  store i32 %a, i32* %a.addr, align 4, !phasar.instruction.id !16<br>
-<br>
-Got store instruction<br>
 [TRACK] Patched memory location (arg/store)<br>
 [TRACK] Source:<br>
 [TRACK] i32 %a<br>
 [TRACK] Destination:<br>
 [TRACK]   %a.addr = alloca i32, align 4, !phasar.instruction.id !14<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20<br>
-<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23<br>
-<br>
-getNormalFlowFunction()<br>
-  %0 = load i32, i32* %a.addr, align 4, !dbg !24, !phasar.instruction.id !25<br>
-<br>
-Got load instruction<br>
-getNormalFlowFunction()<br>
-  store i32 %0, i32* %t1, align 4, !dbg !22, !phasar.instruction.id !26<br>
-<br>
-Got store instruction<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %a.addr = alloca i32, align 4, !phasar.instruction.id !14<br>
 [TRACK] Destination:<br>
 [TRACK]   %t1 = alloca i32, align 4, !phasar.instruction.id !15<br>
-getCallToRetFlowFunction()<br>
-getCallToRetFlowFunction()<br>
-getRetFlowFunction()<br>
-getSummaryFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
-getCallToRetFlowFunction()<br>
-getCallToRetFlowFunction()<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %is_env_set, metadata !44, metadata !18), !dbg !45, !phasar.instruction.id !46<br>
-<br>
-getSummaryFlowFunction()<br>
-  call void @foo(i32 %add), !dbg !40, !phasar.instruction.id !41<br>
-<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20<br>
-<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23<br>
-<br>
-getCallToRetFlowFunction()<br>
-getCallFlowFunction()<br>
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !24, !phasar.instruction.id !25<br>
-<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !36, metadata !18), !dbg !39, !phasar.instruction.id !40<br>
-<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %is_env_set, metadata !44, metadata !18), !dbg !45, !phasar.instruction.id !46<br>
-<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %a.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20<br>
-<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %t1, metadata !21, metadata !18), !dbg !22, !phasar.instruction.id !23<br>
-<br>
 [TRACK] Added patchable memory location (caller -> callee)<br>
 [TRACK] Source:<br>
 [TRACK] Destination:<br>
@@ -388,7 +259,6 @@ D:	%1 = load i32, i32* %is_env_set, align 4, !dbg !36, !phasar.instruction.id !3
 D:	%add = add nsw i32 %1, 1, !dbg !38, !phasar.instruction.id !39, ID: 22<br>
 <br>
 <br>
-No IFDS report available!<br>
 </div>
 </body>
 </html>

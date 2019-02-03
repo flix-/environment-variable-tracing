@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <queue>
+#include <set>
 #include <stack>
 #include <string>
 
@@ -507,31 +508,61 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
 }
 
 static std::string
-getEndOfBranchLabel(const llvm::BranchInst *branchInst) {
-  /*
-   * If the branch does not have an else part then we can
-   * obtain the label directly from the branch instruction.
-   */
-  const auto bbLabel1 = branchInst->getOperand(1)->getName();
-  const auto bbLabel2 = branchInst->getOperand(2)->getName();
+getEndOfBranchLabel(const llvm::TerminatorInst* terminatorInst,
+                    const std::string labelPrefix,
+                    const std::string endLabelPrefix,
+                    std::stack<const llvm::BranchInst*> branchInstStack,
+                    std::set<const llvm::TerminatorInst*>& visitedTerminatorInsts) {
 
-  if (bbLabel1.contains_lower("end")) return bbLabel1;
-  if (bbLabel2.contains_lower("end")) return bbLabel2;
+  std::string newLabelPrefix = labelPrefix;
+  std::string newEndLabelPrefix = endLabelPrefix;
+
+  visitedTerminatorInsts.insert(terminatorInst);
+
+  const auto currentLabel = terminatorInst->getParent()->getName();
 
   /*
-   * Support for ternary operator
+   * Do not check for the first call with the tainted branch as we would
+   * pop from an empty stack. Placing the potential push of a branch
+   * instruction before is not an option as we can have the case that we
+   * are at a merge point of a branch statement but its terminator is again
+   * a tainted condition. If there are instructions within that basic block
+   * they would all be tainted automatically.
    */
-  const auto function = branchInst->getParent()->getParent();
-  for (const auto& bb : *function) {
-    for (const auto& phiNode : bb.phis()) {
-      for (const auto& phiNodeBlock : phiNode.blocks()) {
-        for (const auto& operand : branchInst->operands()) {
-          if (const auto basicBlockInst = llvm::dyn_cast<llvm::BasicBlock>(operand)) {
-            bool isMatch = phiNodeBlock == basicBlockInst;
-            if (isMatch) return phiNode.getParent()->getName();
-          }
-        }
+  if (!branchInstStack.empty()) {
+    bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
+    if (isEndOfBranch) branchInstStack.pop();
+
+    if (branchInstStack.empty()) return currentLabel;
+  }
+
+  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
+    bool isFork = branchInst->getNumSuccessors() > 1;
+    if (isFork) {
+      const std::string bbLabelThen = branchInst->getOperand(2)->getName();
+      const std::string currentLabelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
+
+      if (branchInst->isConditional()) {
+        if (currentLabelPrefix == labelPrefix) branchInstStack.push(branchInst);
       }
+
+      newLabelPrefix = currentLabelPrefix;
+      newEndLabelPrefix = currentLabelPrefix + "." + "end";
+    }
+  }
+
+  for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
+    const auto nextTerminatorInst = terminatorInst->getSuccessor(i)->getTerminator();
+
+    bool isAlreadyVisitedTerminatorInst = visitedTerminatorInsts.find(nextTerminatorInst) != visitedTerminatorInsts.end();
+    if (!isAlreadyVisitedTerminatorInst) {
+      const auto endLabel = getEndOfBranchLabel(nextTerminatorInst,
+                                                newLabelPrefix,
+                                                newEndLabelPrefix,
+                                                branchInstStack,
+                                                visitedTerminatorInsts);
+
+      if (endLabel != EMPTY_STRING) return endLabel;
     }
   }
 
@@ -550,14 +581,54 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
   bool isEpilogLabel = defaultLabel.contains_lower("epilog");
   if (isEpilogLabel) return defaultLabel;
 
-  return EMPTY_STRING;
+  /*
+   * If there is a default set use algorithm as described for branch
+   * instructions (see above).
+   */
+  std::stack<const llvm::SwitchInst*> switchInstStack;
+
+  const llvm::TerminatorInst* terminatorInstPtr = switchInst;
+  do {
+    if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
+      switchInstStack.push(switchInst);
+    }
+
+    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
+    if (!hasSuccessor) return EMPTY_STRING;
+
+    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
+
+    const auto bbLabel = terminatorInstPtr->getParent()->getName();
+    bool isEpilog = bbLabel.contains_lower("epilog");
+    if (isEpilog) switchInstStack.pop();
+  } while (!switchInstStack.empty());
+
+  const auto endOfSwitchLabel = terminatorInstPtr->getParent()->getName();
+
+  return endOfSwitchLabel;
 }
 
 std::string
 DataFlowUtils::getEndOfBlockLabel(const llvm::Instruction* instruction) {
 
   if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(instruction)) {
-    return getEndOfBranchLabel(branchInst);
+    const auto bbLabelThen = branchInst->getOperand(2)->getName();
+
+    auto labelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
+    const auto endLabelPrefix = (labelPrefix + "." + "end").str();
+
+    llvm::outs() << "[TRACK] Checking end of branch label for: " << bbLabelThen << "\n";
+
+    std::set<const llvm::TerminatorInst*> visitedInsts;
+    const auto endOfBranchLabel = getEndOfBranchLabel(branchInst,
+                                                      labelPrefix,
+                                                      endLabelPrefix,
+                                                      std::stack<const llvm::BranchInst*>(),
+                                                      visitedInsts);
+
+    llvm::outs() << "[TRACK] End of branch label: " << endOfBranchLabel << "\n";
+
+    return endOfBranchLabel;
   }
   else
   if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(instruction)) {

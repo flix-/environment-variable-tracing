@@ -5,7 +5,7 @@ CFLAGS='-g -S -emit-llvm'
 SRC_IN='main.c'
 IR_OUT='main.ll'
 
-LINES_FILE='line-numbers.txt'
+LINES_FILE='main-line-numbers.txt'
 LINES_FILE_STRIPPED='line-numbers-stripped.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'

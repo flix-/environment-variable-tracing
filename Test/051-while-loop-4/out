@@ -16,114 +16,7 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %rc = alloca i32, align 4, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %rc, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18
-
-getNormalFlowFunction()
-  br label %while.cond, !dbg !19, !phasar.instruction.id !20
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
-getNormalFlowFunction()
-  %tobool = icmp ne i32 %call, 0, !dbg !19, !phasar.instruction.id !23
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24
-
-Got branch instruction
-getNormalFlowFunction()
-  store i32 100, i32* %rc, align 4, !dbg !25, !phasar.instruction.id !27
-
-Got store instruction
-getNormalFlowFunction()
-  br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24
-
-Got branch instruction
-getNormalFlowFunction()
-  %0 = load i32, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !46
-
-Got load instruction
-getNormalFlowFunction()
-  br label %while.cond1, !dbg !28, !phasar.instruction.id !29
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31
-
-getNormalFlowFunction()
-  %tobool3 = icmp ne i32 %call2, 0, !dbg !28, !phasar.instruction.id !32
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33
-
-Got branch instruction
-getNormalFlowFunction()
-  store i32 42, i32* %rc, align 4, !dbg !34, !phasar.instruction.id !36
-
-Got store instruction
-getNormalFlowFunction()
-  br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33
-
-Got branch instruction
-getNormalFlowFunction()
-  store i32 1, i32* %rc, align 4, !dbg !40, !phasar.instruction.id !41
-
-Got store instruction
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31
-
-getNormalFlowFunction()
-  br label %while.cond1, !dbg !28, !llvm.loop !37, !phasar.instruction.id !39
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31
-
-getNormalFlowFunction()
-  br label %while.cond, !dbg !19, !llvm.loop !42, !phasar.instruction.id !44
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
-getSummaryFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31
-
-getSummaryFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31
-
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %rc, metadata !15, metadata !16), !dbg !17, !phasar.instruction.id !18
-
-getCallFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
-getCallFlowFunction()
-  %call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31### DUMP LLVMIFDSSolver results
+### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: br label %while.cond, !dbg !19, !phasar.instruction.id !20, ID: 5 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -300,8 +193,15 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 --- IFDS START RESULT RECORD ---
 N: br label %while.cond, !dbg !19, !llvm.loop !42, !phasar.instruction.id !44, ID: 17 in function: main
 D:	store i32 1, i32* %rc, align 4, !dbg !40, !phasar.instruction.id !41, ID: 16
-A:	%rc = alloca i32, align 4, !phasar.instruction.i
-
+A:	%rc = alloca i32, align 4, !phasar.instruction.iLine numbers output file: main-line-numbers.txt
+[TRACK] Checking end of branch label for: while.body
+[TRACK] End of branch label: while.end5
+[TRACK] Checking end of branch label for: while.body4
+[TRACK] End of branch label: while.end
+[TRACK] Checking end of branch label for: while.body4
+[TRACK] End of branch label: while.end
+[TRACK] Checking end of branch label for: while.body
+[TRACK] End of branch label: while.end5
 d !13, ID: 2
 
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8
@@ -341,4 +241,3 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 D:	%0 = load i32, i32* %rc, align 4, !dbg !45, !phasar.instruction.id !46, ID: 18
 
 
-No IFDS report available!

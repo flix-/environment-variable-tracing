@@ -16,96 +16,12 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %ret = alloca i32, align 4, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %a = alloca i32, align 4, !phasar.instruction.id !14
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %ret, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
-
-getSummaryFlowFunction()
-  %call = call i32 (...) @foo(), !dbg !20, !phasar.instruction.id !22
-
-getNormalFlowFunction()
-  %tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !23
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool, label %if.then, label %if.else, !dbg !24, !phasar.instruction.id !25
-
-Got branch instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !26, metadata !17), !dbg !28, !phasar.instruction.id !29
-
-getSummaryFlowFunction()
-  %call1 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31
-
-getNormalFlowFunction()
-  store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32
-
-Got store instruction
-getNormalFlowFunction()
-  %0 = load i32, i32* %a, align 4, !dbg !33, !phasar.instruction.id !34
-
-Got load instruction
-getNormalFlowFunction()
-  store i32 %0, i32* %ret, align 4, !dbg !35, !phasar.instruction.id !36
-
-Got store instruction
+Line numbers output file: main-line-numbers.txt
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14
 [TRACK] Destination:
-[TRACK]   %ret = alloca i32, align 4, !phasar.instruction.id !13
-getNormalFlowFunction()
-  br label %if.end, !dbg !37, !phasar.instruction.id !38
-
-Got branch instruction
-getNormalFlowFunction()
-  %1 = load i32, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44
-
-Got load instruction
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getNormalFlowFunction()
-  br i1 %tobool, label %if.then, label %if.else, !dbg !24, !phasar.instruction.id !25
-
-Got branch instruction
-getNormalFlowFunction()
-  store i32 100, i32* %ret, align 4, !dbg !39, !phasar.instruction.id !41
-
-Got store instruction
-getNormalFlowFunction()
-  br label %if.end, !phasar.instruction.id !42
-
-Got branch instruction
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %ret, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
-
-getCallFlowFunction()
-  %call1 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31
-
-getCallFlowFunction()
-  %call = call i32 (...) @foo(), !dbg !20, !phasar.instruction.id !22
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !26, metadata !17), !dbg !28, !phasar.instruction.id !29### DUMP LLVMIFDSSolver results
+[TRACK]   %ret = alloca i32, align 4, !phasar.instruction.id !13### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -190,7 +106,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: br label %if.end, !dbg !37, !phasar.instruction.id !38, ID: 14 in function: main
 D:	store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 
-
 3
 
 D:	store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32, ID: 11
@@ -211,4 +126,3 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 D:	%1 = load i32, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44, ID: 17
 
 
-No IFDS report available!

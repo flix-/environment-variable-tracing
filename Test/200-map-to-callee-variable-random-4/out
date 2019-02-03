@@ -16,246 +16,32 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !14
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %s2 = alloca %struct.s2, align 8, !phasar.instruction.id !16
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %is_env_set = alloca i32, align 4, !phasar.instruction.id !17
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !18
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !60, metadata !26), !dbg !71, !phasar.instruction.id !72
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s2* %s2, metadata !73, metadata !26), !dbg !74, !phasar.instruction.id !75
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %is_env_set, metadata !76, metadata !26), !dbg !77, !phasar.instruction.id !78
-
-getSummaryFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !47, !phasar.instruction.id !48
-
-getNormalFlowFunction()
-  %cmp = icmp ne i8* %call, null, !dbg !49, !phasar.instruction.id !50
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  %conv = zext i1 %cmp to i32, !dbg !49, !phasar.instruction.id !51
-
-Got operands checking instruction (zext)
-getNormalFlowFunction()
-  store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52
-
-Got store instruction
-getNormalFlowFunction()
-  %0 = load i32, i32* %is_env_set, align 4, !dbg !53, !phasar.instruction.id !55
-
-Got load instruction
-getNormalFlowFunction()
-  %tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58
-
-Got branch instruction
-getNormalFlowFunction()
-  %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61
-
-Got GEP instruction
-getNormalFlowFunction()
-  store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63
-
-Got store instruction
-getNormalFlowFunction()
-  br label %if.end, !dbg !64, !phasar.instruction.id !65
-
-Got branch instruction
-getNormalFlowFunction()
-  %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !66, !phasar.instruction.id !67
-
-Got GEP instruction
-getNormalFlowFunction()
-  %1 = load %struct.s2*, %struct.s2** %s22, align 8, !dbg !66, !phasar.instruction.id !68
-
-Got load instruction
-getNormalFlowFunction()
-  %s3 = getelementptr inbounds %struct.s2, %struct.s2* %1, i32 0, i32 1, !dbg !69, !phasar.instruction.id !70
-
-Got GEP instruction
-getSummaryFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
-getCallFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
-getCallToRetFlowFunction()
-getNormalFlowFunction()
-  br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58
-
-Got branch instruction
-getSummaryFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
-getSummaryFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
+Line numbers output file: main-line-numbers.txt
+[TRACK] Checking end of branch label for: if.then
+[TRACK] End of branch label: if.end
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
 [TRACK]   %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61
 [TRACK] Destination:
 [TRACK] %struct.s3* %s3
-getNormalFlowFunction()
-  %t1 = alloca i32*, align 8, !phasar.instruction.id !22
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %t2 = alloca i32*, align 8, !phasar.instruction.id !23
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %t3 = alloca i8*, align 8, !phasar.instruction.id !24
-
-Got operands checking instruction (alloca)
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s3* %s3, metadata !25, metadata !26), !dbg !27, !phasar.instruction.id !28
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t1, metadata !29, metadata !26), !dbg !30, !phasar.instruction.id !31
-
-getNormalFlowFunction()
-  %a = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 0, !dbg !32, !phasar.instruction.id !33
-
-Got GEP instruction
-getNormalFlowFunction()
-  %0 = load i32*, i32** %a, align 8, !dbg !32, !phasar.instruction.id !34
-
-Got load instruction
-getNormalFlowFunction()
-  store i32* %0, i32** %t1, align 8, !dbg !30, !phasar.instruction.id !35
-
-Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK] %struct.s3* %s3
 [TRACK] Destination:
 [TRACK]   %t1 = alloca i32*, align 8, !phasar.instruction.id !22
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t2, metadata !36, metadata !26), !dbg !37, !phasar.instruction.id !38
-
-getNormalFlowFunction()
-  %b = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 1, !dbg !39, !phasar.instruction.id !40
-
-Got GEP instruction
-getNormalFlowFunction()
-  %1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41
-
-Got load instruction
-getNormalFlowFunction()
-  store i32* %1, i32** %t2, align 8, !dbg !37, !phasar.instruction.id !42
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t3, metadata !43, metadata !26), !dbg !44, !phasar.instruction.id !45
-
-getNormalFlowFunction()
-  %t11 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !46, !phasar.instruction.id !47
-
-Got GEP instruction
-getNormalFlowFunction()
-  %2 = load i8*, i8** %t11, align 8, !dbg !46, !phasar.instruction.id !48
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %2, i8** %t3, align 8, !dbg !44, !phasar.instruction.id !49
-
-Got store instruction
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t2, metadata !36, metadata !26), !dbg !37, !phasar.instruction.id !38
-
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK] %struct.s3* %s3
 [TRACK] Destination:
 [TRACK]   %t2 = alloca i32*, align 8, !phasar.instruction.id !23
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t3, metadata !43, metadata !26), !dbg !44, !phasar.instruction.id !45
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t3, metadata !43, metadata !26), !dbg !44, !phasar.instruction.id !45
-
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK] %struct.s3* %s3
 [TRACK] Destination:
 [TRACK]   %t3 = alloca i8*, align 8, !phasar.instruction.id !24
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getRetFlowFunction()
-getSummaryFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s3* %s3, metadata !25, metadata !26), !dbg !27, !phasar.instruction.id !28
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t1, metadata !29, metadata !26), !dbg !30, !phasar.instruction.id !31
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t2, metadata !36, metadata !26), !dbg !37, !phasar.instruction.id !38
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t3, metadata !43, metadata !26), !dbg !44, !phasar.instruction.id !45
-
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !60, metadata !26), !dbg !71, !phasar.instruction.id !72
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s2* %s2, metadata !73, metadata !26), !dbg !74, !phasar.instruction.id !75
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %is_env_set, metadata !76, metadata !26), !dbg !77, !phasar.instruction.id !78
-
-getCallFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !47, !phasar.instruction.id !48
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s3* %s3, metadata !25, metadata !26), !dbg !27, !phasar.instruction.id !28
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t1, metadata !29, metadata !26), !dbg !30, !phasar.instruction.id !31
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32** %t2, metadata !36, metadata !26), !dbg !37, !phasar.instruction.id !38
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t3, metadata !43, metadata !26), !dbg !44, !phasar.instruction.id !45
-
+[TRACK] Checking end of branch label for: if.then
+[TRACK] End of branch label: if.end
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15
@@ -289,6 +75,8 @@ A:	%struct.s3* %s3, ID: foo.0
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %2, i8** %t3, align 8, !dbg !44, !phasar.instruction.id !49, ID: 16 in function: foo
+D:	%2 = load i8*, i8** %t11, align 8, !dbg !46, !phasar.instruction.id !48, ID: 15
+
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -300,10 +88,10 @@ A:	%t2 = alloca i32*, align 8, !phasar.instruction.id !23, ID: 2
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%struct.s3* %s3, ID: foo.0
 
-D:	%2 = load i8*, i8** %t11, align 8, !dbg !46, !phasar.instruction.id !48, ID: 15
-
 --- IFDS START RESULT RECORD ---
 N: store i32* %1, i32** %t2, align 8, !dbg !37, !phasar.instruction.id !42, ID: 12 in function: foo
+D:	%1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41, ID: 11
+
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -312,16 +100,14 @@ A:	%t1 = alloca i32*, align 8, !phasar.instruction.id !22, ID: 1
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%struct.s3* %s3, ID: foo.0
 
-D:	%1 = load i32*, i32** %b, align 8, !dbg !39, !phasar.instruction.id !41, ID: 11
-
 --- IFDS START RESULT RECORD ---
 N: store i32* %0, i32** %t1, align 8, !dbg !30, !phasar.instruction.id !35, ID: 8 in function: foo
-D:	@zero_value = constant i2 0, align 4, ID: -1
-
 D:	%0 = load i32*, i32** %a, align 8, !dbg !32, !phasar.instruction.id !34, ID: 7
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%struct.s3* %s3, ID: foo.0
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %retval = alloca i32, align 4, !phasar.instruction.id !14, ID: 18 in function: main
@@ -635,4 +421,3 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19
 A:	%s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33
 
 
-No IFDS report available!

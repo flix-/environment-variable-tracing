@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <vector>
+#include <set>
 
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/IntrinsicInst.h>
@@ -27,7 +28,7 @@
 namespace psr {
 
 static std::string LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
-static const char* GETENV_CALL = "getenv";
+static std::set<std::string> TAINTED_CALLS = { "getenv" };
 
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
@@ -39,14 +40,10 @@ makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
 
 __attribute__((constructor)) void init() {
 
-  llvm::outs() << "init - makeIFDSEnvironmentVariableTracing" << "\n";
   IFDSTabulationProblemPluginExtendedValueFactory["IFDSEnvironmentVariableTracing"] = &makeIFDSEnvironmentVariableTracing;
 }
 
-__attribute__((destructor)) void fini() {
-
-  llvm::outs() << "fini - makeIFDSEnvironmentVariableTracing" << "\n";
-}
+__attribute__((destructor)) void fini() { }
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
@@ -61,9 +58,6 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
-  llvm::outs() << "getNormalFlowFunction()" << "\n";
-  currentInst->print(llvm::outs()); llvm::outs() << "\n\n";
-
   bool isCheckOperandsInst = llvm::isa<llvm::UnaryInstruction>(currentInst) ||
                              llvm::isa<llvm::BinaryOperator>(currentInst) ||
                              llvm::isa<llvm::CmpInst>(currentInst) ||
@@ -72,7 +66,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    * Load instruction
    */
   if (llvm::isa<llvm::LoadInst>(currentInst)) {
-    llvm::outs() << "Got load instruction" << "\n";
 
     ComputeTargetsExtFunction loadFlowFunction = [](const llvm::Instruction* currentInst,
                                                     ExtendedValue& fact,
@@ -100,7 +93,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (llvm::isa<llvm::StoreInst>(currentInst)) {
-    llvm::outs() << "Got store instruction" << "\n";
 
     ComputeTargetsExtFunction storeFlowFunction = [](const llvm::Instruction* currentInst,
                                                      ExtendedValue& fact,
@@ -241,7 +233,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (llvm::isa<llvm::GetElementPtrInst>(currentInst)) {
-    llvm::outs() << "Got GEP instruction" << "\n";
 
     ComputeTargetsExtFunction gepInstFlowFunction = [](const llvm::Instruction* currentInst,
                                                        ExtendedValue& fact,
@@ -281,7 +272,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (llvm::isa<llvm::PHINode>(currentInst)) {
-    llvm::outs() << "Got phi node instruction" << "\n";
 
     ComputeTargetsExtFunction phiNodeFlowFunction = [](const llvm::Instruction* currentInst,
                                                        ExtendedValue& fact,
@@ -311,7 +301,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (llvm::isa<llvm::BranchInst>(currentInst)) {
-    llvm::outs() << "Got branch instruction" << "\n";
 
     ComputeTargetsExtFunction branchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       ExtendedValue& fact,
@@ -327,16 +316,13 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition);
         if (isBranchTainted) {
           const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
-          bool foundEndOfTaintedBranchLabel = !endOfTaintedBranchLabel.empty();
 
-          if (foundEndOfTaintedBranchLabel) {
-            ExtendedValue ev(branchInst);
-            ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+          ExtendedValue ev(branchInst);
+          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
 
-            lineNumberStore.addLineNumber(branchInst);
+          lineNumberStore.addLineNumber(branchInst);
 
-            return { ev };
-          }
+          return { ev };
         }
       }
 
@@ -350,7 +336,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (llvm::isa<llvm::SwitchInst>(currentInst)) {
-    llvm::outs() << "Got switch instruction" << "\n";
 
     ComputeTargetsExtFunction switchFlowFunction = [](const llvm::Instruction* currentInst,
                                                       ExtendedValue& fact,
@@ -367,16 +352,13 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition);
       if (isSwitchTainted) {
         const auto endOfTaintedSwitchLabel = DataFlowUtils::getEndOfBlockLabel(switchInst);
-        bool foundEndOfTaintedSwitchLabel = !endOfTaintedSwitchLabel.empty();
 
-        if (foundEndOfTaintedSwitchLabel) {
-          ExtendedValue ev(switchInst);
-          ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
+        ExtendedValue ev(switchInst);
+        ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
 
-          lineNumberStore.addLineNumber(switchInst);
+        lineNumberStore.addLineNumber(switchInst);
 
-          return { ev };
-        }
+        return { ev };
       }
 
       return { fact };
@@ -389,7 +371,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    */
   else
   if (isCheckOperandsInst) {
-    llvm::outs() << "Got operands checking instruction (" << currentInst->getOpcodeName() << ")" << "\n";
 
     ComputeTargetsExtFunction checkOperandsFlowFunction = [](const llvm::Instruction* currentInst,
                                                              ExtendedValue& fact,
@@ -420,9 +401,6 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* callStmt,
                                                     const llvm::Function* destMthd) {
 
-  llvm::outs() << "getCallFlowFunction()" << "\n";
-  callStmt->print(llvm::outs()); llvm::outs() << "\n\n";
-
   return std::make_shared<MapTaintedValuesToCallee>(llvm::cast<llvm::CallInst>(callStmt),
                                                     destMthd,
                                                     lineNumberStore,
@@ -434,8 +412,6 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
                                                    const llvm::Function* calleeMthd,
                                                    const llvm::Instruction* exitStmt,
                                                    const llvm::Instruction* retSite) {
-
-  llvm::outs() << "getRetFlowFunction()" << "\n";
 
   return std::make_shared<MapTaintedValuesToCaller>(llvm::cast<llvm::CallInst>(callSite),
                                                     llvm::cast<llvm::ReturnInst>(exitStmt),
@@ -453,8 +429,6 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction* callSite,
                                                          const llvm::Instruction* retSite,
                                                          std::set<const llvm::Function*> callees) {
-
-  llvm::outs() << "getCallToRetFlowFunction()" << "\n";
 
   /*
    * It is important to wrap the identity call here. Consider the following example:
@@ -503,14 +477,18 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* callStmt,
                                                        const llvm::Function* destMthd) {
 
-  llvm::outs() << "getSummaryFlowFunction()" << "\n";
-  callStmt->print(llvm::outs()); llvm::outs() << "\n\n";
+  /*
+   * We exclude function ptr calls as they will be applied to every
+   * function matching its signature (@see LLVMBasedICFG.cpp:217)
+   */
+  const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
+  bool isStaticCallSite = callInst->getCalledFunction();
+  if (!isStaticCallSite) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
 
   /*
    * Memcpy / Memmove instruction
    */
   if (llvm::isa<llvm::MemTransferInst>(callStmt)) {
-    llvm::outs() << "Got memcpy/memmove instruction" << "\n";
 
     ComputeTargetsExtFunction memTransferFlowFunction = [](const llvm::Instruction* currentInst,
                                                            ExtendedValue& fact,
@@ -583,7 +561,6 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
    */
   else
   if (llvm::isa<llvm::MemSetInst>(callStmt)) {
-    llvm::outs() << "Got memset instruction" << "\n";
 
     ComputeTargetsExtFunction memSetFlowFunction = [](const llvm::Instruction* currentInst,
                                                       ExtendedValue& fact,
@@ -611,14 +588,14 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   }
 
   /*
-   * Provide summary for getenv() call
+   * Provide summary for tainted call
    */
-  bool isGetenvCall = destMthd->getName().compare_lower(GETENV_CALL) == 0;
-  if (isGetenvCall) {
-    ComputeTargetsExtFunction getenvCallFlowFunction = [](const llvm::Instruction* currentInst,
-                                                          ExtendedValue& fact,
-                                                          LineNumberStore& lineNumberStore,
-                                                          ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+  bool isTaintedCall = TAINTED_CALLS.find(destMthd->getName().lower()) != TAINTED_CALLS.end();
+  if (isTaintedCall) {
+    ComputeTargetsExtFunction taintedCallFlowFunction = [](const llvm::Instruction* currentInst,
+                                                           ExtendedValue& fact,
+                                                           LineNumberStore& lineNumberStore,
+                                                           ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       lineNumberStore.addLineNumber(currentInst);
 
@@ -626,7 +603,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
       return { fact };
     };
 
-    return std::make_shared<FlowFunctionWrapper>(callStmt, getenvCallFlowFunction, lineNumberStore, zeroValue());
+    return std::make_shared<FlowFunctionWrapper>(callStmt, taintedCallFlowFunction, lineNumberStore, zeroValue());
   }
 
   /*
@@ -643,8 +620,6 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
 std::map<const llvm::Instruction*, std::set<ExtendedValue>>
 IFDSEnvironmentVariableTracing::initialSeeds() {
-
-  llvm::outs() << "initialSeeds()" << "\n";
 
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
   for (const auto& entryPoint : this->EntryPoints) {

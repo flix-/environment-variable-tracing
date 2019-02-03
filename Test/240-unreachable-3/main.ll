@@ -10,26 +10,33 @@ define i32 @main() #0 !dbg !7 {
 entry:
   %retval = alloca i32, align 4
   %tainted = alloca i8*, align 8
-  %a = alloca i32, align 4
-  %a1 = alloca i32, align 4
+  %rc = alloca i32, align 4
+  %b = alloca i32, align 4
+  %ut = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !11, metadata !14), !dbg !15
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !16
   store i8* %call, i8** %tainted, align 8, !dbg !15
-  %0 = load i8*, i8** %tainted, align 8, !dbg !17
-  %tobool = icmp ne i8* %0, null, !dbg !17
-  br i1 %tobool, label %if.then, label %if.end, !dbg !19
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !17, metadata !14), !dbg !18
+  %0 = load i8*, i8** %tainted, align 8, !dbg !19
+  %tobool = icmp ne i8* %0, null, !dbg !19
+  br i1 %tobool, label %if.then, label %if.else, !dbg !21
 
 if.then:                                          ; preds = %entry
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !20, metadata !14), !dbg !22
-  store i32 0, i32* %a, align 4, !dbg !22
-  call void @abort() #5, !dbg !23
-  unreachable, !dbg !23
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !22, metadata !14), !dbg !24
+  store i32 0, i32* %b, align 4, !dbg !24
+  call void @abort() #5, !dbg !25
+  unreachable, !dbg !25
 
-if.end:                                           ; preds = %entry
-  call void @llvm.dbg.declare(metadata i32* %a1, metadata !24, metadata !14), !dbg !25
-  store i32 0, i32* %a1, align 4, !dbg !25
-  ret i32 0, !dbg !26
+if.else:                                          ; preds = %entry
+  store i32 0, i32* %rc, align 4, !dbg !26
+  br label %if.end
+
+if.end:                                           ; preds = %if.else
+  call void @llvm.dbg.declare(metadata i32* %ut, metadata !28, metadata !14), !dbg !29
+  store i32 1, i32* %ut, align 4, !dbg !29
+  %1 = load i32, i32* %rc, align 4, !dbg !30
+  ret i32 %1, !dbg !31
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -69,13 +76,18 @@ attributes #5 = { noreturn nounwind }
 !14 = !DIExpression()
 !15 = !DILocation(line: 7, column: 11, scope: !7)
 !16 = !DILocation(line: 7, column: 21, scope: !7)
-!17 = !DILocation(line: 9, column: 9, scope: !18)
-!18 = distinct !DILexicalBlock(scope: !7, file: !1, line: 9, column: 9)
-!19 = !DILocation(line: 9, column: 9, scope: !7)
-!20 = !DILocalVariable(name: "a", scope: !21, file: !1, line: 10, type: !10)
-!21 = distinct !DILexicalBlock(scope: !18, file: !1, line: 9, column: 18)
-!22 = !DILocation(line: 10, column: 13, scope: !21)
-!23 = !DILocation(line: 11, column: 9, scope: !21)
-!24 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 14, type: !10)
-!25 = !DILocation(line: 14, column: 9, scope: !7)
-!26 = !DILocation(line: 16, column: 5, scope: !7)
+!17 = !DILocalVariable(name: "rc", scope: !7, file: !1, line: 9, type: !10)
+!18 = !DILocation(line: 9, column: 9, scope: !7)
+!19 = !DILocation(line: 10, column: 9, scope: !20)
+!20 = distinct !DILexicalBlock(scope: !7, file: !1, line: 10, column: 9)
+!21 = !DILocation(line: 10, column: 9, scope: !7)
+!22 = !DILocalVariable(name: "b", scope: !23, file: !1, line: 11, type: !10)
+!23 = distinct !DILexicalBlock(scope: !20, file: !1, line: 10, column: 18)
+!24 = !DILocation(line: 11, column: 13, scope: !23)
+!25 = !DILocation(line: 12, column: 9, scope: !23)
+!26 = !DILocation(line: 14, column: 12, scope: !27)
+!27 = distinct !DILexicalBlock(scope: !20, file: !1, line: 13, column: 12)
+!28 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 17, type: !10)
+!29 = !DILocation(line: 17, column: 9, scope: !7)
+!30 = !DILocation(line: 19, column: 12, scope: !7)
+!31 = !DILocation(line: 19, column: 5, scope: !7)

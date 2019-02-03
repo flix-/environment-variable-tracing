@@ -16,58 +16,7 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %foo = alloca %struct.a, align 8, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !15, metadata !28), !dbg !29, !phasar.instruction.id !30
-
-getSummaryFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32
-
-getNormalFlowFunction()
-  %a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !33, !phasar.instruction.id !34
-
-Got GEP instruction
-getNormalFlowFunction()
-  store i8* %call, i8** %a, align 8, !dbg !35, !phasar.instruction.id !36
-
-Got store instruction
-getNormalFlowFunction()
-  %a1 = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !37, !phasar.instruction.id !38
-
-Got GEP instruction
-getNormalFlowFunction()
-  %0 = load i8*, i8** %a1, align 8, !dbg !37, !phasar.instruction.id !39
-
-Got load instruction
-getNormalFlowFunction()
-  %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !40, !phasar.instruction.id !41
-
-Got GEP instruction
-getNormalFlowFunction()
-  %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !42, !phasar.instruction.id !43
-
-Got GEP instruction
-getNormalFlowFunction()
-  %a3 = getelementptr inbounds %struct.c, %struct.c* %a2, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45
-
-Got GEP instruction
-getNormalFlowFunction()
-  store i8* %0, i8** %a3, align 8, !dbg !46, !phasar.instruction.id !47
-
-Got store instruction
+Line numbers output file: main-line-numbers.txt
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !13
@@ -76,14 +25,7 @@ Got store instruction
 [TRACK]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !13
 [TRACK]   %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !40, !phasar.instruction.id !41
 [TRACK]   %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !42, !phasar.instruction.id !43
-[TRACK]   %a3 = getelementptr inbounds %struct.c, %struct.c* %a2, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.a* %foo, metadata !15, metadata !28), !dbg !29, !phasar.instruction.id !30
-
-getCallFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !31, !phasar.instruction.id !32### DUMP LLVMIFDSSolver results
+[TRACK]   %a3 = getelementptr inbounds %struct.c, %struct.c* %a2, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %foo = alloca %struct.a, align 8, !phasar.instruction.id !13, ID: 2 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -157,7 +99,6 @@ N: %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !42
 D:	store i8* %call, i8** %a, align 8, !dbg !35, !phasar.instruction.id !36, ID: 7
 A:	%foo = alloca %struct.a, align 8, !phasar.instruction.id !13, ID: 2
 A:	%a = getelementptr inb
-
 ounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !33, !phasar.instruction.id !34, ID: 6
 
 D:	%0 = load i8*, i8** %a1, align 8, !dbg !37, !phasar.instruction.id !39, ID: 9
@@ -189,4 +130,3 @@ A:	%a3 = getelementptr inbounds %struct.c, %struct.c* %a2, i32 0, i32 0, !dbg !4
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 
-No IFDS report available!

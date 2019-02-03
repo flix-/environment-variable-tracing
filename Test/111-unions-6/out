@@ -16,142 +16,13 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %s = alloca %struct.s1, align 8, !phasar.instruction.id !14
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %tainted = alloca i8*, align 8, !phasar.instruction.id !15
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %not_tainted = alloca i8*, align 8, !phasar.instruction.id !16
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !17
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !18, metadata !39), !dbg !40, !phasar.instruction.id !41
-
-getSummaryFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !42, !phasar.instruction.id !43
-
-getNormalFlowFunction()
-  %u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45
-
-Got GEP instruction
-getNormalFlowFunction()
-  %u1 = bitcast %union.u1* %u to %union.u2*, !dbg !46, !phasar.instruction.id !47
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %u2 = bitcast %union.u2* %u1 to %union.u3*, !dbg !48, !phasar.instruction.id !49
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %taint = bitcast %union.u3* %u2 to i8**, !dbg !50, !phasar.instruction.id !51
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53
-
-Got store instruction
-getNormalFlowFunction()
-  %uuu = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !54, !phasar.instruction.id !55
-
-Got GEP instruction
-getNormalFlowFunction()
-  %taint3 = bitcast %union.u3* %uuu to i8**, !dbg !56, !phasar.instruction.id !57
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  store i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.1, i32 0, i32 0), i8** %taint3, align 8, !dbg !58, !phasar.instruction.id !59
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !60, metadata !39), !dbg !61, !phasar.instruction.id !62
-
-getNormalFlowFunction()
-  %u4 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !63, !phasar.instruction.id !64
-
-Got GEP instruction
-getNormalFlowFunction()
-  %u5 = bitcast %union.u1* %u4 to %union.u2*, !dbg !65, !phasar.instruction.id !66
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %u6 = bitcast %union.u2* %u5 to %union.u3*, !dbg !67, !phasar.instruction.id !68
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %taint7 = bitcast %union.u3* %u6 to i8**, !dbg !69, !phasar.instruction.id !70
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %0 = load i8*, i8** %taint7, align 8, !dbg !69, !phasar.instruction.id !71
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %0, i8** %tainted, align 8, !dbg !61, !phasar.instruction.id !72
-
-Got store instruction
+Line numbers output file: main-line-numbers.txt
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !14
 [TRACK]   %u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45
 [TRACK] Destination:
-[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !15
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !73, metadata !39), !dbg !74, !phasar.instruction.id !75
-
-getNormalFlowFunction()
-  %uuu8 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !76, !phasar.instruction.id !77
-
-Got GEP instruction
-getNormalFlowFunction()
-  %taint9 = bitcast %union.u3* %uuu8 to i8**, !dbg !78, !phasar.instruction.id !79
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %1 = load i8*, i8** %taint9, align 8, !dbg !78, !phasar.instruction.id !80
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %1, i8** %not_tainted, align 8, !dbg !74, !phasar.instruction.id !81
-
-Got store instruction
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !73, metadata !39), !dbg !74, !phasar.instruction.id !75
-
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !60, metadata !39), !dbg !61, !phasar.instruction.id !62
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !73, metadata !39), !dbg !74, !phasar.instruction.id !75
-
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !42, !phasar.instruction.id !43
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %struct.s1* %s, metadata !18, metadata !39), !dbg !40, !phasar.instruction.id !41
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !60, metadata !39), !dbg !61, !phasar.instruction.id !62
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !73, metadata !39), !dbg !74, !phasar.instruction.id !75### DUMP LLVMIFDSSolver results
+[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !15### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -264,9 +135,9 @@ D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53, 
 A:	%s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3
 A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45, ID: 9
 
-D:	@zero_value = constant i2 0, align 4, ID: -1
-
 D:	%u5 = bitcast %union.u1* %u4 to %union.u2*, !dbg !65, !phasar.instruction.id !66, ID: 19
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %taint7 = bitcast %union.u3* %u6 to i8**, !dbg !69, !phasar.instruction.id !70, ID: 21 in function: main
@@ -274,11 +145,11 @@ D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53, 
 A:	%s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3
 A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45, ID: 9
 
-D:	%u6 = bitcast %union.u2* %u5 to %union.u3*, !dbg !67, !phasar.instruction.id !68, ID: 20
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	%u5 = bitcast %union.u1* %u4 to %union.u2*, !dbg !65, !phasar.instruction.id !66, ID: 19
+
+D:	%u6 = bitcast %union.u2* %u5 to %union.u3*, !dbg !67, !phasar.instruction.id !68, ID: 20
 
 --- IFDS START RESULT RECORD ---
 N: %0 = load i8*, i8** %taint7, align 8, !dbg !69, !phasar.instruction.id !71, ID: 22 in function: main
@@ -286,21 +157,19 @@ D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53, 
 A:	%s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3
 A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45, ID: 9
 
-D:	@zero_value = constant i2 0, align 4, ID: -1
-
 D:	%u5 = bitcast %union.u1* %u4 to %union.u2*, !dbg !65, !phasar.instruction.id !66, ID: 19
 
 D:	%u6 = bitcast %union.u2* %u5 to %union.u3*, !dbg !67, !phasar.instruction.id !68, ID: 20
 
 D:	%taint7 = bitcast %union.u3* %u6 to i8**, !dbg !69, !phasar.instruction.id !70, ID: 21
 
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
 --- IFDS START RESULT RECORD ---
 N: store i8* %0, i8** %tainted, align 8, !dbg !61, !phasar.instruction.id !72, ID: 23 in function: main
 D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53, ID: 13
 A:	%s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3
 A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45, ID: 9
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	%u5 = bitcast %union.u1* %u4 to %union.u2*, !dbg !65, !phasar.instruction.id !66, ID: 19
 
@@ -309,6 +178,8 @@ D:	%u6 = bitcast %union.u2* %u5 to %union.u3*, !dbg !67, !phasar.instruction.id 
 D:	%taint7 = bitcast %union.u3* %u6 to i8**, !dbg !69, !phasar.instruction.id !70, ID: 21
 
 D:	%0 = load i8*, i8** %taint7, align 8, !dbg !69, !phasar.instruction.id !71, ID: 22
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !73, metadata !39), !dbg !74, !phasar.instruction.id !75, ID: 24 in function: main
@@ -371,7 +242,6 @@ D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.instruction.id !53, 
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !15, ID: 4
 
 D:	store i8* %call, i8** %taint, align 8, !dbg !52, !phasar.in
-
 struction.id !53, ID: 13
 A:	%s = alloca %struct.s1, align 8, !phasar.instruction.id !14, ID: 3
 A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !44, !phasar.instruction.id !45, ID: 9
@@ -379,4 +249,3 @@ A:	%u = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !4
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 
-No IFDS report available!

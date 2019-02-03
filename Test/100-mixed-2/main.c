@@ -43,7 +43,7 @@ main()
                 break;
             }
         }
-        int u = 0;
+        int eot = 0;
     }
     int a = 0;
 

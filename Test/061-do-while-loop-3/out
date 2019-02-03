@@ -16,124 +16,7 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %rc = alloca i32, align 4, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %a = alloca i32, align 4, !phasar.instruction.id !14
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %rc, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
-
-getNormalFlowFunction()
-  br label %do.body, !dbg !20, !llvm.loop !21, !phasar.instruction.id !23
-
-Got branch instruction
-getNormalFlowFunction()
-  store i32 42, i32* %rc, align 4, !dbg !24, !phasar.instruction.id !26
-
-Got store instruction
-getNormalFlowFunction()
-  br label %do.body1, !dbg !27, !llvm.loop !28, !phasar.instruction.id !30
-
-Got branch instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !31, metadata !17), !dbg !33, !phasar.instruction.id !34
-
-getNormalFlowFunction()
-  store i32 1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !35
-
-Got store instruction
-getNormalFlowFunction()
-  br label %do.cond, !dbg !36, !phasar.instruction.id !37
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.instruction.id !39
-
-getNormalFlowFunction()
-  %tobool = icmp ne i32 %call, 0, !dbg !36, !phasar.instruction.id !40
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool, label %do.body1, label %do.end, !dbg !36, !llvm.loop !28, !phasar.instruction.id !41
-
-Got branch instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !31, metadata !17), !dbg !33, !phasar.instruction.id !34
-
-getCallToRetFlowFunction()
-getNormalFlowFunction()
-  br i1 %tobool, label %do.body1, label %do.end, !dbg !36, !llvm.loop !28, !phasar.instruction.id !41
-
-Got branch instruction
-getNormalFlowFunction()
-  br label %do.cond2, !dbg !42, !phasar.instruction.id !43
-
-Got branch instruction
-getSummaryFlowFunction()
-  %call3 = call i32 (...) @foo(), !dbg !44, !phasar.instruction.id !45
-
-getNormalFlowFunction()
-  %tobool4 = icmp ne i32 %call3, 0, !dbg !42, !phasar.instruction.id !46
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %tobool4, label %do.body, label %do.end5, !dbg !42, !llvm.loop !21, !phasar.instruction.id !47
-
-Got branch instruction
-getNormalFlowFunction()
-  br i1 %tobool4, label %do.body, label %do.end5, !dbg !42, !llvm.loop !21, !phasar.instruction.id !47
-
-Got branch instruction
-getNormalFlowFunction()
-  %0 = load i32, i32* %rc, align 4, !dbg !48, !phasar.instruction.id !49
-
-Got load instruction
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !31, metadata !17), !dbg !33, !phasar.instruction.id !34
-
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.instruction.id !39
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !31, metadata !17), !dbg !33, !phasar.instruction.id !34
-
-getSummaryFlowFunction()
-  %call3 = call i32 (...) @foo(), !dbg !44, !phasar.instruction.id !45
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.instruction.id !39
-
-getSummaryFlowFunction()
-  %call3 = call i32 (...) @foo(), !dbg !44, !phasar.instruction.id !45
-
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.instruction.id !39
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %rc, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !31, metadata !17), !dbg !33, !phasar.instruction.id !34
-
-getCallFlowFunction()
-  %call3 = call i32 (...) @foo(), !dbg !44, !phasar.instruction.id !45### DUMP LLVMIFDSSolver results
+### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: br label %do.body, !dbg !20, !llvm.loop !21, !phasar.instruction.id !23, ID: 6 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -296,8 +179,11 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: ret i32 %0, !dbg !50, !phasar.instruction.id !51, ID: 20 in function: main
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.in
-
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !38, !phasar.inLine numbers output file: main-line-numbers.txt
+[TRACK] Checking end of branch label for: do.body1
+[TRACK] End of branch label: do.end
+[TRACK] Checking end of branch label for: do.body1
+[TRACK] End of branch label: do.end
 struction.id !39, ID: 12
 
 D:	store i32 1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !35, ID: 10
@@ -306,4 +192,3 @@ A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 
-No IFDS report available!

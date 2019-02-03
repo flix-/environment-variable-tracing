@@ -16,131 +16,22 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %f = alloca %union.a, align 8, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %union.a* %f, metadata !44, metadata !25), !dbg !45, !phasar.instruction.id !46
-
-getSummaryFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
-
-getNormalFlowFunction()
-  %ub = bitcast %union.a* %f to %union.b*, !dbg !30, !phasar.instruction.id !31
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %tainted = bitcast %union.b* %ub to i8**, !dbg !32, !phasar.instruction.id !33
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  store i8* %call, i8** %tainted, align 8, !dbg !34, !phasar.instruction.id !35
-
-Got store instruction
-getNormalFlowFunction()
-  %coerce.dive = getelementptr inbounds %union.a, %union.a* %f, i32 0, i32 0, !dbg !36, !phasar.instruction.id !37
-
-Got GEP instruction
-getNormalFlowFunction()
-  %0 = load i8*, i8** %coerce.dive, align 8, !dbg !36, !phasar.instruction.id !38
-
-Got load instruction
-getSummaryFlowFunction()
-  call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39
-
-getCallFlowFunction()
-  call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39
-
+Line numbers output file: main-line-numbers.txt
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %f = alloca %union.a, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
 [TRACK] i8* %ua.coerce
-getNormalFlowFunction()
-  %ua = alloca %union.a, align 8, !phasar.instruction.id !20
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %tainted = alloca i8*, align 8, !phasar.instruction.id !21
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %coerce.dive = getelementptr inbounds %union.a, %union.a* %ua, i32 0, i32 0, !phasar.instruction.id !22
-
-Got GEP instruction
-getNormalFlowFunction()
-  store i8* %ua.coerce, i8** %coerce.dive, align 8, !phasar.instruction.id !23
-
-Got store instruction
 [TRACK] Patched memory location (arg/store)
 [TRACK] Source:
 [TRACK] i8* %ua.coerce
 [TRACK] Destination:
 [TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %union.a* %ua, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !28, metadata !25), !dbg !29, !phasar.instruction.id !30
-
-getNormalFlowFunction()
-  %foo = bitcast %union.a* %ua to i8**, !dbg !31, !phasar.instruction.id !32
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %0 = load i8*, i8** %foo, align 8, !dbg !31, !phasar.instruction.id !33
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %0, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !34
-
-Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %ua = alloca %union.a, align 8, !phasar.instruction.id !20
 [TRACK] Destination:
 [TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !21
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getRetFlowFunction()
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @foo(i8* %0), !dbg !36, !phasar.instruction.id !39
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata %union.a* %ua, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !28, metadata !25), !dbg !29, !phasar.instruction.id !30
-
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %union.a* %f, metadata !44, metadata !25), !dbg !45, !phasar.instruction.id !46
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata %union.a* %ua, metadata !24, metadata !25), !dbg !26, !phasar.instruction.id !27
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !28, metadata !25), !dbg !29, !phasar.instruction.id !30
-
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %f = alloca %union.a, align 8, !phasar.instruction.id !13
@@ -297,4 +188,3 @@ A:	%f = alloca %union.a, align 8, !phasar.instruction.id !13, ID: 12
 D:	%0 = load i8*, i8** %coerce.dive, align 8, !dbg !36, !phasar.instruction.id !38, ID: 20
 
 
-No IFDS report available!

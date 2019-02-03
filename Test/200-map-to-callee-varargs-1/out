@@ -16,40 +16,7 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-init - makeIFDSEnvironmentVariableTracing
-initialSeeds()
-getNormalFlowFunction()
-  %retval = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %t = alloca i8*, align 8, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !14
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t, metadata !87, metadata !18), !dbg !88, !phasar.instruction.id !89
-
-getSummaryFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
-getNormalFlowFunction()
-  store i8* %call, i8** %t, align 8, !dbg !19, !phasar.instruction.id !23
-
-Got store instruction
-getNormalFlowFunction()
-  %0 = load i8*, i8** %t, align 8, !dbg !24, !phasar.instruction.id !25
-
-Got load instruction
-getSummaryFlowFunction()
-  call void (i32, ...) @foo(i32 1, i8* %0), !dbg !26, !phasar.instruction.id !27
-
-getCallFlowFunction()
-  call void (i32, ...) @foo(i32 1, i8* %0), !dbg !26, !phasar.instruction.id !27
-
+Line numbers output file: main-line-numbers.txt
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !13
@@ -57,118 +24,6 @@ getCallFlowFunction()
 [TRACK] @zero_value = constant i2 0, align 4
 [TRACK] VarArg Index: 0
 [TRACK] Current VarArg Index: -1
-getNormalFlowFunction()
-  %n.addr = alloca i32, align 4, !phasar.instruction.id !12
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !13
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %x = alloca i8*, align 8, !phasar.instruction.id !14
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  %t1 = alloca i8*, align 8, !phasar.instruction.id !15
-
-Got operands checking instruction (alloca)
-getNormalFlowFunction()
-  store i32 %n, i32* %n.addr, align 4, !phasar.instruction.id !16
-
-Got store instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !21, metadata !18), !dbg !36, !phasar.instruction.id !37
-
-getNormalFlowFunction()
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39
-
-Got GEP instruction
-getNormalFlowFunction()
-  %arraydecay1 = bitcast %struct.__va_list_tag* %arraydecay to i8*, !dbg !38, !phasar.instruction.id !40
-
-Got operands checking instruction (bitcast)
-getSummaryFlowFunction()
-  call void @llvm.va_start(i8* %arraydecay1), !dbg !38, !phasar.instruction.id !41
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %x, metadata !42, metadata !18), !dbg !45, !phasar.instruction.id !46
-
-getNormalFlowFunction()
-  %arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48
-
-Got GEP instruction
-getNormalFlowFunction()
-  %gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !47, !phasar.instruction.id !49
-
-Got GEP instruction
-getNormalFlowFunction()
-  %gp_offset = load i32, i32* %gp_offset_p, align 16, !dbg !47, !phasar.instruction.id !50
-
-Got load instruction
-getNormalFlowFunction()
-  %fits_in_gp = icmp ule i32 %gp_offset, 40, !dbg !47, !phasar.instruction.id !51
-
-Got operands checking instruction (icmp)
-getNormalFlowFunction()
-  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !47, !phasar.instruction.id !52
-
-Got branch instruction
-getNormalFlowFunction()
-  %0 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 3, !dbg !47, !phasar.instruction.id !53
-
-Got GEP instruction
-getNormalFlowFunction()
-  %reg_save_area = load i8*, i8** %0, align 16, !dbg !47, !phasar.instruction.id !54
-
-Got load instruction
-getNormalFlowFunction()
-  %1 = getelementptr i8, i8* %reg_save_area, i32 %gp_offset, !dbg !47, !phasar.instruction.id !55
-
-Got GEP instruction
-getNormalFlowFunction()
-  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !47, !phasar.instruction.id !52
-
-Got branch instruction
-getNormalFlowFunction()
-  %overflow_arg_area_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 2, !dbg !47, !phasar.instruction.id !60
-
-Got GEP instruction
-getNormalFlowFunction()
-  %overflow_arg_area = load i8*, i8** %overflow_arg_area_p, align 8, !dbg !47, !phasar.instruction.id !61
-
-Got load instruction
-getNormalFlowFunction()
-  %4 = bitcast i8* %overflow_arg_area to i8**, !dbg !47, !phasar.instruction.id !62
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %overflow_arg_area.next = getelementptr i8, i8* %overflow_arg_area, i32 8, !dbg !47, !phasar.instruction.id !63
-
-Got GEP instruction
-getNormalFlowFunction()
-  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !47, !phasar.instruction.id !64
-
-Got store instruction
-getNormalFlowFunction()
-  br label %vaarg.end, !dbg !47, !phasar.instruction.id !65
-
-Got branch instruction
-getNormalFlowFunction()
-  %vaarg.addr = phi i8** [ %2, %vaarg.in_reg ], [ %4, %vaarg.in_mem ], !dbg !47, !phasar.instruction.id !66
-
-Got phi node instruction
-getNormalFlowFunction()
-  %5 = load i8*, i8** %vaarg.addr, align 8, !dbg !47, !phasar.instruction.id !67
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %5, i8** %x, align 8, !dbg !45, !phasar.instruction.id !68
-
-Got store instruction
 [TRACK] Patched memory location (arg/store)
 [TRACK] Source:
 [TRACK] @zero_value = constant i2 0, align 4
@@ -176,116 +31,16 @@ Got store instruction
 [TRACK] Current VarArg Index: 0
 [TRACK] Destination:
 [TRACK]   %x = alloca i8*, align 8, !phasar.instruction.id !14
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t1, metadata !69, metadata !18), !dbg !70, !phasar.instruction.id !71
-
-getNormalFlowFunction()
-  %6 = load i8*, i8** %x, align 8, !dbg !72, !phasar.instruction.id !73
-
-Got load instruction
-getNormalFlowFunction()
-  store i8* %6, i8** %t1, align 8, !dbg !70, !phasar.instruction.id !74
-
-Got store instruction
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %x = alloca i8*, align 8, !phasar.instruction.id !14
 [TRACK] Destination:
 [TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15
-getNormalFlowFunction()
-  %arraydecay3 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !75, !phasar.instruction.id !76
-
-Got GEP instruction
-getNormalFlowFunction()
-  %arraydecay34 = bitcast %struct.__va_list_tag* %arraydecay3 to i8*, !dbg !75, !phasar.instruction.id !77
-
-Got operands checking instruction (bitcast)
-getSummaryFlowFunction()
-  call void @llvm.va_end(i8* %arraydecay34), !dbg !75, !phasar.instruction.id !78
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void @llvm.va_end(i8* %arraydecay34), !dbg !75, !phasar.instruction.id !78
-
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getCallToRetFlowFunction()
-getRetFlowFunction()
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void (i32, ...) @foo(i32 1, i8* %0), !dbg !26, !phasar.instruction.id !27
-
-getCallToRetFlowFunction()
-getSummaryFlowFunction()
-  call void (i32, ...) @foo(i32 1, i8* %0), !dbg !26, !phasar.instruction.id !27
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !21, metadata !18), !dbg !36, !phasar.instruction.id !37
-
-getSummaryFlowFunction()
-  call void @llvm.va_start(i8* %arraydecay1), !dbg !38, !phasar.instruction.id !41
-
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %x, metadata !42, metadata !18), !dbg !45, !phasar.instruction.id !46
-
-getNormalFlowFunction()
-  %2 = bitcast i8* %1 to i8**, !dbg !47, !phasar.instruction.id !56
-
-Got operands checking instruction (bitcast)
-getNormalFlowFunction()
-  %3 = add i32 %gp_offset, 8, !dbg !47, !phasar.instruction.id !57
-
-Got operands checking instruction (add)
-getNormalFlowFunction()
-  store i32 %3, i32* %gp_offset_p, align 16, !dbg !47, !phasar.instruction.id !58
-
-Got store instruction
-getNormalFlowFunction()
-  br label %vaarg.end, !dbg !47, !phasar.instruction.id !59
-
-Got branch instruction
-getSummaryFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t1, metadata !69, metadata !18), !dbg !70, !phasar.instruction.id !71
-
-getSummaryFlowFunction()
-  call void @llvm.va_end(i8* %arraydecay34), !dbg !75, !phasar.instruction.id !78
-
-getCallToRetFlowFunction()
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t, metadata !87, metadata !18), !dbg !88, !phasar.instruction.id !89
-
-getCallFlowFunction()
-  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22
-
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
-[TRACK] @zero_value = constant i2 0, align 4
-[TRACK] VarArg Index: 0
-[TRACK] Current VarArg Index: -1
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !17, metadata !18), !dbg !19, !phasar.instruction.id !20
-
-getCallFlowFunction()
-  call void @llvm.va_start(i8* %arraydecay1), !dbg !38, !phasar.instruction.id !41
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !21, metadata !18), !dbg !36, !phasar.instruction.id !37
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %x, metadata !42, metadata !18), !dbg !45, !phasar.instruction.id !46
-
-getCallFlowFunction()
-  call void @llvm.dbg.declare(metadata i8** %t1, metadata !69, metadata !18), !dbg !70, !phasar.instruction.id !71
-
-getCallFlowFunction()
-  call void @llvm.va_end(i8* %arraydecay34), !dbg !75, !phasar.instruction.id !78### DUMP LLVMIFDSSolver results
+[TRACK] @zero_value = constant i2 0, align 4### DUMP LLVMIFDSSolver results
 --- IFDS START RESULT RECORD ---
 N: %n.addr = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: foo
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -614,7 +369,8 @@ A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !15, ID: 4
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%x = alloca i8*,
-
+[TRACK] VarArg Index: 0
+[TRACK] Current VarArg Index: -1
  align 8, !phasar.instruction.id !14, ID: 3
 
 --- IFDS START RESULT RECORD ---
@@ -671,4 +427,3 @@ D:	%0 = load i8*, i8** %t, align 8, !dbg !24, !phasar.instruction.id !25, ID: 46
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 
-No IFDS report available!

@@ -6,14 +6,12 @@ int
 main() {
     char *tainted = getenv("gude");
 
+    int rc;
     if (tainted) {
-        int a = 0;
-        char *t1 = getenv("huhu");
+        rc = 0;
         abort();
-    } else {
-        int b = 1;
     }
 
-    return 0;
+    return rc;
 }
 

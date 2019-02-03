@@ -47,96 +47,12 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-init - makeIFDSEnvironmentVariableTracing<br>
-initialSeeds()<br>
-getNormalFlowFunction()<br>
-  %retval = alloca i32, align 4, !phasar.instruction.id !12<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  %ret = alloca i32, align 4, !phasar.instruction.id !13<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  %a = alloca i32, align 4, !phasar.instruction.id !14<br>
-<br>
-Got operands checking instruction (alloca)<br>
-getNormalFlowFunction()<br>
-  store i32 0, i32* %retval, align 4, !phasar.instruction.id !15<br>
-<br>
-Got store instruction<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %ret, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19<br>
-<br>
-getSummaryFlowFunction()<br>
-  %call = call i32 (...) @foo(), !dbg !20, !phasar.instruction.id !22<br>
-<br>
-getNormalFlowFunction()<br>
-  %tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !23<br>
-<br>
-Got operands checking instruction (icmp)<br>
-getNormalFlowFunction()<br>
-  br i1 %tobool, label %if.then, label %if.else, !dbg !24, !phasar.instruction.id !25<br>
-<br>
-Got branch instruction<br>
-getSummaryFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !26, metadata !17), !dbg !28, !phasar.instruction.id !29<br>
-<br>
-getSummaryFlowFunction()<br>
-  %call1 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31<br>
-<br>
-getNormalFlowFunction()<br>
-  store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32<br>
-<br>
-Got store instruction<br>
-getNormalFlowFunction()<br>
-  %0 = load i32, i32* %a, align 4, !dbg !33, !phasar.instruction.id !34<br>
-<br>
-Got load instruction<br>
-getNormalFlowFunction()<br>
-  store i32 %0, i32* %ret, align 4, !dbg !35, !phasar.instruction.id !36<br>
-<br>
-Got store instruction<br>
+Line numbers output file: main-line-numbers.txt<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14<br>
 [TRACK] Destination:<br>
-[TRACK]   %ret = alloca i32, align 4, !phasar.instruction.id !13<br>
-getNormalFlowFunction()<br>
-  br label %if.end, !dbg !37, !phasar.instruction.id !38<br>
-<br>
-Got branch instruction<br>
-getNormalFlowFunction()<br>
-  %1 = load i32, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44<br>
-<br>
-Got load instruction<br>
-getCallToRetFlowFunction()<br>
-getCallToRetFlowFunction()<br>
-getNormalFlowFunction()<br>
-  br i1 %tobool, label %if.then, label %if.else, !dbg !24, !phasar.instruction.id !25<br>
-<br>
-Got branch instruction<br>
-getNormalFlowFunction()<br>
-  store i32 100, i32* %ret, align 4, !dbg !39, !phasar.instruction.id !41<br>
-<br>
-Got store instruction<br>
-getNormalFlowFunction()<br>
-  br label %if.end, !phasar.instruction.id !42<br>
-<br>
-Got branch instruction<br>
-getCallToRetFlowFunction()<br>
-getCallToRetFlowFunction()<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %ret, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19<br>
-<br>
-getCallFlowFunction()<br>
-  %call1 = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !30, !phasar.instruction.id !31<br>
-<br>
-getCallFlowFunction()<br>
-  %call = call i32 (...) @foo(), !dbg !20, !phasar.instruction.id !22<br>
-<br>
-getCallFlowFunction()<br>
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !26, metadata !17), !dbg !28, !phasar.instruction.id !29### DUMP LLVMIFDSSolver results<br>
+[TRACK]   %ret = alloca i32, align 4, !phasar.instruction.id !13### DUMP LLVMIFDSSolver results<br>
 --- IFDS START RESULT RECORD ---<br>
 N: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 1 in function: main<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
@@ -221,7 +137,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 N: br label %if.end, !dbg !37, !phasar.instruction.id !38, ID: 14 in function: main<br>
 D:	store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32, ID: 11<br>
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: <br>
-<br>
 3<br>
 <br>
 D:	store i32 %call1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32, ID: 11<br>
@@ -242,7 +157,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 D:	%1 = load i32, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44, ID: 17<br>
 <br>
 <br>
-No IFDS report available!<br>
 </div>
 </body>
 </html>

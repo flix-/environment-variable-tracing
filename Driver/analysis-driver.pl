@@ -9,7 +9,7 @@ sub getFunctionsFromIR {
     my %functions;
 
     while (my $line = <$ir_fh>) {
-        if ($line =~ m/define (?!private|internal).*?@(.*)\(/g) {
+        if ($line =~ m/define (?!private|internal).*?@(.*?)\(/g) {
             $functions{$1} = undef;
         }
     }
