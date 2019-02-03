@@ -514,9 +514,6 @@ getEndOfBranchLabel(const llvm::TerminatorInst* terminatorInst,
                     std::stack<const llvm::BranchInst*> branchInstStack,
                     std::set<const llvm::TerminatorInst*>& visitedTerminatorInsts) {
 
-  std::string newLabelPrefix = labelPrefix;
-  std::string newEndLabelPrefix = endLabelPrefix;
-
   visitedTerminatorInsts.insert(terminatorInst);
 
   const auto currentLabel = terminatorInst->getParent()->getName();
@@ -537,17 +534,11 @@ getEndOfBranchLabel(const llvm::TerminatorInst* terminatorInst,
   }
 
   if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
-    bool isFork = branchInst->getNumSuccessors() > 1;
-    if (isFork) {
+    if (branchInst->isConditional()) {
       const std::string bbLabelThen = branchInst->getOperand(2)->getName();
       const std::string currentLabelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
 
-      if (branchInst->isConditional()) {
-        if (currentLabelPrefix == labelPrefix) branchInstStack.push(branchInst);
-      }
-
-      newLabelPrefix = currentLabelPrefix;
-      newEndLabelPrefix = currentLabelPrefix + "." + "end";
+      if (currentLabelPrefix == labelPrefix) branchInstStack.push(branchInst);
     }
   }
 
@@ -557,8 +548,8 @@ getEndOfBranchLabel(const llvm::TerminatorInst* terminatorInst,
     bool isAlreadyVisitedTerminatorInst = visitedTerminatorInsts.find(nextTerminatorInst) != visitedTerminatorInsts.end();
     if (!isAlreadyVisitedTerminatorInst) {
       const auto endLabel = getEndOfBranchLabel(nextTerminatorInst,
-                                                newLabelPrefix,
-                                                newEndLabelPrefix,
+                                                labelPrefix,
+                                                endLabelPrefix,
                                                 branchInstStack,
                                                 visitedTerminatorInsts);
 
@@ -615,6 +606,7 @@ DataFlowUtils::getEndOfBlockLabel(const llvm::Instruction* instruction) {
     const auto bbLabelThen = branchInst->getOperand(2)->getName();
 
     auto labelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
+    if (labelPrefix.compare_lower("cond") == 0) labelPrefix = "if";
     const auto endLabelPrefix = (labelPrefix + "." + "end").str();
 
     llvm::outs() << "[TRACK] Checking end of branch label for: " << bbLabelThen << "\n";

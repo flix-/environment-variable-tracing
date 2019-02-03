@@ -11,6 +11,8 @@ entry:
   %retval = alloca i32, align 4
   %taint = alloca i32, align 4
   %a = alloca i32, align 4
+  %nt = alloca i32, align 4
+  %a4 = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !11, metadata !12), !dbg !13
   %call = call i32 (...) @foo(), !dbg !14
@@ -31,7 +33,18 @@ cond.end:                                         ; preds = %cond.false, %cond.t
   call void @llvm.dbg.declare(metadata i32* %a, metadata !18, metadata !12), !dbg !19
   %0 = load i32, i32* %taint, align 4, !dbg !20
   store i32 %0, i32* %a, align 4, !dbg !19
-  ret i32 0, !dbg !21
+  call void @llvm.dbg.declare(metadata i32* %nt, metadata !21, metadata !12), !dbg !22
+  %1 = load i32, i32* %nt, align 4, !dbg !23
+  %cmp3 = icmp eq i32 %1, 0, !dbg !25
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !26
+
+if.then:                                          ; preds = %cond.end
+  call void @llvm.dbg.declare(metadata i32* %a4, metadata !27, metadata !12), !dbg !29
+  store i32 0, i32* %a4, align 4, !dbg !29
+  br label %if.end, !dbg !30
+
+if.end:                                           ; preds = %if.then, %cond.end
+  ret i32 0, !dbg !31
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -72,4 +85,14 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !18 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 9, type: !10)
 !19 = !DILocation(line: 9, column: 9, scope: !7)
 !20 = !DILocation(line: 9, column: 13, scope: !7)
-!21 = !DILocation(line: 11, column: 5, scope: !7)
+!21 = !DILocalVariable(name: "nt", scope: !7, file: !1, line: 11, type: !10)
+!22 = !DILocation(line: 11, column: 9, scope: !7)
+!23 = !DILocation(line: 12, column: 9, scope: !24)
+!24 = distinct !DILexicalBlock(scope: !7, file: !1, line: 12, column: 9)
+!25 = !DILocation(line: 12, column: 12, scope: !24)
+!26 = !DILocation(line: 12, column: 9, scope: !7)
+!27 = !DILocalVariable(name: "a", scope: !28, file: !1, line: 13, type: !10)
+!28 = distinct !DILexicalBlock(scope: !24, file: !1, line: 12, column: 18)
+!29 = !DILocation(line: 13, column: 13, scope: !28)
+!30 = !DILocation(line: 14, column: 5, scope: !28)
+!31 = !DILocation(line: 16, column: 5, scope: !7)
