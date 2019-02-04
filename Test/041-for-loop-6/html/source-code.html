@@ -215,6 +215,8 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2<br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37<br>
 <br>
 D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
@@ -226,9 +228,7 @@ L:	for.end<br>
 <br>
 D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -247,7 +247,7 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !16, ID: 3<br>
 A:	%s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !43, !phasar.instruction.id !44, ID: 14<br>
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !45, !phasar.instruction.id !46, ID: 15<br>
 <br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata %struct.s1* %s1, metadata !28, metadata !25), !dbg !39, !phasar.instruction.id !40, ID: 12 in function: main<br>
@@ -315,13 +315,13 @@ A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %1 = load i32, i32* %j, align 4, !dbg !71, !phasar.instruction.id !73, ID: 26 in function: main<br>
-D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
-L:	for.end<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
+L:	for.end<br>
 <br>
 D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 16, i32 8, i1 false), !dbg !92, !phasar.instruction.id !95, ID: 38<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !16, ID: 3<br>
@@ -397,10 +397,10 @@ N: %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%1 = load i32, i32* %j, align 4, !dbg !71, !phasar.instruction.id !73, ID: 26<br>
 <br>
@@ -434,22 +434,22 @@ D:	%1 = load i32, i32* %j, align 4, !dbg !71, !phasar.instruction.id !73, ID: 26
 <br>
 D:	%s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !74, !phasar.instruction.id !75, ID: 27<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
+L:	for.end<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
 <br>
-D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
-L:	for.end<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
@@ -477,10 +477,10 @@ D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !db
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -502,15 +502,15 @@ A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg 
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31 in function: main<br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
+L:	for.end<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
-D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
-L:	for.end<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -539,14 +539,14 @@ D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
 <br>
@@ -571,6 +571,8 @@ N: %3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, I
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata !25), !dbg !88, !phasar.instruction.id !89, ID: 34<br>
@@ -581,8 +583,6 @@ L:	for.end<br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
 <br>
@@ -606,14 +606,14 @@ A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %6 = load i32, i32* %a, align 8, !dbg !108, !phasar.instruction.id !110, ID: 46 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -640,6 +640,8 @@ N: br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
@@ -648,8 +650,6 @@ D:	%cmp5 = icmp slt i32 %1, %conv, !dbg !82, !phasar.instruction.id !83, ID: 32<
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -678,14 +678,14 @@ D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
 <br>
@@ -710,6 +710,8 @@ N: %s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata !25), !dbg !88, !phasar.instruction.id !89, ID: 34<br>
 <br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
@@ -718,8 +720,6 @@ L:	for.end<br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
 <br>
@@ -743,10 +743,12 @@ D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37 in function: main<br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
 <br>
@@ -757,9 +759,7 @@ L:	for.end<br>
 <br>
 D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -789,6 +789,8 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2<br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37<br>
 <br>
 D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
@@ -804,8 +806,6 @@ D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
 D:	%t23 = getelementptr inbounds %struct.s2, %struct.s2* %s22, i32 0, i32 0, !dbg !76, !phasar.instruction.id !77, ID: 28<br>
@@ -820,23 +820,23 @@ A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.inc, !dbg !96, !phasar.instruction.id !97, ID: 39 in function: main<br>
-D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata !25), !dbg !88, !phasar.instruction.id !89, ID: 34<br>
+D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37<br>
 <br>
-D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
+D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata !25), !dbg !88, !phasar.instruction.id !89, ID: 34<br>
 <br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
 D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -853,16 +853,18 @@ D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 16, i32 8, i1 false)
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !16, ID: 3<br>
 A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
 <br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %inc = add nsw i32 %5, 1, !dbg !98, !phasar.instruction.id !100, ID: 41 in function: main<br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
+D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
 D:	%5 = load i32, i32* %j, align 4, !dbg !98, !phasar.instruction.id !99, ID: 40<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37<br>
 <br>
@@ -873,11 +875,9 @@ D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
-D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -896,18 +896,18 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42 in function: main<br>
-D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
-<br>
-D:	%1 = load i32, i32* %j, align 4, !dbg !71, !phasar.instruction.id !73, ID: 26<br>
-<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
+<br>
+D:	%1 = load i32, i32* %j, align 4, !dbg !71, !phasar.instruction.id !73, ID: 26<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata %struct.s2* %s28, metadata !86, metadata !25), !dbg !88, !phasar.instruction.id !89, ID: 34<br>
 <br>
 D:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !90, !phasar.instruction.id !91, ID: 35<br>
 <br>
 D:	%4 = bitcast %struct.s2* %s28 to i8*, !dbg !92, !phasar.instruction.id !94, ID: 37<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%5 = load i32, i32* %j, align 4, !dbg !98, !phasar.instruction.id !99, ID: 40<br>
 <br>
@@ -916,9 +916,9 @@ D:	%inc = add nsw i32 %5, 1, !dbg !98, !phasar.instruction.id !100, ID: 41<br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -933,7 +933,7 @@ A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 16, i32 8, i1 false), !dbg !92, !phasar.instruction.id !95, ID: 38<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
+D:	%3 = bitcast %struct.s2* %s29 to i8*, !dbg !92, !phasar.instruction.id !93, ID: 36<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.cond1, !dbg !102, !llvm.loop !103, !phasar.instruction.id !105, ID: 43 in function: main<br>
@@ -944,10 +944,10 @@ A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 16, i32 8, i1 false), !dbg !92, !phasar.instruction.id !95, ID: 38<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2<br>
@@ -957,14 +957,14 @@ N: %s210 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !db
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %cmp5, label %for.body7, label %for.end, !dbg !84, !phasar.instruction.id !85, ID: 33<br>
 L:	for.end<br>
 <br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -988,14 +988,14 @@ A:	%s29 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %a = getelementptr inbounds %struct.s2, %struct.s2* %s210, i32 0, i32 1, !dbg !108, !phasar.instruction.id !109, ID: 45 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
-D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
-D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
+D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>
@@ -1022,13 +1022,13 @@ N: store i32 %6, i32* %rc, align 4, !dbg !111, !phasar.instruction.id !112, ID: 
 D:	store i32 %inc, i32* %j, align 4, !dbg !98, !phasar.instruction.id !101, ID: 42<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !18, ID: 5<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%6 = load i32, i32* %a, align 8, !dbg !108, !phasar.instruction.id !110, ID: 46<br>
 <br>
 D:	%conv = zext i1 %cmp4 to i32, !dbg !79, !phasar.instruction.id !81, ID: 31<br>
 <br>
 D:	%cmp4 = icmp ne i8* %2, null, !dbg !79, !phasar.instruction.id !80, ID: 30<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%2 = load i8*, i8** %t23, align 8, !dbg !76, !phasar.instruction.id !78, ID: 29<br>
 <br>

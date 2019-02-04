@@ -231,14 +231,14 @@ getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
   return memLocationSeq.front();
 }
 
-static const llvm::Value*
-getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
+//static const llvm::Value*
+//getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
 
-  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
-  if (memLocationSeq.empty()) return nullptr;
+//  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
+//  if (memLocationSeq.empty()) return nullptr;
 
-  return memLocationSeq.front();
-}
+//  return memLocationSeq.front();
+//}
 
 bool
 DataFlowUtils::isMemoryLocationTainted(const ExtendedValue& fact,
@@ -516,14 +516,6 @@ getEndOfSwitchLabelRec(const llvm::TerminatorInst* terminatorInst,
 
   const auto currentLabel = terminatorInst->getParent()->getName();
 
-  /*
-   * Do not check for the first call with the tainted branch as we would
-   * pop from an empty stack. Placing the potential push of a branch
-   * instruction before is not an option as we can have the case that we
-   * are at a merge point of a branch statement but its terminator is again
-   * a tainted condition. If there are instructions within that basic block
-   * they would all be tainted automatically.
-   */
   if (!switchInstStack.empty()) {
     const auto endLabelPrefix = "sw.epilog";
 
@@ -569,45 +561,6 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
   return getEndOfSwitchLabelRec(switchInst,
                                 std::stack<const llvm::SwitchInst*>(),
                                 visitedInsts);
-}
-
-static std::string
-getEndOfSwitchLabelOld(const llvm::SwitchInst* const switchInst) {
-
-  /*
-   * If there is no default branch we can obtain the label directly
-   * from the switch instruction.
-   */
-  const auto defaultBB = switchInst->getDefaultDest();
-  const auto defaultLabel = defaultBB->getName();
-  bool isEpilogLabel = defaultLabel.contains_lower("epilog");
-  if (isEpilogLabel) return defaultLabel;
-
-  /*
-   * If there is a default set use algorithm as described for branch
-   * instructions (see above).
-   */
-  std::stack<const llvm::SwitchInst*> switchInstStack;
-
-  const llvm::TerminatorInst* terminatorInstPtr = switchInst;
-  do {
-    if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInstPtr)) {
-      switchInstStack.push(switchInst);
-    }
-
-    bool hasSuccessor = terminatorInstPtr->getNumSuccessors() > 0;
-    if (!hasSuccessor) return "";
-
-    terminatorInstPtr = terminatorInstPtr->getSuccessor(0)->getTerminator();
-
-    const auto bbLabel = terminatorInstPtr->getParent()->getName();
-    bool isEpilog = bbLabel.contains_lower("epilog");
-    if (isEpilog) switchInstStack.pop();
-  } while (!switchInstStack.empty());
-
-  const auto endOfSwitchLabel = terminatorInstPtr->getParent()->getName();
-
-  return endOfSwitchLabel;
 }
 
 static std::string
