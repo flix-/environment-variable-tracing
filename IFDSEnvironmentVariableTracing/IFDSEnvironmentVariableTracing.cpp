@@ -27,7 +27,6 @@
 
 namespace psr {
 
-static std::string LINE_NUMBERS_OUTPUT_FILE = "line-numbers.txt";
 static std::set<std::string> TAINTED_CALLS = { "getenv" };
 
 
@@ -47,12 +46,7 @@ __attribute__((destructor)) void fini() { }
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
-
-  if (!entryPoints.empty()) LINE_NUMBERS_OUTPUT_FILE = entryPoints.front() + "-line-numbers.txt";
-
-  llvm::outs() << "Line numbers output file: " << LINE_NUMBERS_OUTPUT_FILE << "\n";
-}
+    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {}
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
@@ -632,9 +626,41 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
 
 void
 IFDSEnvironmentVariableTracing::printReport() {
-  std::ofstream writer(LINE_NUMBERS_OUTPUT_FILE);
-  for (const auto& lineNumber : lineNumberStore.getLineNumbers()) {
-    writer << lineNumber << "\n";
+
+  /*
+   * 1) Simple report for tests (compatibility)
+   * 2) lcov trace file
+   */
+  const std::string simpleReportFile = "line-numbers.txt";
+  const std::string lcovTraceFile = EntryPoints.front() + "-trace.txt";
+
+  // Write simple report
+  std::ofstream writer(simpleReportFile);
+
+  for (const auto& pair : lineNumberStore.getLineNumbers()) {
+    const auto lineNumbers = pair.second;
+
+    for (const auto& lineNumber : lineNumbers) {
+      writer << lineNumber << "\n";
+    }
+  }
+  writer.close();
+  writer.clear();
+
+  // Write lcov trace
+  writer.open(lcovTraceFile);
+
+  for (const auto& pair : lineNumberStore.getLineNumbers()) {
+    const auto path = pair.first;
+    const auto lineNumbers = pair.second;
+
+    writer << "SF:" << path << "\n";
+
+    for (const auto& lineNumber : lineNumbers) {
+      writer << "DA:" << lineNumber << ",1" << "\n";
+    }
+
+    writer << "end_of_record" << "\n";
   }
 }
 

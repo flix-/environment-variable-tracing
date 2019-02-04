@@ -4,8 +4,6 @@
 
 #include "LineNumberStore.h"
 
-#include <sstream>
-
 #include <llvm/IR/DebugInfoMetadata.h>
 
 namespace psr {
@@ -22,23 +20,29 @@ LineNumberStore::addLineNumber(const llvm::Instruction* instruction) {
 
   const auto *fnScope = llvm::cast<llvm::DIScope>(debugLocFn.getScope());
 
-  std::stringstream stream;
-  stream << fnScope->getDirectory().str() <<
-            "/" <<
-            fnScope->getFilename().str() <<
-            ":" <<
-            debugLocInst->getLine();
+  const std::string absolutePath = fnScope->getDirectory().str() +
+                                   "/" +
+                                   fnScope->getFilename().str();
+  unsigned int lineNumber = debugLocInst->getLine();
 
-  const std::string logLine = stream.str();
-
-  this->lineNumbers.insert(logLine);
+  getSetForKey(absolutePath).insert(lineNumber);
 
   return 1;
 }
 
-std::set<std::string>
-LineNumberStore::getLineNumbers(void) {
-  return this->lineNumbers;
+std::set<unsigned int>&
+LineNumberStore::getSetForKey(std::string key) {
+
+  auto set = lineNumbers.find(key);
+  if (set != lineNumbers.end()) return set->second;
+
+  lineNumbers.insert({key, std::set<unsigned int>()});
+  return lineNumbers.find(key)->second;
+}
+
+const std::map<std::string, std::set<unsigned int>>
+LineNumberStore::getLineNumbers(void) const {
+  return lineNumbers;
 }
 
 } // namespace

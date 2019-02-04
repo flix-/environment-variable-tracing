@@ -5,6 +5,7 @@
 #ifndef LINENUMBERSTORE_H
 #define LINENUMBERSTORE_H
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -17,10 +18,12 @@ public:
   LineNumberStore();
 
   long addLineNumber(const llvm::Instruction* instruction);
-  std::set<std::string> getLineNumbers(void);
+  const std::map<std::string, std::set<unsigned int>> getLineNumbers(void) const;
 
 private:
-  std::set<std::string> lineNumbers;
+  std::map<std::string, std::set<unsigned int>> lineNumbers;
+
+  std::set<unsigned int>& getSetForKey(std::string key);
 };
 
 } // namespace

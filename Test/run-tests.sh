@@ -5,8 +5,7 @@ CFLAGS='-g -S -emit-llvm'
 SRC_IN='main.c'
 IR_OUT='main.ll'
 
-LINES_FILE='main-line-numbers.txt'
-LINES_FILE_STRIPPED='line-numbers-stripped.txt'
+LINES_FILE='line-numbers.txt'
 EXPECTED_LINES_FILE='expected-line-numbers.txt'
 PHASAR_OUTPUT_FILE='out'
 HTML_INCLUDE_PHASAR_OUTPUT=1
@@ -15,7 +14,6 @@ OUT_HTML="html/source-code.html"
 OUT_CSS="html/css/mark-lines.css"
 
 PHASAR_BIN='/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar'
-#PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/MonoIntraEnvironmentVariableTracing/libMonoIntraEnvironmentVariableTracing.so'
 PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so'
 PHASAR_RESULTS_FILE='results.json'
 
@@ -52,7 +50,7 @@ function create_html {
     rm -f ${OUT_CSS}
     while read -r line || [[ -n "${line}" ]]; do
         echo "li.L${line} { background-color: grey; }" >> ${OUT_CSS}
-    done < "${LINES_FILE_STRIPPED}"
+    done < "${LINES_FILE}"
 }
 
 function create_summary_start {
@@ -129,11 +127,7 @@ do
 
     echo "Checking result"
 
-    sed 's/^[^:]*://' ${LINES_FILE} > ${LINES_FILE_STRIPPED}
-    sort -g ${LINES_FILE_STRIPPED} > ${LINES_FILE_STRIPPED}.tmp
-    mv ${LINES_FILE_STRIPPED}.tmp ${LINES_FILE_STRIPPED}
-
-    diff ${EXPECTED_LINES_FILE} ${LINES_FILE_STRIPPED} > /dev/null 2>&1
+    diff ${EXPECTED_LINES_FILE} ${LINES_FILE} > /dev/null 2>&1
     RC=$?
     TEST_RESULT=""
     if [ $RC -eq 0 ]; then

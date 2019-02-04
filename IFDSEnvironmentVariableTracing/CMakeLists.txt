@@ -14,6 +14,4 @@ add_library(IFDSEnvironmentVariableTracing MODULE
 
   Utils/DataFlowUtils.h
   Utils/DataFlowUtils.cpp
-  Utils/LLVMIRDump.h
-  Utils/LLVMIRDump.cpp
 )
