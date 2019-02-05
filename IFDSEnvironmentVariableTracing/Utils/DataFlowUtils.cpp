@@ -564,14 +564,36 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
 }
 
 static std::string
+getPrefixFromLabel(std::string label) {
+
+  return label.substr(0, label.find('.'));
+}
+
+static const std::set<std::string>
+getLabelPrefixesFromTerminatorInst(const llvm::TerminatorInst* terminatorInst) {
+
+  std::set<std::string> labelPrefixes;
+
+  for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
+    const auto bbLabel = terminatorInst->getSuccessor(i)->getName();
+    const auto labelPrefix = getPrefixFromLabel(bbLabel);
+
+    labelPrefixes.insert(labelPrefix);
+  }
+
+  return labelPrefixes;
+}
+
+static std::string
 getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
-                       const std::string labelPrefix,
+                       std::set<std::string> labelPrefixes,
                        std::stack<const llvm::BranchInst*> branchInstStack,
                        std::set<const llvm::TerminatorInst*>& visitedTerminatorInsts) {
 
   visitedTerminatorInsts.insert(terminatorInst);
 
-  const auto currentLabel = terminatorInst->getParent()->getName();
+  const auto currentBB = terminatorInst->getParent();
+  const auto currentLabel = currentBB->getName();
 
   /*
    * Do not check for the first call with the tainted branch as we would
@@ -582,20 +604,31 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
    * they would all be tainted automatically.
    */
   if (!branchInstStack.empty()) {
-    const auto endLabelPrefix = labelPrefix + "." + "end";
+    for (const auto& labelPrefix : labelPrefixes) {
+      const auto endLabelPrefix = labelPrefix + "." + "end";
 
-    bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
-    if (isEndOfBranch) branchInstStack.pop();
+      bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
+      if (isEndOfBranch) {
+        branchInstStack.pop();
+        break;
+      }
+    }
 
     if (branchInstStack.empty()) return currentLabel;
   }
 
   if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
     if (branchInst->isConditional()) {
-      const std::string bbLabelThen = branchInst->getOperand(2)->getName();
-      const std::string currentLabelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
+      for (unsigned int i = 0; i < branchInst->getNumSuccessors(); ++i) {
+        const auto branchLabel = branchInst->getSuccessor(i)->getName();
+        const auto branchLabelPrefix = getPrefixFromLabel(branchLabel);
 
-      if (currentLabelPrefix == labelPrefix) branchInstStack.push(branchInst);
+        bool isLabelPrefixCollision = labelPrefixes.find(branchLabelPrefix) != labelPrefixes.end();
+        if (isLabelPrefixCollision) {
+          branchInstStack.push(branchInst);
+          break;
+        }
+      }
     }
   }
 
@@ -604,12 +637,12 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
 
     bool isAlreadyVisitedTerminatorInst = visitedTerminatorInsts.find(nextTerminatorInst) != visitedTerminatorInsts.end();
     if (!isAlreadyVisitedTerminatorInst) {
-      const auto endLabel = getEndOfBranchLabelRec(nextTerminatorInst,
-                                                   labelPrefix,
-                                                   branchInstStack,
-                                                   visitedTerminatorInsts);
+      const auto endOfBranchLabel = getEndOfBranchLabelRec(nextTerminatorInst,
+                                                           labelPrefixes,
+                                                           branchInstStack,
+                                                           visitedTerminatorInsts);
 
-      if (endLabel != EMPTY_STRING) return endLabel;
+      if (endOfBranchLabel != EMPTY_STRING) return endOfBranchLabel;
     }
   }
 
@@ -630,17 +663,17 @@ getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
   if (bbLabelElse.contains_lower("end")) return bbLabelElse;
 
   /*
-   * DFS...
+   * DFS
    */
-  auto labelPrefix = bbLabelThen.substr(0, bbLabelThen.find('.'));
-
-  if (labelPrefix.compare_lower("cond") == 0) labelPrefix = "if";
-
+  std::set<std::string> labelPrefixes = getLabelPrefixesFromTerminatorInst(branchInst);
   std::set<const llvm::TerminatorInst*> visitedInsts;
-  return getEndOfBranchLabelRec(branchInst,
-                                labelPrefix,
-                                std::stack<const llvm::BranchInst*>(),
-                                visitedInsts);
+
+  const auto endOfBranchLabel = getEndOfBranchLabelRec(branchInst,
+                                                       labelPrefixes,
+                                                       std::stack<const llvm::BranchInst*>(),
+                                                       visitedInsts);
+
+  return endOfBranchLabel;
 }
 
 std::string
@@ -691,6 +724,13 @@ bool
 DataFlowUtils::isMemoryLocationFact(const ExtendedValue& ev) {
 
   return !ev.getMemLocationSeq().empty();
+}
+
+bool
+DataFlowUtils::isKillAfterStoreFact(const ExtendedValue& ev) {
+
+  return !isMemoryLocationFact(ev) &&
+         !llvm::isa<llvm::CallInst>(ev.getValue());
 }
 
 void

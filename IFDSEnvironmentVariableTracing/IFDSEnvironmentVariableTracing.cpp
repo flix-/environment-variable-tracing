@@ -27,7 +27,7 @@
 
 namespace psr {
 
-static std::set<std::string> TAINTED_CALLS = { "getenv" };
+static const std::set<std::string> TAINTED_CALLS = { "getenv" };
 
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
@@ -178,7 +178,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       if (isSrcMemLocation) {
         bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
         bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
-                       !DataFlowUtils::isMemoryLocationFact(fact);
+                        DataFlowUtils::isKillAfterStoreFact(fact);
 
         if (genFact) {
           const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
@@ -203,7 +203,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       else {
         bool genFact = DataFlowUtils::isValueTainted(fact, srcValue);
         bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
-                       !DataFlowUtils::isMemoryLocationFact(fact);
+                        DataFlowUtils::isKillAfterStoreFact(fact);
 
         if (genFact) {
           ExtendedValue ev(storeInst);
@@ -311,12 +311,14 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         if (isBranchTainted) {
           const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
 
-          ExtendedValue ev(branchInst);
-          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+          if (!endOfTaintedBranchLabel.empty()) {
+            ExtendedValue ev(branchInst);
+            ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
 
-          lineNumberStore.addLineNumber(branchInst);
+            lineNumberStore.addLineNumber(branchInst);
 
-          return { ev };
+            return { ev };
+          }
         }
       }
 

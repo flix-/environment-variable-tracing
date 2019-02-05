@@ -9,6 +9,8 @@ main()
     int taint = foo() == 0 ? bar() : &tainted;
     int a = taint;
 
+    int ut = 1;
+
     return 0;
 }
 

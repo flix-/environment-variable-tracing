@@ -11,6 +11,7 @@ entry:
   %retval = alloca i32, align 4
   %taint = alloca i32, align 4
   %a = alloca i32, align 4
+  %ut = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !11, metadata !12), !dbg !13
   %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !14
@@ -30,7 +31,9 @@ cond.end:                                         ; preds = %cond.false, %cond.t
   call void @llvm.dbg.declare(metadata i32* %a, metadata !17, metadata !12), !dbg !18
   %0 = load i32, i32* %taint, align 4, !dbg !19
   store i32 %0, i32* %a, align 4, !dbg !18
-  ret i32 0, !dbg !20
+  call void @llvm.dbg.declare(metadata i32* %ut, metadata !20, metadata !12), !dbg !21
+  store i32 1, i32* %ut, align 4, !dbg !21
+  ret i32 0, !dbg !22
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -68,4 +71,6 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !17 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 9, type: !10)
 !18 = !DILocation(line: 9, column: 9, scope: !7)
 !19 = !DILocation(line: 9, column: 13, scope: !7)
-!20 = !DILocation(line: 11, column: 5, scope: !7)
+!20 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 11, type: !10)
+!21 = !DILocation(line: 11, column: 9, scope: !7)
+!22 = !DILocation(line: 13, column: 5, scope: !7)

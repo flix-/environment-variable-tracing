@@ -55,6 +55,10 @@ N: store i32 %1, i32* %a, align 4, !dbg !33, !phasar.instruction.id !37, ID: 17 
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
+D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9
+
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	%1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36, ID: 16
@@ -101,15 +105,15 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
-N: %a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3 in function: main
+N: %a = alloca i32, align 4, !phasar.instruction.i
+[TRACK] Checking end of branch label for: entry
+[TRACK] End of branch label: lor.end
+d !14, ID: 3 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2 in function: main
-D:	@zero_value = constant 
-[TRACK] Checking end of branch label for: entry
-[TRACK] End of branch label: lor.end
-i2 0, align 4, ID: -1
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10 in function: main
@@ -137,9 +141,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %0 = phi i1 [ true, %entry ], [ %tobool2, %lor.rhs ], !phasar.instruction.id !29, ID: 12 in function: main
-D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8
-L:	lor.end
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10
@@ -148,10 +149,17 @@ D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9
 
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
 
+D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8
+L:	lor.end
+
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i32* %a, metadata !32, metadata !17), !dbg !33, !phasar.instruction.id !34, ID: 15 in function: main
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
+
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
+D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -159,6 +167,10 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: %1 = load i32, i32* %taint, align 4, !dbg !35, !phasar.instruction.id !36, ID: 16 in function: main
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
+
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
+D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -169,6 +181,10 @@ A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
 
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
+
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
+D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 

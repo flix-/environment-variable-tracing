@@ -78,10 +78,14 @@ N: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	store i32 100, i32* %rc, align 4, !dbg !32, !phasar.instruction.id !34, ID: 14<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
+<br>
+D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 0, i32* %retval, align 4, !phasar.instruction.id !14, ID: 3 in function: main<br>
@@ -91,6 +95,8 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 N: br i1 %tobool, label %land.rhs, label %land.end, !dbg !24, !phasar.instruction.id !25, ID: 8 in function: main<br>
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
+<br>
+D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
 <br>
 D:	%tobool = icmp ne i32 %call, 0, !dbg !21, !phasar.instruction.id !23, ID: 7<br>
 <br>
@@ -114,6 +120,8 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
+D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
+<br>
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
 <br>
@@ -123,6 +131,10 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
+<br>
+D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	store i32 100, i32* %rc, align 4, !dbg !32, !phasar.instruction.id !34, ID: 14<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
@@ -139,6 +151,8 @@ L:	land.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
+D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
+<br>
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
 <br>
@@ -147,17 +161,17 @@ N: %tobool2 = icmp ne i32 %call1, 0, !dbg !24, !phasar.instruction.id !28, ID: 1
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
 <br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
+<br>
 D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
+D:	br i1 %tobool, label %land.rhs, label %land.end, !dbg !24, !phasar.instruction.id !25, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	store i32 100, i32* %rc, align 4, !dbg !32, !phasar.instruction.id !34, ID: 14<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	br i1 %tobool, label %land.rhs, label %land.end, !dbg !24, !phasar.instruction.id !25, ID: 8<br>
-L:	land.end<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %land.end, !phasar.instruction.id !29, ID: 11 in function: main<br>
@@ -206,7 +220,15 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !24, !phasar.instruction.id !28, ID: 10<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	@z[TRACK] Checking end of branch label for: while.cond<br>
+[TRACK] End of branch label: land.end<br>
+[TRACK] Checking end of branch label for: land.end<br>
+[TRACK] End of branch label: while.end<br>
+[TRACK] Checking end of branch label for: land.end<br>
+[TRACK] End of branch label: while.end<br>
+[TRACK] Checking end of branch label for: while.cond<br>
+[TRACK] End of branch label: land.end<br>
+ero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 100, i32* %rc, align 4, !dbg !32, !phasar.instruction.id !34, ID: 14<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
@@ -220,15 +242,7 @@ D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !24, !phasar.instruction.id !28, ID: 1
 D:	br i1 %0, label %while.body, label %while.end, !dbg !19, !phasar.instruction.id !31, ID: 13<br>
 L:	while.end<br>
 <br>
-D:	%0 = phi i1 [ false, %while.cond ], [ %tobool2, %land.rhs ], !phasar.instruc[TRACK] Checking end of branch label for: while.cond<br>
-[TRACK] End of branch label: land.end<br>
-[TRACK] Checking end of branch label for: land.end<br>
-[TRACK] End of branch label: while.end<br>
-[TRACK] Checking end of branch label for: land.end<br>
-[TRACK] End of branch label: while.end<br>
-[TRACK] Checking end of branch label for: while.cond<br>
-[TRACK] End of branch label: land.end<br>
-tion.id !30, ID: 12<br>
+D:	%0 = phi i1 [ false, %while.cond ], [ %tobool2, %land.rhs ], !phasar.instruction.id !30, ID: 12<br>
 <br>
 D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 9<br>
 <br>
