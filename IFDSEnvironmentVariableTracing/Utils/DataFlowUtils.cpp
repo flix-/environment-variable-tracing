@@ -4,10 +4,12 @@
 
 #include "DataFlowUtils.h"
 
+#include <ctime>
 #include <algorithm>
 #include <iterator>
 #include <queue>
 #include <set>
+#include <sstream>
 #include <stack>
 #include <string>
 
@@ -765,3 +767,17 @@ DataFlowUtils::getTypeName(const llvm::Type* type) {
   return typeRawOutputStream.str();
 }
 
+std::string
+DataFlowUtils::getTraceFilename(std::string entryPoint) {
+
+  time_t t = std::time(nullptr);
+  long int now = static_cast<long int> (t);
+
+  std::stringstream traceFileStream;
+  traceFileStream << "static" << "-"
+                  << entryPoint << "-"
+                  << now << "-"
+                  << "trace.txt";
+
+  return traceFileStream.str();
+}

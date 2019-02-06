@@ -61,6 +61,7 @@ public:
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 
+  static std::string getTraceFilename(std::string entryPoint);
 };
 
 } // namespace

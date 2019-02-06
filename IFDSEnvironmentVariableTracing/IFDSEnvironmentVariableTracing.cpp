@@ -27,7 +27,10 @@
 
 namespace psr {
 
-static const std::set<std::string> TAINTED_CALLS = { "getenv" };
+static const std::set<std::string> TAINTED_CALLS = { "getenv",
+                                                     "ossl_safe_getenv",
+                                                     "secure_getenv"
+                                                   };
 
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
@@ -634,10 +637,12 @@ IFDSEnvironmentVariableTracing::printReport() {
    * 2) lcov trace file
    */
   const std::string simpleReportFile = "line-numbers.txt";
-  const std::string lcovTraceFile = EntryPoints.front() + "-trace.txt";
+  const std::string lcovTraceFile = DataFlowUtils::getTraceFilename(EntryPoints.front());
 
   // Write simple report
   std::ofstream writer(simpleReportFile);
+
+  llvm::outs() << "Writing simple report to: " << simpleReportFile << "\n";
 
   for (const auto& pair : lineNumberStore.getLineNumbers()) {
     const auto lineNumbers = pair.second;
@@ -651,6 +656,8 @@ IFDSEnvironmentVariableTracing::printReport() {
 
   // Write lcov trace
   writer.open(lcovTraceFile);
+
+  llvm::outs() << "Writing lcov trace to: " << lcovTraceFile << "\n";
 
   for (const auto& pair : lineNumberStore.getLineNumbers()) {
     const auto path = pair.first;
