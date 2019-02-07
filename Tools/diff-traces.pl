@@ -16,7 +16,7 @@ sub get_trace_from_file {
         chomp($line);
 
         $current_key = $1 if ($line =~ m/SF:(.*)/);
-        $trace->{$current_key}->{$1} = undef if ($line =~ m/DA:([0-9]+),([1-9]+)/);
+        $trace->{$current_key}->{$1} = undef if ($line =~ m/DA:([0-9]+),[1-9]+/);
     }
 
     close($trace_fh);
@@ -73,7 +73,7 @@ my $static_trace = get_trace_from_file($static_trace_file);
 my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
 
 #print Dumper $static_trace;
-print Dumper $dynamic_trace;
+#print Dumper $dynamic_trace;
 
 diff_traces($static_trace, $dynamic_trace);
 

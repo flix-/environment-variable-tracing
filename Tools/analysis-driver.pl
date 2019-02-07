@@ -96,7 +96,7 @@ foreach my $trace_file (@traces) {
     $lcov_param .=  "-a $trace_file ";
 }
 
-my $merged_trace_file = "static-${ir_file}-trace.txt";
+my $merged_trace_file = "static-trace.txt";
 
 system("lcov $lcov_param -o $merged_trace_file");
 
