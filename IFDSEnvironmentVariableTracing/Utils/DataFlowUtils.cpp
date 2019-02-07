@@ -4,8 +4,8 @@
 
 #include "DataFlowUtils.h"
 
-#include <ctime>
 #include <algorithm>
+#include <ctime>
 #include <iterator>
 #include <queue>
 #include <set>
@@ -21,6 +21,8 @@
 using namespace psr;
 
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
+static const std::set<std::string> PUSH_BARRIER{"stop. don't push. go back to start"};
+
 static const std::vector<const llvm::Value*> EMPTY_SEQ;
 static const std::string EMPTY_STRING;
 
@@ -565,6 +567,12 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
                                 visitedInsts);
 }
 
+static bool
+isPushBarrier(std::string bbLabel) {
+
+  return std::count(bbLabel.begin(), bbLabel.end(), '.') > 1;
+}
+
 static std::string
 getPrefixFromLabel(std::string label) {
 
@@ -578,6 +586,9 @@ getLabelPrefixesFromTerminatorInst(const llvm::TerminatorInst* terminatorInst) {
 
   for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
     const auto bbLabel = terminatorInst->getSuccessor(i)->getName();
+
+    if (isPushBarrier(bbLabel)) return PUSH_BARRIER;
+
     const auto labelPrefix = getPrefixFromLabel(bbLabel);
 
     labelPrefixes.insert(labelPrefix);
@@ -596,46 +607,57 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
   const auto currentBB = terminatorInst->getParent();
   const auto currentLabel = currentBB->getName();
 
+  llvm::outs() << "[TRACK]: Label: " << currentLabel << "\n";
+
   bool isInitial = labelPrefixStack.empty();
   if (isInitial) {
     std::set<std::string> labelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
     labelPrefixStack.push(labelPrefixes);
   }
   else {
-    /*
-     * Check if is end of branch.
-     */
-    for (const auto& labelPrefix : labelPrefixStack.top()) {
-      const auto endLabelPrefix = labelPrefix + "." + "end";
+    if (labelPrefixStack.top() == PUSH_BARRIER) {
+      std::set<std::string> labelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
 
-      bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
-      if (isEndOfBranch) {
-        labelPrefixStack.pop();
-        break;
-      }
+      labelPrefixStack.pop();
+      labelPrefixStack.push(labelPrefixes);
     }
 
-    if (labelPrefixStack.empty()) return currentLabel;
+    if (labelPrefixStack.top() != PUSH_BARRIER) {
+      /*
+       * Check if is end of branch.
+       */
+      for (const auto& labelPrefix : labelPrefixStack.top()) {
+        const auto endLabelPrefix = labelPrefix + "." + "end";
 
-    /*
-     * Check if we need to push stack.
-     */
-    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
+        bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
+        if (isEndOfBranch) {
+          labelPrefixStack.pop();
+          break;
+        }
+      }
 
-      if (branchInst->isConditional()) {
-        const auto currentLabelPrefixes = labelPrefixStack.top();
+      if (labelPrefixStack.empty()) return currentLabel;
 
-        for (unsigned int i = 0; i < branchInst->getNumSuccessors(); ++i) {
-          const auto nextBB = branchInst->getSuccessor(i);
-          const auto nextLabel = nextBB->getName();
-          const auto nextLabelPrefix = getPrefixFromLabel(nextLabel);
+      /*
+       * Check if we need to push stack.
+       */
+      if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
 
-          bool isLabelPrefixCollision = currentLabelPrefixes.find(nextLabelPrefix) != currentLabelPrefixes.end();
-          if (isLabelPrefixCollision) {
-            const auto nextLabelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
+        if (branchInst->isConditional()) {
+          const auto currentLabelPrefixes = labelPrefixStack.top();
 
-            labelPrefixStack.push(nextLabelPrefixes);
-            break;
+          for (unsigned int i = 0; i < branchInst->getNumSuccessors(); ++i) {
+            const auto nextBB = branchInst->getSuccessor(i);
+            const auto nextLabel = nextBB->getName();
+            const auto nextLabelPrefix = getPrefixFromLabel(nextLabel);
+
+            bool isLabelPrefixCollision = currentLabelPrefixes.find(nextLabelPrefix) != currentLabelPrefixes.end();
+            if (isLabelPrefixCollision) {
+              const auto nextLabelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
+
+              labelPrefixStack.push(nextLabelPrefixes);
+              break;
+            }
           }
         }
       }
@@ -665,11 +687,11 @@ getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
    * If the branch does not have an else part we can obtain
    * the label directly from the branch instruction.
    */
-  const auto bbLabelThen = branchInst->getOperand(2)->getName();
-  const auto bbLabelElse = branchInst->getOperand(1)->getName();
+//  const auto bbLabelThen = branchInst->getOperand(2)->getName();
+//  const auto bbLabelElse = branchInst->getOperand(1)->getName();
 
-  if (bbLabelThen.contains_lower("end")) return bbLabelThen;
-  if (bbLabelElse.contains_lower("end")) return bbLabelElse;
+//  if (bbLabelThen.contains_lower("end")) return bbLabelThen;
+//  if (bbLabelElse.contains_lower("end")) return bbLabelElse;
 
   /*
    * DFS
@@ -770,8 +792,8 @@ DataFlowUtils::getTypeName(const llvm::Type* type) {
 std::string
 DataFlowUtils::getTraceFilename(std::string entryPoint) {
 
-  time_t t = std::time(nullptr);
-  long int now = static_cast<long int> (t);
+  time_t time = std::time(nullptr);
+  long now = static_cast<long> (time);
 
   std::stringstream traceFileStream;
   traceFileStream << "static" << "-"
