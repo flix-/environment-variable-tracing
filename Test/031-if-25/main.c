@@ -18,9 +18,9 @@ main()
             } else if (a || b || c) {
                 int d = a;
             }
-            int tainted = 1;
+            int end1 = 1;
         } while (getenv("gude"));
-        int end = 1;
+        int end2 = 2;
     }
 
     int ut = 0;

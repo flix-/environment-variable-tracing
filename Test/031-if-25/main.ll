@@ -17,8 +17,8 @@ entry:
   %a12 = alloca i32, align 4
   %b13 = alloca i32, align 4
   %d21 = alloca i32, align 4
-  %tainted = alloca i32, align 4
-  %end = alloca i32, align 4
+  %end1 = alloca i32, align 4
+  %end2 = alloca i32, align 4
   %ut = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %a, metadata !11, metadata !12), !dbg !13
@@ -107,8 +107,8 @@ if.end22:                                         ; preds = %if.then20, %lor.lhs
   br label %if.end23
 
 if.end23:                                         ; preds = %if.end22, %if.end
-  call void @llvm.dbg.declare(metadata i32* %tainted, metadata !70, metadata !12), !dbg !71
-  store i32 1, i32* %tainted, align 4, !dbg !71
+  call void @llvm.dbg.declare(metadata i32* %end1, metadata !70, metadata !12), !dbg !71
+  store i32 1, i32* %end1, align 4, !dbg !71
   br label %do.cond, !dbg !72
 
 do.cond:                                          ; preds = %if.end23
@@ -117,8 +117,8 @@ do.cond:                                          ; preds = %if.end23
   br i1 %tobool25, label %do.body, label %do.end26, !dbg !72, !llvm.loop !27
 
 do.end26:                                         ; preds = %do.cond
-  call void @llvm.dbg.declare(metadata i32* %end, metadata !74, metadata !12), !dbg !75
-  store i32 1, i32* %end, align 4, !dbg !75
+  call void @llvm.dbg.declare(metadata i32* %end2, metadata !74, metadata !12), !dbg !75
+  store i32 2, i32* %end2, align 4, !dbg !75
   br label %if.end27, !dbg !76
 
 if.end27:                                         ; preds = %do.end26, %entry
@@ -210,11 +210,11 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !67 = !DILocation(line: 19, column: 21, scope: !66)
 !68 = !DILocation(line: 19, column: 25, scope: !66)
 !69 = !DILocation(line: 20, column: 13, scope: !66)
-!70 = !DILocalVariable(name: "tainted", scope: !31, file: !1, line: 21, type: !10)
+!70 = !DILocalVariable(name: "end1", scope: !31, file: !1, line: 21, type: !10)
 !71 = !DILocation(line: 21, column: 17, scope: !31)
 !72 = !DILocation(line: 22, column: 9, scope: !31)
 !73 = !DILocation(line: 22, column: 18, scope: !26)
-!74 = !DILocalVariable(name: "end", scope: !26, file: !1, line: 23, type: !10)
+!74 = !DILocalVariable(name: "end2", scope: !26, file: !1, line: 23, type: !10)
 !75 = !DILocation(line: 23, column: 13, scope: !26)
 !76 = !DILocation(line: 24, column: 5, scope: !26)
 !77 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 26, type: !10)

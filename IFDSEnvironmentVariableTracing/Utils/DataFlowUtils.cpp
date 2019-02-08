@@ -21,7 +21,7 @@
 using namespace psr;
 
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
-static const std::set<std::string> PUSH_BARRIER{"stop. don't push. go back to start"};
+static const std::string SUBSTITUTION_WILDCARD = "";  // Must be empty string to match .end automatically!
 
 static const std::vector<const llvm::Value*> EMPTY_SEQ;
 static const std::string EMPTY_STRING;
@@ -568,110 +568,79 @@ getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
 }
 
 static bool
-isPushBarrier(std::string bbLabel) {
+isSubstitutionWildcard(std::string bbLabel) {
 
-  return std::count(bbLabel.begin(), bbLabel.end(), '.') > 1;
+  bool containsTrueOrFalse = bbLabel.find("true") != std::string::npos ||
+                             bbLabel.find("false") != std::string::npos;
+
+  return containsTrueOrFalse;
+  //return std::count(bbLabel.begin(), bbLabel.end(), '.') > 1;
 }
 
 static std::string
-getPrefixFromLabel(std::string label) {
+getPrefixFromLabel(std::string bbLabel) {
 
-  return label.substr(0, label.find('.'));
-}
+  if (isSubstitutionWildcard(bbLabel)) return SUBSTITUTION_WILDCARD;
 
-static const std::set<std::string>
-getLabelPrefixesFromTerminatorInst(const llvm::TerminatorInst* terminatorInst) {
-
-  std::set<std::string> labelPrefixes;
-
-  for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
-    const auto bbLabel = terminatorInst->getSuccessor(i)->getName();
-
-    if (isPushBarrier(bbLabel)) return PUSH_BARRIER;
-
-    const auto labelPrefix = getPrefixFromLabel(bbLabel);
-
-    labelPrefixes.insert(labelPrefix);
-  }
-
-  return labelPrefixes;
+  return bbLabel.substr(0, bbLabel.find('.'));
 }
 
 static std::string
 getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
-                       std::stack<std::set<std::string>> labelPrefixStack,
-                       std::set<const llvm::TerminatorInst*>& visitedTerminatorInsts) {
-
-  visitedTerminatorInsts.insert(terminatorInst);
+                       std::stack<std::string> labelPrefixStack,
+                       std::set<std::string>& visitedNodes) {
 
   const auto currentBB = terminatorInst->getParent();
   const auto currentLabel = currentBB->getName();
 
-  llvm::outs() << "[TRACK]: Label: " << currentLabel << "\n";
+  visitedNodes.insert(currentLabel);
 
-  bool isInitial = labelPrefixStack.empty();
-  if (isInitial) {
-    std::set<std::string> labelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
-    labelPrefixStack.push(labelPrefixes);
-  }
-  else {
-    if (labelPrefixStack.top() == PUSH_BARRIER) {
-      std::set<std::string> labelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
+  if (!labelPrefixStack.empty()) {
+    /*
+     * If SUBSTITUTION_WILDCARD is on top it will match every .end label!
+     */
+    const auto endLabelPrefix = labelPrefixStack.top() + ".end";
+    bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
+    if (isEndOfBranch) labelPrefixStack.pop();
 
-      labelPrefixStack.pop();
-      labelPrefixStack.push(labelPrefixes);
-    }
-
-    if (labelPrefixStack.top() != PUSH_BARRIER) {
-      /*
-       * Check if is end of branch.
-       */
-      for (const auto& labelPrefix : labelPrefixStack.top()) {
-        const auto endLabelPrefix = labelPrefix + "." + "end";
-
-        bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
-        if (isEndOfBranch) {
-          labelPrefixStack.pop();
-          break;
-        }
-      }
-
-      if (labelPrefixStack.empty()) return currentLabel;
-
-      /*
-       * Check if we need to push stack.
-       */
-      if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
-
-        if (branchInst->isConditional()) {
-          const auto currentLabelPrefixes = labelPrefixStack.top();
-
-          for (unsigned int i = 0; i < branchInst->getNumSuccessors(); ++i) {
-            const auto nextBB = branchInst->getSuccessor(i);
-            const auto nextLabel = nextBB->getName();
-            const auto nextLabelPrefix = getPrefixFromLabel(nextLabel);
-
-            bool isLabelPrefixCollision = currentLabelPrefixes.find(nextLabelPrefix) != currentLabelPrefixes.end();
-            if (isLabelPrefixCollision) {
-              const auto nextLabelPrefixes = getLabelPrefixesFromTerminatorInst(terminatorInst);
-
-              labelPrefixStack.push(nextLabelPrefixes);
-              break;
-            }
-          }
-        }
-      }
-    }
+    if (labelPrefixStack.empty()) return currentLabel;
   }
 
   for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
-    const auto nextTerminatorInst = terminatorInst->getSuccessor(i)->getTerminator();
+    const auto nextBB = terminatorInst->getSuccessor(i);
+    const auto nextLabel = nextBB->getName();
+    const auto nextLabelPrefix = getPrefixFromLabel(nextLabel);
 
-    bool isAlreadyVisitedTerminatorInst = visitedTerminatorInsts.find(nextTerminatorInst) != visitedTerminatorInsts.end();
-    if (!isAlreadyVisitedTerminatorInst) {
+    std::stack<std::string> nextLabelPrefixStack = labelPrefixStack;
+
+    if (nextLabelPrefixStack.empty()) {
+      nextLabelPrefixStack.push(nextLabelPrefix);
+    }
+    else
+    if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
+      if (branchInst->isConditional()) {
+        if (nextLabelPrefixStack.top() == SUBSTITUTION_WILDCARD) {
+          nextLabelPrefixStack.pop();
+          nextLabelPrefixStack.push(nextLabelPrefix);
+        }
+        else
+        if (nextLabelPrefix == SUBSTITUTION_WILDCARD) {
+          nextLabelPrefixStack.push(SUBSTITUTION_WILDCARD);
+        }
+        else {
+          bool isLabelPrefixCollision = nextLabelPrefixStack.top() == nextLabelPrefix;
+          if (isLabelPrefixCollision) nextLabelPrefixStack.push(nextLabelPrefix);
+        }
+      }
+    }
+
+    const auto nextTerminatorInst = nextBB->getTerminator();
+
+    bool isAlreadyVisitedNode = visitedNodes.find(nextLabel) != visitedNodes.end();
+    if (!isAlreadyVisitedNode) {
       const auto endOfBranchLabel = getEndOfBranchLabelRec(nextTerminatorInst,
-                                                           labelPrefixStack,
-                                                           visitedTerminatorInsts);
+                                                           nextLabelPrefixStack,
+                                                           visitedNodes);
 
       if (endOfBranchLabel != EMPTY_STRING) return endOfBranchLabel;
     }
@@ -682,6 +651,8 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
 
 static std::string
 getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
+
+  // TODO: Uncomment for production use!
 
   /*
    * If the branch does not have an else part we can obtain
@@ -696,12 +667,12 @@ getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
   /*
    * DFS
    */
-  std::stack<std::set<std::string>> labelPrefixStack;
-  std::set<const llvm::TerminatorInst*> visitedInsts;
+  std::stack<std::string> labelPrefixStack;
+  std::set<std::string> visitedNodes;
 
   const auto endOfBranchLabel = getEndOfBranchLabelRec(branchInst,
                                                        labelPrefixStack,
-                                                       visitedInsts);
+                                                       visitedNodes);
 
   return endOfBranchLabel;
 }

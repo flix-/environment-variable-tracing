@@ -314,14 +314,14 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         if (isBranchTainted) {
           const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
 
-          if (!endOfTaintedBranchLabel.empty()) {
-            ExtendedValue ev(branchInst);
-            ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+          if (endOfTaintedBranchLabel.empty()) llvm::outs() << "[TRACK] No branch label found! Unreachable or algorithm incomplete?" << "\n";
 
-            lineNumberStore.addLineNumber(branchInst);
+          ExtendedValue ev(branchInst);
+          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
 
-            return { ev };
-          }
+          lineNumberStore.addLineNumber(branchInst);
+
+          return { ev };
         }
       }
 
