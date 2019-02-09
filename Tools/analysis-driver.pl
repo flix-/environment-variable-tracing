@@ -33,9 +33,10 @@ sub printFunctionsToFile {
 
 # START CONFIG
 my $FUNCTIONS_FILE = 'functions.txt';
-my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar';
-#my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar-debug';
-my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
+my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501-release/bin/phasar';
+#my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501-debug/bin/phasar-debug';
+#my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
+my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
 # END CONFIG
 
 die "Usage: $0 <path_to_llvm_ir> <path_to_functions>\n" if (@ARGV != 1 && @ARGV != 2);

@@ -28,7 +28,6 @@
 namespace psr {
 
 static const std::set<std::string> TAINTED_CALLS = { "getenv",
-                                                     "ossl_safe_getenv",
                                                      "secure_getenv"
                                                    };
 
