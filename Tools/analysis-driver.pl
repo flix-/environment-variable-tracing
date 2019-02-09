@@ -33,8 +33,8 @@ sub printFunctionsToFile {
 
 # START CONFIG
 my $FUNCTIONS_FILE = 'functions.txt';
-#my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar';
-my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar-debug';
+my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar';
+#my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501/bin/phasar-debug';
 my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
 # END CONFIG
 

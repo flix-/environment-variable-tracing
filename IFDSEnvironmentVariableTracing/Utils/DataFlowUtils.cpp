@@ -513,34 +513,36 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
 
 static std::string
 getEndOfSwitchLabelRec(const llvm::TerminatorInst* terminatorInst,
-                       std::stack<const llvm::SwitchInst*> switchInstStack,
-                       std::set<const llvm::TerminatorInst*>& visitedTerminatorInsts) {
+                       std::stack<std::string> labelPrefixStack,
+                       std::set<std::string>& visitedNodes) {
 
-  visitedTerminatorInsts.insert(terminatorInst);
+  const auto currentBB = terminatorInst->getParent();
+  const auto currentLabel = currentBB->getName();
 
-  const auto currentLabel = terminatorInst->getParent()->getName();
+  visitedNodes.insert(currentLabel);
 
-  if (!switchInstStack.empty()) {
+  if (!labelPrefixStack.empty()) {
     const auto endLabelPrefix = "sw.epilog";
 
     bool isEndOfSwitch = currentLabel.contains_lower(endLabelPrefix);
-    if (isEndOfSwitch) switchInstStack.pop();
+    if (isEndOfSwitch) labelPrefixStack.pop();
 
-    if (switchInstStack.empty()) return currentLabel;
+    if (labelPrefixStack.empty()) return currentLabel;
   }
 
-  if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInst)) {
-    switchInstStack.push(switchInst);
-  }
+  if (llvm::isa<llvm::SwitchInst>(terminatorInst)) labelPrefixStack.push(currentLabel);
 
   for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
-    const auto nextTerminatorInst = terminatorInst->getSuccessor(i)->getTerminator();
+    const auto nextBB = terminatorInst->getSuccessor(i);
+    const auto nextLabel = nextBB->getName();
 
-    bool isAlreadyVisitedTerminatorInst = visitedTerminatorInsts.find(nextTerminatorInst) != visitedTerminatorInsts.end();
+    const auto nextTerminatorInst = nextBB->getTerminator();
+
+    bool isAlreadyVisitedTerminatorInst = visitedNodes.find(nextLabel) != visitedNodes.end();
     if (!isAlreadyVisitedTerminatorInst) {
       const auto endLabel = getEndOfSwitchLabelRec(nextTerminatorInst,
-                                                   switchInstStack,
-                                                   visitedTerminatorInsts);
+                                                   labelPrefixStack,
+                                                   visitedNodes);
 
       if (endLabel != EMPTY_STRING) return endLabel;
     }
@@ -552,19 +554,25 @@ getEndOfSwitchLabelRec(const llvm::TerminatorInst* terminatorInst,
 static std::string
 getEndOfSwitchLabel(const llvm::SwitchInst* const switchInst) {
 
+  // TODO: Uncomment in production use!
   /*
    * If there is no default branch we can obtain the label directly
    * from the switch instruction.
    */
-  const auto defaultBB = switchInst->getDefaultDest();
-  const auto defaultLabel = defaultBB->getName();
-  bool isEpilogLabel = defaultLabel.contains_lower("epilog");
-  if (isEpilogLabel) return defaultLabel;
+//  const auto defaultBB = switchInst->getDefaultDest();
+//  const auto defaultLabel = defaultBB->getName();
+//  bool isEpilogLabel = defaultLabel.contains_lower("epilog");
+//  if (isEpilogLabel) return defaultLabel;
 
-  std::set<const llvm::TerminatorInst*> visitedInsts;
+  /*
+   * DFS
+   */
+  std::stack<std::string> labelPrefixStack;
+  std::set<std::string> visitedNodes;
+
   return getEndOfSwitchLabelRec(switchInst,
-                                std::stack<const llvm::SwitchInst*>(),
-                                visitedInsts);
+                                labelPrefixStack,
+                                visitedNodes);
 }
 
 static bool
@@ -585,6 +593,24 @@ getPrefixFromLabel(std::string bbLabel) {
   return bbLabel.substr(0, bbLabel.find('.'));
 }
 
+/*
+ * This algorithm finds the mergepoint for a given conditional branch instruction.
+ * It works based on naming conventions for basic block labels. We assume that in
+ * the general case a starting point label $labelPrefix.* ($labelPrefix := 'if',
+ * 'for', 'do' etc.) ends in a basic block $labelPrefix.end.*.
+ * We first push $labelPrefix to a stack. Whenever we encounter a new conditional
+ * branch that has the same $labelPrefix we also push. Popping from stack occurs
+ * when we have a basic block $labelPrefix.end.*. As soon as the stack is empty we
+ * have reached our merge point.
+ *
+ * There are certain cases where a given $labelPrefix does not have a corresponding
+ * end label. In particular they start with $labelPrefix_x and will be changed to
+ * $labelPrefix_y during processing and we can find $labelPrefix_y.end.*. Those cases
+ * will be handled by a special value SUBSTITUTION_WILDCARD. If we have such a value
+ * on our stack we 1) do not push other SUBSTITUTION_WILDCARDS until substitution
+ * occurs, 2) we substitute it when we have a label prefix != SUBSTITUTION_WILDCARD
+ * and 3) we match every *.end block with the SUBSTITUTION_WILDCARD.
+ */
 static std::string
 getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
                        std::stack<std::string> labelPrefixStack,
@@ -652,8 +678,7 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
 static std::string
 getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
 
-  // TODO: Uncomment for production use!
-
+  // TODO: Uncomment in production use!
   /*
    * If the branch does not have an else part we can obtain
    * the label directly from the branch instruction.
@@ -670,11 +695,9 @@ getEndOfBranchLabel(const llvm::BranchInst* branchInst) {
   std::stack<std::string> labelPrefixStack;
   std::set<std::string> visitedNodes;
 
-  const auto endOfBranchLabel = getEndOfBranchLabelRec(branchInst,
-                                                       labelPrefixStack,
-                                                       visitedNodes);
-
-  return endOfBranchLabel;
+  return getEndOfBranchLabelRec(branchInst,
+                                labelPrefixStack,
+                                visitedNodes);
 }
 
 std::string

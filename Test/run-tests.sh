@@ -98,6 +98,8 @@ function create_summary_end {
     echo '</html>' >> ${SUMMARY_FILE}
 }
 
+find . -name *-trace.txt -delete
+
 create_summary_start
 
 DIRECTORY=${1}
