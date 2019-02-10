@@ -311,12 +311,15 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
         bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition);
         if (isBranchTainted) {
-          const auto endOfTaintedBranchLabel = DataFlowUtils::getEndOfBlockLabel(branchInst);
+          const auto endOfTaintedBranchBB = DataFlowUtils::getEndOfBlockBB(branchInst);
+          const auto endOfTaintedBranchSuccLabels = DataFlowUtils::getSuccessorLabels(endOfTaintedBranchBB);
 
-          if (endOfTaintedBranchLabel.empty()) llvm::outs() << "[TRACK] No branch label found! Unreachable or algorithm incomplete?" << "\n";
+          const auto endOfTaintedBranchLabel = endOfTaintedBranchBB ? endOfTaintedBranchBB->getName() : "";
+          if (endOfTaintedBranchLabel.empty()) llvm::outs() << "[TRACK] No end of tainted branch label found! Unreachable or algorithm incomplete?" << "\n";
 
           ExtendedValue ev(branchInst);
-          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
+          ev.setEndOfTaintedBlockLabels(endOfTaintedBranchLabel,
+                                        endOfTaintedBranchSuccLabels);
 
           lineNumberStore.addLineNumber(branchInst);
 
@@ -349,10 +352,15 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
        */
       bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition);
       if (isSwitchTainted) {
-        const auto endOfTaintedSwitchLabel = DataFlowUtils::getEndOfBlockLabel(switchInst);
+        const auto endOfTaintedSwitchBB = DataFlowUtils::getEndOfBlockBB(switchInst);
+        const auto endOfTaintedSwitchSuccLabels = DataFlowUtils::getSuccessorLabels(endOfTaintedSwitchBB);
+
+        const auto endOfTaintedSwitchLabel = endOfTaintedSwitchBB ? endOfTaintedSwitchBB->getName() : "";
+        if (endOfTaintedSwitchLabel.empty()) llvm::outs() << "[TRACK] No end of tainted switch label found! Unreachable or algorithm incomplete?" << "\n";
 
         ExtendedValue ev(switchInst);
-        ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
+        ev.setEndOfTaintedBlockLabels(endOfTaintedSwitchLabel,
+                                      endOfTaintedSwitchSuccLabels);
 
         lineNumberStore.addLineNumber(switchInst);
 

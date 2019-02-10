@@ -71,8 +71,8 @@ DONE
 [TRACK]   %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38
 [TRACK] Destination:
 [TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !19
-[TRACK] Checking end of branch label for: entry
-[TRACK] End of branch label: if.end
+[TRACK] Checking end of branch bb for: entry
+[TRACK] End of branch bb: if.end
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17
@@ -88,12 +88,12 @@ DONE
 [TRACK]   %s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17
 [TRACK] Destination:
 [TRACK]   %ut1 = alloca i8*, align 8, !phasar.instruction.id !20
-[TRACK] Checking end of branch label for: if.then
-[TRACK] End of branch label: vaarg.end
-[TRACK] Checking end of branch label for: if.then
-[TRACK] End of branch label: vaarg.end
-[TRACK] Checking end of branch label for: entry
-[TRACK] End of branch label: if.end
+[TRACK] Checking end of branch bb for: if.then
+[TRACK] End of branch bb: vaarg.end
+[TRACK] Checking end of branch bb for: if.then
+[TRACK] End of branch bb: vaarg.end
+[TRACK] Checking end of branch bb for: entry
+[TRACK] End of branch bb: if.end
 [TRACK] Added patchable memory location (caller -> callee)
 [TRACK] Source:
 [TRACK]   %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !16
@@ -1718,15 +1718,15 @@ A:	%gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_lis
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1768,11 +1768,10 @@ D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
+A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	br i1 %cmp, label %if.then, label %if.end, !dbg !39, !phasar.instruction.id !40, ID: 15
 L:	if.end
@@ -1789,7 +1788,8 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
+A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 --- IFDS START RESULT RECORD ---
 N: %t24 = getelementptr inbounds %struct.s2, %struct.s2* %9, i32 0, i32 1, !dbg !107, !phasar.instruction.id !108, ID: 49 in function: foo
@@ -1821,8 +1821,7 @@ A:	%arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %stru
 A:	%gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !71, !phasar.instruction.id !73, ID: 22
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	br i1 %cmp, label %if.then, label %if.end, !dbg !39, !phasar.instruction.id !40, ID: 15
 L:	if.end
@@ -1839,11 +1838,12 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
+A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
+A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 --- IFDS START RESULT RECORD ---
 N: %10 = load i8*, i8** %t24, align 8, !dbg !107, !phasar.instruction.id !109, ID: 50 in function: foo
@@ -1877,15 +1877,15 @@ A:	%arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %stru
 A:	%gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !71, !phasar.instruction.id !73, ID: 22
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -1933,8 +1933,7 @@ D:	store %struct.s2* %6, %struct.s2** %s2, align 8, !dbg !69, !phasar.instructio
 A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
@@ -1953,11 +1952,12 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
+A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
+A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i8** %ut1, metadata !111, metadata !23), !dbg !112, !phasar.instruction.id !113, ID: 52 in function: foo
@@ -1993,18 +1993,18 @@ A:	%arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %stru
 A:	%gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !71, !phasar.instruction.id !73, ID: 22
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -2056,18 +2056,18 @@ A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 D:	call void @llvm.dbg.declare(metadata i8** %ut1, metadata !111, metadata !23), !dbg !112, !phasar.instruction.id !113, ID: 52
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -2135,18 +2135,18 @@ D:	call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metada
 D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id !61, ID: 19
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 --- IFDS START RESULT RECORD ---
 N: %12 = load i8*, i8** %ut15, align 8, !dbg !116, !phasar.instruction.id !118, ID: 55 in function: foo
@@ -2200,18 +2200,18 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
@@ -2269,20 +2269,20 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
-A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
+A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 --- IFDS START RESULT RECORD ---
 N: %arraydecay6 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !120, !phasar.instruction.id !121, ID: 57 in function: foo
@@ -2338,18 +2338,18 @@ D:	call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metada
 D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id !61, ID: 19
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -2409,18 +2409,18 @@ D:	call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metada
 D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id !61, ID: 19
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -2481,18 +2481,18 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
@@ -2561,18 +2561,18 @@ D:	call void @llvm.va_start(i8* %arraydecay1), !dbg !58, !phasar.instruction.id 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !62, metadata !23), !dbg !69, !phasar.instruction.id !70, ID: 20
 
@@ -2638,18 +2638,18 @@ D:	call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metada
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
-
-D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !30, !phasar.instruction.id !31, ID: 67
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%s2 = alloca %struct.s2*, align 8, !phasar.instruction.id !17, ID: 4
 A:	%t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !37, !phasar.instruction.id !38, ID: 71
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t1 = alloca i8*, align 8, !phasar.instruction.id !18, ID: 5
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%t2 = alloca i8*, align 8, !phasar.instruction.id !19, ID: 6
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	@zero_value = constant i2 0, align 4, ID: -1
@@ -2707,7 +2707,7 @@ A:	%t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg
 [TRACK] VarArg Index: 0
 [TRACK] Current VarArg Index: -1
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1549795365-trace.txt
+Writing lcov trace to: static-main-1549838143-trace.txt
  !30, !phasar.instruction.id !31, ID: 67
 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !28, !phasar.instruction.id !29, ID: 66

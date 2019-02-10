@@ -17,17 +17,8 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
 
   if (isBranchOrSwitchFact) {
-    std::string basicBlockLabel = DataFlowUtils::getBBLabel(currentInst);
-
-    /*
-     * We are removing the tainted branch instruction from facts if the instruction's
-     * basic block label matches the one of the trainted branch end block. Note that
-     * we remove it after the phi node making sure that the phi node is auto added
-     * whenever we came from a tainted branch.
-     */
-    bool isEndOfTaintedBlock = !llvm::isa<llvm::PHINode>(currentInst) &&
-                               basicBlockLabel == fact.getEndOfTaintedBlockLabel();
-    if (isEndOfTaintedBlock) return { };
+    bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
+    if (removeTaintedBlockInst) return { };
 
     lineNumberStore.addLineNumber(currentInst);
 

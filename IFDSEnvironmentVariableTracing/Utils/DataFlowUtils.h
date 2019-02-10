@@ -6,6 +6,7 @@
 #define DATAFLOWUTILS_H
 
 #include <string>
+#include <set>
 #include <tuple>
 #include <vector>
 
@@ -20,7 +21,7 @@ public:
   DataFlowUtils() = delete;
 
   static bool isValueTainted(const ExtendedValue& fact,
-                             const llvm::Value* instruction);
+                             const llvm::Value* currentInst);
 
   static bool isMemoryLocationTainted(const ExtendedValue& fact,
                                       const llvm::Value* memLocationMatr);
@@ -51,10 +52,12 @@ public:
               getSanitizedArgList(const llvm::CallInst* callInst,
                                   const llvm::Function* destMthd,
                                   const llvm::Value* zeroValue);
-  static std::string getEndOfBlockLabel(const llvm::Instruction* instruction);
-  static std::string getBBLabel(const llvm::Instruction* instruction);
 
-  static bool isAutoGENInTaintedBlock(const llvm::Instruction* instruction);
+  static const llvm::BasicBlock* getEndOfBlockBB(const llvm::Instruction* currentInst);
+  static const std::set<std::string> getSuccessorLabels(const llvm::BasicBlock *basicBlock);
+  static bool removeTaintedBlockInst(const ExtendedValue& fact,
+                                     const llvm::Instruction* currentInst);
+  static bool isAutoGENInTaintedBlock(const llvm::Instruction* currentInst);
 
   static bool isMemoryLocationFact(const ExtendedValue& ev);
   static bool isKillAfterStoreFact(const ExtendedValue& ev);
