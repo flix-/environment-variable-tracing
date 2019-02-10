@@ -536,16 +536,16 @@ getEndOfSwitchLabelRec(const llvm::TerminatorInst* terminatorInst,
     const auto nextBB = terminatorInst->getSuccessor(i);
     const auto nextLabel = nextBB->getName();
 
+    bool isNextNodeAlreadyVisited = visitedNodes.find(nextLabel) != visitedNodes.end();
+    if (isNextNodeAlreadyVisited) continue;
+
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    bool isAlreadyVisitedTerminatorInst = visitedNodes.find(nextLabel) != visitedNodes.end();
-    if (!isAlreadyVisitedTerminatorInst) {
-      const auto endLabel = getEndOfSwitchLabelRec(nextTerminatorInst,
-                                                   labelPrefixStack,
-                                                   visitedNodes);
+    const auto endLabel = getEndOfSwitchLabelRec(nextTerminatorInst,
+                                                 labelPrefixStack,
+                                                 visitedNodes);
 
-      if (endLabel != EMPTY_STRING) return endLabel;
-    }
+    if (endLabel != EMPTY_STRING) return endLabel;
   }
 
   return EMPTY_STRING;
@@ -599,9 +599,9 @@ getPrefixFromLabel(std::string bbLabel) {
  * the general case a starting point label $labelPrefix.* ($labelPrefix := 'if',
  * 'for', 'do' etc.) ends in a basic block $labelPrefix.end.*.
  * We first push $labelPrefix to a stack. Whenever we encounter a new conditional
- * branch that has the same $labelPrefix we also push. Popping from stack occurs
- * when we have a basic block $labelPrefix.end.*. As soon as the stack is empty we
- * have reached our merge point.
+ * branch we also push its $labelPrefix. Popping from stack occurs when we have a
+ * basic block $labelPrefix.end.*. As soon as the stack is empty we have reached
+ * our mergepoint.
  *
  * There are certain cases where a given $labelPrefix does not have a corresponding
  * end label. In particular they start with $labelPrefix_x and will be changed to
@@ -622,10 +622,8 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
   visitedNodes.insert(currentLabel);
 
   if (!labelPrefixStack.empty()) {
-    /*
-     * If SUBSTITUTION_WILDCARD is on top it will match every .end label!
-     */
     const auto endLabelPrefix = labelPrefixStack.top() + ".end";
+
     bool isEndOfBranch = currentLabel.contains_lower(endLabelPrefix);
     if (isEndOfBranch) labelPrefixStack.pop();
 
@@ -635,41 +633,29 @@ getEndOfBranchLabelRec(const llvm::TerminatorInst* terminatorInst,
   for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
     const auto nextBB = terminatorInst->getSuccessor(i);
     const auto nextLabel = nextBB->getName();
-    const auto nextLabelPrefix = getPrefixFromLabel(nextLabel);
+
+    bool isNextNodeAlreadyVisited = visitedNodes.find(nextLabel) != visitedNodes.end();
+    if (isNextNodeAlreadyVisited) continue;
 
     std::stack<std::string> nextLabelPrefixStack = labelPrefixStack;
 
-    if (nextLabelPrefixStack.empty()) {
-      nextLabelPrefixStack.push(nextLabelPrefix);
-    }
-    else
     if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
       if (branchInst->isConditional()) {
-        if (nextLabelPrefixStack.top() == SUBSTITUTION_WILDCARD) {
-          nextLabelPrefixStack.pop();
-          nextLabelPrefixStack.push(nextLabelPrefix);
-        }
-        else
-        if (nextLabelPrefix == SUBSTITUTION_WILDCARD) {
-          nextLabelPrefixStack.push(SUBSTITUTION_WILDCARD);
-        }
-        else {
-          bool isLabelPrefixCollision = nextLabelPrefixStack.top() == nextLabelPrefix;
-          if (isLabelPrefixCollision) nextLabelPrefixStack.push(nextLabelPrefix);
-        }
+        bool isTopSubstitutionWildcard = !nextLabelPrefixStack.empty() &&
+                                          nextLabelPrefixStack.top() == SUBSTITUTION_WILDCARD;
+        if (isTopSubstitutionWildcard) nextLabelPrefixStack.pop();
+
+        nextLabelPrefixStack.push(getPrefixFromLabel(nextLabel));
       }
     }
 
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    bool isAlreadyVisitedNode = visitedNodes.find(nextLabel) != visitedNodes.end();
-    if (!isAlreadyVisitedNode) {
-      const auto endOfBranchLabel = getEndOfBranchLabelRec(nextTerminatorInst,
-                                                           nextLabelPrefixStack,
-                                                           visitedNodes);
+    const auto endOfBranchLabel = getEndOfBranchLabelRec(nextTerminatorInst,
+                                                         nextLabelPrefixStack,
+                                                         visitedNodes);
 
-      if (endOfBranchLabel != EMPTY_STRING) return endOfBranchLabel;
-    }
+    if (endOfBranchLabel != EMPTY_STRING) return endOfBranchLabel;
   }
 
   return EMPTY_STRING;
