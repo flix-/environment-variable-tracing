@@ -662,7 +662,7 @@ DataFlowUtils::getEndOfBlockBB(const llvm::Instruction* currentInst) {
     llvm::outs() << "[TRACK] Checking end of branch bb for: " << branchInst->getParent()->getName() << "\n";
 
     const auto endOfBranchBB = getEndOfBranchBB(branchInst);
-    const auto endOfBranchLabel = endOfBranchBB ? endOfBranchBB->getName() : "unknown";
+    const auto endOfBranchLabel = endOfBranchBB ? endOfBranchBB->getName() : "";
     llvm::outs() << "[TRACK] End of branch bb: " << endOfBranchLabel << "\n";
 
     return endOfBranchBB;
@@ -672,7 +672,7 @@ DataFlowUtils::getEndOfBlockBB(const llvm::Instruction* currentInst) {
     llvm::outs() << "[TRACK] Checking end of switch bb for: " << switchInst->getParent()->getName() << "\n";
 
     const auto endOfSwitchBB = getEndOfSwitchBB(switchInst);
-    const auto endOfSwitchLabel = endOfSwitchBB ? endOfSwitchBB->getName() : "unknown";
+    const auto endOfSwitchLabel = endOfSwitchBB ? endOfSwitchBB->getName() : "";
     llvm::outs() << "[TRACK] End of switch label: " << endOfSwitchLabel << "\n";
 
     return endOfSwitchBB;
