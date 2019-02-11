@@ -314,6 +314,10 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
           const auto endOfTaintedBranchBB = DataFlowUtils::getEndOfBlockBB(branchInst);
           const auto endOfTaintedBranchSuccLabels = DataFlowUtils::getSuccessorLabels(endOfTaintedBranchBB);
 
+          for (const auto& succ : endOfTaintedBranchSuccLabels) {
+            llvm::outs() << "[TRACK] Succ: " << succ << "\n";
+          }
+
           const auto endOfTaintedBranchLabel = endOfTaintedBranchBB ? endOfTaintedBranchBB->getName() : "";
           if (endOfTaintedBranchLabel.empty()) llvm::outs() << "[TRACK] No end of tainted branch label found! Unreachable or algorithm incomplete?" << "\n";
 

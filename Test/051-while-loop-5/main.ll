@@ -11,9 +11,6 @@ entry:
   %retval = alloca i32, align 4
   %rc = alloca i32, align 4
   %ut = alloca i32, align 4
-  %i = alloca i32, align 4
-  %a = alloca i32, align 4
-  %a4 = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !11, metadata !12), !dbg !13
   br label %while.cond, !dbg !14
@@ -38,32 +35,8 @@ if.end:                                           ; preds = %while.body
 while.end:                                        ; preds = %if.then, %while.cond
   call void @llvm.dbg.declare(metadata i32* %ut, metadata !25, metadata !12), !dbg !26
   store i32 0, i32* %ut, align 4, !dbg !26
-  call void @llvm.dbg.declare(metadata i32* %i, metadata !27, metadata !12), !dbg !29
-  store i32 0, i32* %i, align 4, !dbg !29
-  br label %for.cond, !dbg !30
-
-for.cond:                                         ; preds = %for.inc, %while.end
-  %1 = load i32, i32* %i, align 4, !dbg !31
-  %cmp1 = icmp slt i32 %1, 10, !dbg !33
-  br i1 %cmp1, label %for.body, label %for.end, !dbg !34
-
-for.body:                                         ; preds = %for.cond
-  br label %while.body3, !dbg !35
-
-while.body3:                                      ; preds = %for.body, %while.body3
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !37, metadata !12), !dbg !39
-  store i32 0, i32* %a, align 4, !dbg !39
-  br label %while.body3, !dbg !35, !llvm.loop !40
-
-for.inc:                                          ; No predecessors!
-  %2 = load i32, i32* %i, align 4, !dbg !42
-  %inc = add nsw i32 %2, 1, !dbg !42
-  store i32 %inc, i32* %i, align 4, !dbg !42
-  br label %for.cond, !dbg !43, !llvm.loop !44
-
-for.end:                                          ; preds = %for.cond
-  %3 = load i32, i32* %rc, align 4, !dbg !46
-  ret i32 %3, !dbg !47
+  %1 = load i32, i32* %rc, align 4, !dbg !27
+  ret i32 %1, !dbg !28
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -106,24 +79,5 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !24 = !DILocation(line: 12, column: 5, scope: !7)
 !25 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 14, type: !10)
 !26 = !DILocation(line: 14, column: 9, scope: !7)
-!27 = !DILocalVariable(name: "i", scope: !28, file: !1, line: 16, type: !10)
-!28 = distinct !DILexicalBlock(scope: !7, file: !1, line: 16, column: 5)
-!29 = !DILocation(line: 16, column: 14, scope: !28)
-!30 = !DILocation(line: 16, column: 10, scope: !28)
-!31 = !DILocation(line: 16, column: 21, scope: !32)
-!32 = distinct !DILexicalBlock(scope: !28, file: !1, line: 16, column: 5)
-!33 = !DILocation(line: 16, column: 23, scope: !32)
-!34 = !DILocation(line: 16, column: 5, scope: !28)
-!35 = !DILocation(line: 17, column: 9, scope: !36)
-!36 = distinct !DILexicalBlock(scope: !32, file: !1, line: 16, column: 34)
-!37 = !DILocalVariable(name: "a", scope: !38, file: !1, line: 18, type: !10)
-!38 = distinct !DILexicalBlock(scope: !36, file: !1, line: 17, column: 19)
-!39 = !DILocation(line: 18, column: 17, scope: !38)
-!40 = distinct !{!40, !35, !41}
-!41 = !DILocation(line: 19, column: 9, scope: !36)
-!42 = !DILocation(line: 16, column: 29, scope: !32)
-!43 = !DILocation(line: 16, column: 5, scope: !32)
-!44 = distinct !{!44, !34, !45}
-!45 = !DILocation(line: 21, column: 5, scope: !28)
-!46 = !DILocation(line: 23, column: 12, scope: !7)
-!47 = !DILocation(line: 23, column: 5, scope: !7)
+!27 = !DILocation(line: 16, column: 12, scope: !7)
+!28 = !DILocation(line: 16, column: 5, scope: !7)

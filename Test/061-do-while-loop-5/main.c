@@ -7,12 +7,15 @@ main()
 {
     int rc;
     do {
-        int a;
         do {
-            a = 1;
-        } while (getenv("gude"));
-        rc = a;
-    } while (foo());
+            int a;
+            do {
+                a = 1;
+            } while (getenv("gude"));
+            rc = a;
+            int ut = 0;
+        } while (foo());
+    } while (bar());
 
     return rc;
 }

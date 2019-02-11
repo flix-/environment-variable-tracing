@@ -13,7 +13,9 @@
 #include <stack>
 #include <string>
 
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/IntrinsicInst.h>
+#include <llvm/IR/Dominators.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -706,52 +708,38 @@ getSuccessorLabelsRec(const llvm::BasicBlock* basicBlock,
   return parentLabels;
 }
 
-static bool
-hasCycleToStart(const llvm::BasicBlock* basicBlock,
-                std::string endOfTaintedBlockLabel,
-                std::set<std::string> visitedNodes) {
-
-  const auto bbLabel = basicBlock->getName();
-
-  visitedNodes.insert(bbLabel);
-
-  const auto terminatorInst = basicBlock->getTerminator();
-  for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
-    const auto nextBB = terminatorInst->getSuccessor(i);
-    const auto nextLabel = nextBB->getName();
-
-    bool isNextNodeAlreadyVisited = visitedNodes.find(nextLabel) != visitedNodes.end();
-    if (isNextNodeAlreadyVisited) {
-      bool wrapUp = nextLabel == endOfTaintedBlockLabel;
-      if (wrapUp) return true;
-
-      continue;
-    }
-
-    bool wrapUp = hasCycleToStart(nextBB,
-                                 endOfTaintedBlockLabel,
-                                 visitedNodes);
-    if (wrapUp) return true;
-  }
-
-  return false;
-}
-
 const std::set<std::string>
-DataFlowUtils::getSuccessorLabels(const llvm::BasicBlock *basicBlock) {
+DataFlowUtils::getSuccessorLabels(const llvm::BasicBlock* basicBlock) {
 
   if (!basicBlock) return EMPTY_STRING_SET;
 
   const auto endOfTaintedBlockLabel = basicBlock->getName();
 
-  bool hasCycle = hasCycleToStart(basicBlock,
-                                  endOfTaintedBlockLabel,
-                                  std::set<std::string>());
+  llvm::Function* function = const_cast<llvm::Function*>(basicBlock->getParent());
+  llvm::DominatorTree dt(*function);
+  llvm::LoopInfo loopInfo;
+  loopInfo.analyze(dt);
 
-  if (hasCycle) return { endOfTaintedBlockLabel };
+  std::set<std::string> loopLabels;
 
-  return getSuccessorLabelsRec(basicBlock,
-                               std::set<std::string>());
+  const auto loop = loopInfo.getLoopFor(basicBlock);
+  if (loop) {
+    for (const auto& bb : loop->getBlocks()) {
+      const auto label = bb->getName();
+
+      loopLabels.insert(label);
+
+      llvm::outs() << "[TRACK] Loop blocks: " << label << "\n";
+    }
+  }
+
+  std::set<std::string> ret = { endOfTaintedBlockLabel };
+  std::set<std::string> successorLabels = getSuccessorLabelsRec(basicBlock,
+                                                                std::set<std::string>());
+  std::set_difference(successorLabels.begin(), successorLabels.end(), loopLabels.begin(), loopLabels.end(),
+                      std::inserter(ret, ret.end()));
+
+  return ret;
 }
 
 /*

@@ -54,7 +54,7 @@ public:
                                   const llvm::Value* zeroValue);
 
   static const llvm::BasicBlock* getEndOfBlockBB(const llvm::Instruction* currentInst);
-  static const std::set<std::string> getSuccessorLabels(const llvm::BasicBlock *basicBlock);
+  static const std::set<std::string> getSuccessorLabels(const llvm::BasicBlock* basicBlock);
   static bool removeTaintedBlockInst(const ExtendedValue& fact,
                                      const llvm::Instruction* currentInst);
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* currentInst);
