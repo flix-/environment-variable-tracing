@@ -136,13 +136,13 @@ A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2,
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %0, i8** %also_tainted, align 8, !dbg !32, !phasar.instruction.id !37, ID: 17 in function: foo
-D:	%0 = load i8*, i8** %tainted1, align 8, !dbg !34, !phasar.instruction.id !36, ID: 16
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%struct.s1* %fs, ID: foo.0
 A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 30
+
+D:	%0 = load i8*, i8** %tainted1, align 8, !dbg !34, !phasar.instruction.id !36, ID: 16
 
 --- IFDS START RESULT RECORD ---
 N: %1 = load i8*, i8** %also_tainted, align 8, !dbg !38, !phasar.instruction.id !39, ID: 18 in function: foo
@@ -157,21 +157,19 @@ A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !22, ID: 10
 
 --- IFDS START RESULT RECORD ---
 N: %tainted11 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 2, !dbg !40, !phasar.instruction.id !41, ID: 19 in function: foo
+D:	%1 = load i8*, i8** %also_tainted, align 8, !dbg !38, !phasar.instruction.id !39, ID: 18
+
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !22, ID: 10
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
-A:	%struct.s1* %fs, ID: foo.0
-A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 30
-
-D:	%1 = load i8*, i8** %also_tainted, align 8, !dbg !38, !phasar.instruction.id !39, ID: 18
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%struct.s1* %fs, ID: foo.0
+A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2, !dbg !30, !phasar.instruction.id !31, ID: 30
 
 --- IFDS START RESULT RECORD ---
 N: store i8* %1, i8** %tainted11, align 8, !dbg !42, !phasar.instruction.id !43, ID: 20 in function: foo
-D:	%1 = load i8*, i8** %also_tainted, align 8, !dbg !38, !phasar.instruction.id !39, ID: 18
-
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
@@ -180,6 +178,8 @@ A:	%tainted1 = getelementptr inbounds %struct.s1, %struct.s1* %ms, i32 0, i32 2,
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !22, ID: 10
+
+D:	%1 = load i8*, i8** %also_tainted, align 8, !dbg !38, !phasar.instruction.id !39, ID: 18
 
 --- IFDS START RESULT RECORD ---
 N: %tainted12 = getelementptr inbounds %struct.s1, %struct.s1* %fs, i32 0, i32 2, !dbg !44, !phasar.instruction.id !45, ID: 21 in function: foo
@@ -206,7 +206,7 @@ A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !22, ID: 10
 --- IFDS START RESULT RECORD ---
 N: call void @bar(%struct.s1* byval align 8 %fs), !dbg !48, !phasar.instruction.id !49, 
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1549913778-trace.txt
+Writing lcov trace to: static-main-1549967444-trace.txt
 ID: 23 in function: foo
 D:	@zero_value = constant i2 0, align 4, ID: -1
 

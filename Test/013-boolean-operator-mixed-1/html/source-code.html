@@ -44,7 +44,6 @@ PTG construction ended<br>
 DONE<br>
 [TRACK] Checking end of branch bb for: land.lhs.true<br>
 [TRACK] End of branch bb: lor.end<br>
-[TRACK] Succ: lor.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
@@ -103,7 +102,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 --- IFDS START RESULT RECORD ---<br>
 N: %lor.ext = zext i1 %0 to i32, !dbg !28, !phasar.instruction.id !35, ID: 16 in function: main<br>
 D:	br i1 %tobool2, label %lor.rhs, label %lor.end, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
-L:	lor.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -120,7 +118,6 @@ N: %call3 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 12 
 D:	%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool2, label %lor.rhs, label %lor.end, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
-L:	lor.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -129,7 +126,6 @@ N: %tobool4 = icmp ne i32 %call3, 0, !dbg !28, !phasar.instruction.id !32, ID: 1
 D:	%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool2, label %lor.rhs, label %lor.end, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
-L:	lor.end<br>
 <br>
 D:	%call3 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 12<br>
 <br>
@@ -142,7 +138,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 D:	%tobool4 = icmp ne i32 %call3, 0, !dbg !28, !phasar.instruction.id !32, ID: 13<br>
 <br>
 D:	br i1 %tobool2, label %lor.rhs, label %lor.end, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
-L:	lor.end<br>
 <br>
 D:	%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
@@ -153,7 +148,6 @@ N: %0 = phi i1 [ true, %land.lhs.true ], [ %tobool4, %lor.rhs ], !phasar.instruc
 D:	%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool2, label %lor.rhs, label %lor.end, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
-L:	lor.end<br>
 <br>
 D:	%call3 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 12<br>
 <br>
@@ -216,13 +210,12 @@ D:	%call1 = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.s
 <br>
 D:	%call3 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 12<br>
 <br>
-D:	store i32 %lor.ext, i<br>
+D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !<br>
 [TRACK] Checking end of branch bb for: land.lhs.true<br>
 [TRACK] End of branch bb: lor.end<br>
-[TRACK] Succ: lor.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1549913745-trace.txt<br>
-32* %taint, align 4, !dbg !18, !phasar.instruction.id !36, ID: 17<br>
+Writing lcov trace to: static-main-1549967411-trace.txt<br>
+36, ID: 17<br>
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !36, ID: 17<br>

@@ -24,7 +24,6 @@
 
 #include <phasar/PhasarLLVM/ControlFlow/LLVMBasedICFG.h>
 
-
 namespace psr {
 
 static const std::set<std::string> TAINTED_CALLS = { "getenv",
@@ -312,18 +311,14 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition);
         if (isBranchTainted) {
           const auto endOfTaintedBranchBB = DataFlowUtils::getEndOfBlockBB(branchInst);
-          const auto endOfTaintedBranchSuccLabels = DataFlowUtils::getSuccessorLabels(endOfTaintedBranchBB);
-
-          for (const auto& succ : endOfTaintedBranchSuccLabels) {
-            llvm::outs() << "[TRACK] Succ: " << succ << "\n";
-          }
+          const auto endOfTaintedBranchSuccLabels = DataFlowUtils::getSuccessorLabels(branchInst->getParent(),
+                                                                                      endOfTaintedBranchBB);
 
           const auto endOfTaintedBranchLabel = endOfTaintedBranchBB ? endOfTaintedBranchBB->getName() : "";
           if (endOfTaintedBranchLabel.empty()) llvm::outs() << "[TRACK] No end of tainted branch label found! Unreachable or algorithm incomplete?" << "\n";
 
           ExtendedValue ev(branchInst);
-          ev.setEndOfTaintedBlockLabels(endOfTaintedBranchLabel,
-                                        endOfTaintedBranchSuccLabels);
+          ev.setEndOfTaintedBlockSuccLabels(endOfTaintedBranchSuccLabels);
 
           lineNumberStore.addLineNumber(branchInst);
 
@@ -357,14 +352,14 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition);
       if (isSwitchTainted) {
         const auto endOfTaintedSwitchBB = DataFlowUtils::getEndOfBlockBB(switchInst);
-        const auto endOfTaintedSwitchSuccLabels = DataFlowUtils::getSuccessorLabels(endOfTaintedSwitchBB);
+        const auto endOfTaintedSwitchSuccLabels = DataFlowUtils::getSuccessorLabels(switchInst->getParent(),
+                                                                                    endOfTaintedSwitchBB);
 
         const auto endOfTaintedSwitchLabel = endOfTaintedSwitchBB ? endOfTaintedSwitchBB->getName() : "";
         if (endOfTaintedSwitchLabel.empty()) llvm::outs() << "[TRACK] No end of tainted switch label found! Unreachable or algorithm incomplete?" << "\n";
 
         ExtendedValue ev(switchInst);
-        ev.setEndOfTaintedBlockLabels(endOfTaintedSwitchLabel,
-                                      endOfTaintedSwitchSuccLabels);
+        ev.setEndOfTaintedBlockSuccLabels(endOfTaintedSwitchSuccLabels);
 
         lineNumberStore.addLineNumber(switchInst);
 

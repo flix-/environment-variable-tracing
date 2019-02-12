@@ -46,7 +46,6 @@ PTG construction ended<br>
 DONE<br>
 [TRACK] Checking end of branch bb for: entry<br>
 [TRACK] End of branch bb: cond.end<br>
-[TRACK] Succ: cond.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
@@ -79,7 +78,6 @@ N: %call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10 
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7<br>
 <br>
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9<br>
-L:	cond.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -92,7 +90,6 @@ N: br label %cond.end, !dbg !21, !phasar.instruction.id !29, ID: 12 in function:
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7<br>
 <br>
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9<br>
-L:	cond.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -130,7 +127,6 @@ D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10<
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7<br>
 <br>
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9<br>
-L:	cond.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -139,7 +135,6 @@ N: %cond = phi i32 [ %call1, %cond.true ], [ 1, %cond.false ], !dbg !21, !phasar
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9<br>
-L:	cond.end<br>
 <br>
 D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -152,7 +147,6 @@ D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10<
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7<br>
 <br>
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9<br>
-L:	cond.end<br>
 <br>
 D:	%cond = phi i32 [ %call1, %cond.true ], [ 1, %cond.false ], !dbg !21, !phasar.instruction.id !30, ID: 13<br>
 <br>
@@ -214,15 +208,14 @@ D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10<
 N: ret i32 0, !dbg !42, !phasar.instruction.id !43, ID: 20 in function: main<br>
 D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.ins<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7<br>
+<br>
+D:	store i32 %cond, i32* %taint, ali<br>
 [TRACK] Checking end of branch bb for: entry<br>
 [TRACK] End of branch bb: cond.end<br>
-[TRACK] Succ: cond.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1549913746-trace.txt<br>
-truction.id !22, ID: 7<br>
-<br>
-D:	store i32 %cond, i32* %taint, align 4, !dbg !19, !phasar.instruction.id !31, ID: 14<br>
+Writing lcov trace to: static-main-1549967412-trace.txt<br>
+gn 4, !dbg !19, !phasar.instruction.id !31, ID: 14<br>
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	store i32 %cond, i32* %taint, align 4, !dbg !19, !phasar.instruction.id !31, ID: 14<br>

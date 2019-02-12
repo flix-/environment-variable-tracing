@@ -709,37 +709,36 @@ getSuccessorLabelsRec(const llvm::BasicBlock* basicBlock,
 }
 
 const std::set<std::string>
-DataFlowUtils::getSuccessorLabels(const llvm::BasicBlock* basicBlock) {
+DataFlowUtils::getSuccessorLabels(const llvm::BasicBlock* taintedBBStart,
+                                  const llvm::BasicBlock* taintedBBEnd) {
 
-  if (!basicBlock) return EMPTY_STRING_SET;
+  if (!taintedBBEnd) return EMPTY_STRING_SET;
 
-  const auto endOfTaintedBlockLabel = basicBlock->getName();
-
-  llvm::Function* function = const_cast<llvm::Function*>(basicBlock->getParent());
-  llvm::DominatorTree dt(*function);
+  llvm::Function* function = const_cast<llvm::Function*>(taintedBBStart->getParent());
+  llvm::DominatorTree dominatorTree(*function);
   llvm::LoopInfo loopInfo;
-  loopInfo.analyze(dt);
 
-  std::set<std::string> loopLabels;
+  loopInfo.analyze(dominatorTree);
 
-  const auto loop = loopInfo.getLoopFor(basicBlock);
-  if (loop) {
-    for (const auto& bb : loop->getBlocks()) {
+  std::set<std::string> taintedLoopLabels;
+
+  const auto taintedLoop = loopInfo.getLoopFor(taintedBBStart);
+  if (taintedLoop) {
+    for (const auto& bb : taintedLoop->getBlocks()) {
       const auto label = bb->getName();
-
-      loopLabels.insert(label);
-
-      llvm::outs() << "[TRACK] Loop blocks: " << label << "\n";
+      taintedLoopLabels.insert(label);
     }
   }
 
-  std::set<std::string> ret = { endOfTaintedBlockLabel };
-  std::set<std::string> successorLabels = getSuccessorLabelsRec(basicBlock,
-                                                                std::set<std::string>());
-  std::set_difference(successorLabels.begin(), successorLabels.end(), loopLabels.begin(), loopLabels.end(),
-                      std::inserter(ret, ret.end()));
+  std::set<std::string> successorLabels;
+  std::set<std::string> successorLabelsOverApprox = getSuccessorLabelsRec(taintedBBEnd,
+                                                                          std::set<std::string>());
 
-  return ret;
+  std::set_difference(successorLabelsOverApprox.begin(), successorLabelsOverApprox.end(),
+                      taintedLoopLabels.begin(), taintedLoopLabels.end(),
+                      std::inserter(successorLabels, successorLabels.end()));
+
+  return successorLabels;
 }
 
 /*
@@ -761,8 +760,8 @@ DataFlowUtils::removeTaintedBlockInst(const ExtendedValue& fact,
   const auto currentBB = currentInst->getParent();
   const auto currentLabel = currentBB->getName();
 
-  bool isCurrentInstAfterBlock = endOfTaintedBlockSuccLabels.find(currentLabel) != endOfTaintedBlockSuccLabels.end();
-  if (isCurrentInstAfterBlock) return true;
+  bool isCurrentInstAfterTaintedBlock = endOfTaintedBlockSuccLabels.find(currentLabel) != endOfTaintedBlockSuccLabels.end();
+  if (isCurrentInstAfterTaintedBlock) return true;
 
   return false;
 }
