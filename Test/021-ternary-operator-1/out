@@ -55,13 +55,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: store i32 %cond, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !26, ID: 10 in function: main
 D:	%0 = zext i1 %cmp to i64, !dbg !20, !phasar.instruction.id !24, ID: 8
 
-D:	%cmp = icmp eq i32 %call, 0, !dbg !22, !phasar.instruction.id !23, ID: 7
-
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	%cond = select i1 %cmp, i32 0, i32 1, !dbg !20, !phasar.instruction.id !25, ID: 9
 
-D:	@zero_value = constant i2 0, align 4, ID: -1
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
+D:	%cmp = icmp eq i32 %call, 0, !dbg !22, !phasar.instruction.id !23, ID: 7
 
 --- IFDS START RESULT RECORD ---
 N: %a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3 in function: main
@@ -73,12 +73,12 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %1 = load i32, i32* %taint, align 4, !dbg !30, !phasar.instruction.id !31, ID: 12 in function: main
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
+
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i32 %cond, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !26, ID: 10
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
-
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
 
 --- IFDS START RESULT RECORD ---
 N: %cond = select i1 %cmp, i32 0, i32 1, !dbg !20, !phasar.instruction.id !25, ID: 9 in function: main
@@ -103,13 +103,11 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 N: store i32 %1, i32* %a, align 4, !dbg !28, !phasar.instruction.id !32, ID: 13 in function: main
 D:	%call = call i32 @gete
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1549967412-trace.txt
+Writing lcov trace to: static-main-1550069408-trace.txt
 nv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6
 
 D:	store i32 %cond, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !26, ID: 10
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
-
-D:	%1 = load i32, i32* %taint, align 4, !dbg !30, !phasar.instruction.id !31, ID: 12
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 

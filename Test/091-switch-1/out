@@ -89,12 +89,12 @@ D:	switch i32 %0, label %sw.default [
 
 --- IFDS START RESULT RECORD ---
 N: %1 = load i32, i32* %rc, align 4, !dbg !49, !phasar.instruction.id !50, ID: 21 in function: main
-D:	store i32 2, i32* %b, align 4, !dbg !44, !phasar.instruction.id !46, ID: 19
-A:	%b = alloca i32, align 4, !phasar.instruction.id !16, ID: 5
+D:	call void @llvm.dbg.declare(metadata i32* %b, metadata !43, metadata !19), !dbg !44, !phasar.instruction.id !45, ID: 18
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
-D:	call void @llvm.dbg.declare(metadata i32* %b, metadata !43, metadata !19), !dbg !44, !phasar.instruction.id !45, ID: 18
+D:	store i32 2, i32* %b, align 4, !dbg !44, !phasar.instruction.id !46, ID: 19
+A:	%b = alloca i32, align 4, !phasar.instruction.id !16, ID: 5
 
 D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 16
 A:	%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4
@@ -139,8 +139,6 @@ N: switch i32 %0, label %sw.default [
     i32 1, label %sw.bb1
   ], !dbg !30, !phasar.instruction.id !31, ID: 12 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
-
-D:	%0 = load i32, i32* %taint, align 4, !dbg !28, !phasar.instruction.id !29, ID: 11
 
 D:	store i32 %call, i32* %taint, align 4, !dbg !23, !phasar.instruction.id !27, ID: 10
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
@@ -190,18 +188,18 @@ D:	switch i32 %0, label %sw.default [
     i32 1, label %sw.bb1
   ], !dbg !30, !phasar.instruction.id !31, ID: 12
 
-D:	@zero_v[TRACK] Checking end of switch bb for: entry
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: store i32 1[TRACK] Checking end of switch bb for: entry
 [TRACK] End of switch label: sw.epilog
 [TRACK] Checking end of switch bb for: entry
 [TRACK] End of switch label: sw.epilog
 [TRACK] Checking end of switch bb for: entry
 [TRACK] End of switch label: sw.epilog
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1549967427-trace.txt
-alue = constant i2 0, align 4, ID: -1
-
---- IFDS START RESULT RECORD ---
-N: store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 16 in function: main
+Writing lcov trace to: static-main-1550069423-trace.txt
+, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 16 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !37, metadata !19), !dbg !38, !phasar.instruction.id !39, ID: 15

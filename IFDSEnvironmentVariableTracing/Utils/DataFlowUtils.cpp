@@ -250,19 +250,14 @@ bool
 DataFlowUtils::isMemoryLocationTainted(const ExtendedValue& fact,
                                        const llvm::Value* memLocationMatr) {
 
-  const auto memLocationFactVector = getMemoryLocationSeqFromFact(fact);
-  if (memLocationFactVector.empty()) return false;
+  const auto memLocationFactSeq = getMemoryLocationSeqFromFact(fact);
+  if (memLocationFactSeq.empty()) return false;
 
-  const auto memLocationInstVector = getMemoryLocationSeqFromMatr(memLocationMatr);
-  if (memLocationInstVector.empty()) return false;
+  const auto memLocationInstSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
+  if (memLocationInstSeq.empty()) return false;
 
-  std::size_t n = memLocationFactVector.size();
-  bool isMemLocationsEqual = isFirstNMemoryLocationPartsEqual(memLocationFactVector,
-                                                              memLocationInstVector,
-                                                              n);
-  if (!isMemLocationsEqual) return false;
-
-  return true;
+  return isSubsetMemoryLocationSeq(memLocationInstSeq,
+                                   memLocationFactSeq);
 }
 
 bool
@@ -786,6 +781,18 @@ DataFlowUtils::isKillAfterStoreFact(const ExtendedValue& ev) {
 
   return !isMemoryLocationFact(ev) &&
          !llvm::isa<llvm::CallInst>(ev.getValue());
+}
+
+bool
+DataFlowUtils::isCheckOperandsInst(const llvm::Instruction* currentInst) {
+
+  bool isLoad = llvm::isa<llvm::LoadInst>(currentInst);
+  if (isLoad) return false;
+
+  return llvm::isa<llvm::UnaryInstruction>(currentInst) ||
+         llvm::isa<llvm::BinaryOperator>(currentInst) ||
+         llvm::isa<llvm::CmpInst>(currentInst) ||
+         llvm::isa<llvm::SelectInst>(currentInst);
 }
 
 void

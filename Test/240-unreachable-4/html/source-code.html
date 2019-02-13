@@ -87,8 +87,6 @@ N: %tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13 
 D:	store i8* %call, i8** %tainted, align 8, !dbg !24, !phasar.instruction.id !28, ID: 11<br>
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 3<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
-<br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
@@ -121,31 +119,29 @@ A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	%tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
-<br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata i32* %a, metadata !35, metadata !23), !dbg !37, !phasar.instruction.id !38, ID: 15 in function: main<br>
-D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
+D:	%tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13<br>
 <br>
 D:	store i8* %call, i8** %tainted, align 8, !dbg !24, !phasar.instruction.id !28, ID: 11<br>
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 3<br>
+<br>
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 0, i32* %a, align 4, !dbg !37, !phasar.instruction.id !39, ID: 16 in function: main<br>
 D:	store i8* %call, i8** %tainted, align 8, !dbg !24, !phasar.instruction.id !28, ID: 11<br>
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 3<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
+D:	%tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -191,8 +187,6 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i8* %call1, i8** %t1, align 8, !dbg !41, !phasar.instruction.id !45, ID: 19 in function: main<br>
-D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0)) #4, !dbg !43, !phasar.instruction.id !44, ID: 18<br>
@@ -200,6 +194,8 @@ D:	%call1 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.s
 D:	call void @llvm.dbg.declare(metadata i8** %t1, metadata !40, metadata !23), !dbg !41, !phasar.instruction.id !42, ID: 17<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !35, metadata !23), !dbg !37, !phasar.instruction.id !38, ID: 15<br>
+<br>
+D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -266,7 +262,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
+D:	%tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -275,26 +271,26 @@ N: store i32 1, i32* %b, align 4, !dbg !51, !phasar.instruction.id !53, ID: 23 i
 D:	store i8* %call, i8** %tainted, align 8, !dbg !24, !phasar.instruction.id !28, ID: 11<br>
 A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 3<br>
 <br>
-D:	%0 = load i8*, i8** %tainted, align 8, !dbg !29, !phasar.instruction.id !31, ID: 12<br>
+D:	%tobool = icmp ne i8* %0, null, !dbg !29, !phasar.instruction.id !32, ID: 13<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !26, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
 <br>
-D:	call void @llvm.dbg.declare([TRACK] Checking end of branch bb for: entry<br>
+D:	call void @llvm.dbg.declare(metadata i32* %b, metadata !49, metadata !23), !dbg !51, !phasar.instruction.id !52, ID: 22<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+--- IFDS START RESULT RECORD ---<br>
+N: call void @abort() #5, !db[TRACK] Checking end of branch bb for: entry<br>
 [TRACK] End of branch bb: <br>
 [TRACK] No end of tainted branch label found! Unreachable or algorithm incomplete?<br>
 [TRACK] Checking end of branch bb for: entry<br>
 [TRACK] End of branch bb: <br>
 [TRACK] No end of tainted branch label found! Unreachable or algorithm incomplete?<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1549967447-trace.txt<br>
-metadata i32* %b, metadata !49, metadata !23), !dbg !51, !phasar.instruction.id !52, ID: 22<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
---- IFDS START RESULT RECORD ---<br>
-N: call void @abort() #5, !dbg !54, !phasar.instruction.id !55, ID: 24 in function: main<br>
+Writing lcov trace to: static-main-1550069443-trace.txt<br>
+g !54, !phasar.instruction.id !55, ID: 24 in function: main<br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !33, !phasar.instruction.id !34, ID: 14<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>

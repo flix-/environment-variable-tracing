@@ -163,9 +163,9 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.cond1, !dbg !41, !phasar.instruction.id !42, ID: 15 in function: main<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17 in function: main<br>
@@ -207,7 +207,7 @@ D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %2 = load i32, i32* %j, align 4, !dbg !52, !phasar.instruction.id !54, ID: 20 in function: main<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+D:	%cmp2 = icmp slt i32 %1, %call, !dbg !48, !phasar.instruction.id !49, ID: 18<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -222,6 +222,8 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+<br>
 D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
@@ -229,6 +231,8 @@ N: %4 = load i32, i32* %i, align 4, !dbg !67, !phasar.instruction.id !68, ID: 27
 D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+<br>
+D:	%cmp2 = icmp slt i32 %1, %call, !dbg !48, !phasar.instruction.id !49, ID: 18<br>
 <br>
 D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
@@ -245,13 +249,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19 in function: main<br>
+D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
+A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
+<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
-<br>
-D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
-A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
 D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
@@ -268,45 +272,47 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 N: store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21 in function: main<br>
 D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16<br>
 <br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
-D:	%2 = load i32, i32* %j, align 4, !dbg !52, !phasar.instruction.id !54, ID: 20<br>
-<br>
-D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
-<br>
-D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
+D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
-D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
+D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
+<br>
+D:	%2 = load i32, i32* %j, align 4, !dbg !52, !phasar.instruction.id !54, ID: 20<br>
+<br>
+D:	%cmp2 = icmp slt i32 %1, %call, !dbg !48, !phasar.instruction.id !49, ID: 18<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %3 = load i32, i32* %j, align 4, !dbg !59, !phasar.instruction.id !60, ID: 23 in function: main<br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
-D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
+D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
-D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
+D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.inc, !dbg !57, !phasar.instruction.id !58, ID: 22 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
-D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
@@ -317,7 +323,7 @@ A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %inc = add nsw i32 %3, 1, !dbg !59, !phasar.instruction.id !61, ID: 24 in function: main<br>
@@ -353,39 +359,41 @@ D:	%3 = load i32, i32* %j, align 4, !dbg !59, !phasar.instruction.id !60, ID: 23
 D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	%inc = add nsw i32 %3, 1, !dbg !59, !phasar.instruction.id !61, ID: 24<br>
+D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
-D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
+D:	%inc = add nsw i32 %3, 1, !dbg !59, !phasar.instruction.id !61, ID: 24<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.cond1, !dbg !63, !llvm.loop !64, !phasar.instruction.id !66, ID: 26 in function: main<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
-D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
-<br>
-D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
+D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
-D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
+D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %cmp2, label %for.body3, label %for.end, !dbg !50, !phasar.instruction.id !51, ID: 19<br>
 <br>
---- IFDS START RESULT RECORD ---<br>
-N: store i32 %4, i32* %rc, align 4, !dbg !69, !phasar.instruction.id !70, ID: 28 in function: main<br>
-D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
-D:	%call = call i32 @getenv(i8* gete<br>
+--- IFD<br>
 [TRACK] Checking end of branch bb for: for.cond1<br>
 [TRACK] End of branch bb: for.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1549967421-trace.txt<br>
-lementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+Writing lcov trace to: static-main-1550069418-trace.txt<br>
+S START RESULT RECORD ---<br>
+N: store i32 %4, i32* %rc, align 4, !dbg !69, !phasar.instruction.id !70, ID: 28 in function: main<br>
+D:	%1 = load i32, i32* %j, align 4, !dbg !43, !phasar.instruction.id !45, ID: 16<br>
+<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+<br>
+D:	%cmp2 = icmp slt i32 %1, %call, !dbg !48, !phasar.instruction.id !49, ID: 18<br>
 <br>
 D:	store i32 %2, i32* %rc, align 4, !dbg !55, !phasar.instruction.id !56, ID: 21<br>
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
@@ -400,12 +408,12 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %5 = load i32, i32* %i, align 4, !dbg !73, !phasar.instruction.id !74, ID: 30 in function: main<br>
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
+<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %inc, i32* %j, align 4, !dbg !59, !phasar.instruction.id !62, ID: 25<br>
 A:	%j = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
-<br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !46, !phasar.instruction.id !47, ID: 17<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %for.inc4, !dbg !71, !phasar.instruction.id !72, ID: 29 in function: main<br>

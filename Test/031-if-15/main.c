@@ -19,6 +19,14 @@ main()
         int a = 4711;
     }
 
+    if (s1->t1 != NULL) {
+        int b = 4711;
+    }
+
+    if (s1->ut1 != NULL) {
+        int c = 4711;
+    }
+
     return 0;
 }
 

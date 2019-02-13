@@ -13,6 +13,8 @@ entry:
   %retval = alloca i32, align 4
   %s1 = alloca %struct.s1*, align 8
   %a = alloca i32, align 4
+  %b = alloca i32, align 4
+  %c = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata %struct.s1** %s1, metadata !20, metadata !21), !dbg !22
   %call = call noalias i8* @malloc(i64 16) #3, !dbg !23
@@ -41,12 +43,36 @@ if.then2:                                         ; preds = %if.end
   br label %if.end3, !dbg !40
 
 if.end3:                                          ; preds = %if.then2, %if.end
-  store i32 0, i32* %retval, align 4, !dbg !41
-  br label %return, !dbg !41
+  %4 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !41
+  %t14 = getelementptr inbounds %struct.s1, %struct.s1* %4, i32 0, i32 0, !dbg !43
+  %5 = load i8*, i8** %t14, align 8, !dbg !43
+  %cmp5 = icmp ne i8* %5, null, !dbg !44
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !45
 
-return:                                           ; preds = %if.end3, %if.then
-  %4 = load i32, i32* %retval, align 4, !dbg !42
-  ret i32 %4, !dbg !42
+if.then6:                                         ; preds = %if.end3
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !46, metadata !21), !dbg !48
+  store i32 4711, i32* %b, align 4, !dbg !48
+  br label %if.end7, !dbg !49
+
+if.end7:                                          ; preds = %if.then6, %if.end3
+  %6 = load %struct.s1*, %struct.s1** %s1, align 8, !dbg !50
+  %ut1 = getelementptr inbounds %struct.s1, %struct.s1* %6, i32 0, i32 1, !dbg !52
+  %7 = load i8*, i8** %ut1, align 8, !dbg !52
+  %cmp8 = icmp ne i8* %7, null, !dbg !53
+  br i1 %cmp8, label %if.then9, label %if.end10, !dbg !54
+
+if.then9:                                         ; preds = %if.end7
+  call void @llvm.dbg.declare(metadata i32* %c, metadata !55, metadata !21), !dbg !57
+  store i32 4711, i32* %c, align 4, !dbg !57
+  br label %if.end10, !dbg !58
+
+if.end10:                                         ; preds = %if.then9, %if.end7
+  store i32 0, i32* %retval, align 4, !dbg !59
+  br label %return, !dbg !59
+
+return:                                           ; preds = %if.end10, %if.then
+  %8 = load i32, i32* %retval, align 4, !dbg !60
+  ret i32 %8, !dbg !60
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -108,5 +134,23 @@ attributes #3 = { nounwind }
 !38 = distinct !DILexicalBlock(scope: !34, file: !1, line: 18, column: 21)
 !39 = !DILocation(line: 19, column: 13, scope: !38)
 !40 = !DILocation(line: 20, column: 5, scope: !38)
-!41 = !DILocation(line: 22, column: 5, scope: !16)
-!42 = !DILocation(line: 23, column: 1, scope: !16)
+!41 = !DILocation(line: 22, column: 9, scope: !42)
+!42 = distinct !DILexicalBlock(scope: !16, file: !1, line: 22, column: 9)
+!43 = !DILocation(line: 22, column: 13, scope: !42)
+!44 = !DILocation(line: 22, column: 16, scope: !42)
+!45 = !DILocation(line: 22, column: 9, scope: !16)
+!46 = !DILocalVariable(name: "b", scope: !47, file: !1, line: 23, type: !19)
+!47 = distinct !DILexicalBlock(scope: !42, file: !1, line: 22, column: 25)
+!48 = !DILocation(line: 23, column: 13, scope: !47)
+!49 = !DILocation(line: 24, column: 5, scope: !47)
+!50 = !DILocation(line: 26, column: 9, scope: !51)
+!51 = distinct !DILexicalBlock(scope: !16, file: !1, line: 26, column: 9)
+!52 = !DILocation(line: 26, column: 13, scope: !51)
+!53 = !DILocation(line: 26, column: 17, scope: !51)
+!54 = !DILocation(line: 26, column: 9, scope: !16)
+!55 = !DILocalVariable(name: "c", scope: !56, file: !1, line: 27, type: !19)
+!56 = distinct !DILexicalBlock(scope: !51, file: !1, line: 26, column: 26)
+!57 = !DILocation(line: 27, column: 13, scope: !56)
+!58 = !DILocation(line: 28, column: 5, scope: !56)
+!59 = !DILocation(line: 30, column: 5, scope: !16)
+!60 = !DILocation(line: 31, column: 1, scope: !16)

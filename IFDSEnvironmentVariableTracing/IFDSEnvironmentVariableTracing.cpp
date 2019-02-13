@@ -53,14 +53,10 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
-  bool isCheckOperandsInst = llvm::isa<llvm::UnaryInstruction>(currentInst) ||
-                             llvm::isa<llvm::BinaryOperator>(currentInst) ||
-                             llvm::isa<llvm::CmpInst>(currentInst) ||
-                             llvm::isa<llvm::SelectInst>(currentInst);
   /*
-   * Load instruction
+   * Load before return instruction
    */
-  if (llvm::isa<llvm::LoadInst>(currentInst)) {
+  if (llvm::isa<llvm::LoadInst>(currentInst) && llvm::isa<llvm::ReturnInst>(successorInst)) {
 
     ComputeTargetsExtFunction loadFlowFunction = [](const llvm::Instruction* currentInst,
                                                     ExtendedValue& fact,
@@ -68,16 +64,16 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       const auto loadInst = llvm::cast<llvm::LoadInst>(currentInst);
-
       const auto memLocation = loadInst->getPointerOperand();
 
-      bool isLoadTainted = DataFlowUtils::isValueTainted(fact, memLocation) ||
-                           DataFlowUtils::isMemoryLocationTainted(fact, memLocation);
-
-      if (isLoadTainted) {
+      bool isMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(fact,
+                                                                         memLocation);
+      if (isMemLocationTainted) {
         lineNumberStore.addLineNumber(loadInst);
+
         return { fact, ExtendedValue(loadInst) };
       }
+
       return { fact };
     };
 
@@ -278,10 +274,11 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       for (const auto block : phiNodeInst->blocks()) {
         const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
 
-        bool isTainted = DataFlowUtils::isValueTainted(fact, incomingValue) ||
-                         DataFlowUtils::isMemoryLocationTainted(fact, incomingValue);
-        if (isTainted) {
+        bool isIncomingValueTainted = DataFlowUtils::isValueTainted(fact, incomingValue) ||
+                                      DataFlowUtils::isMemoryLocationTainted(fact, incomingValue);
+        if (isIncomingValueTainted) {
           lineNumberStore.addLineNumber(phiNodeInst);
+
           return { fact, ExtendedValue(phiNodeInst) };
         }
       }
@@ -308,7 +305,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       if (isConditional) {
         const auto condition = branchInst->getCondition();
 
-        bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition);
+        bool isBranchTainted = DataFlowUtils::isValueTainted(fact, condition) ||
+                               DataFlowUtils::isMemoryLocationTainted(fact, condition);
         if (isBranchTainted) {
           const auto endOfTaintedBranchBB = DataFlowUtils::getEndOfBlockBB(branchInst);
           const auto endOfTaintedBranchSuccLabels = DataFlowUtils::getSuccessorLabels(branchInst->getParent(),
@@ -322,7 +320,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
           lineNumberStore.addLineNumber(branchInst);
 
-          return { ev };
+          return { fact, ev };
         }
       }
 
@@ -343,13 +341,10 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       const auto switchInst = llvm::cast<llvm::SwitchInst>(currentInst);
-
       const auto condition = switchInst->getCondition();
-      /*
-       * No need to check memory locations here as it is forbidden to use
-       * a memory address as a condition in switch statement.
-       */
-      bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition);
+
+      bool isSwitchTainted = DataFlowUtils::isValueTainted(fact, condition) ||
+                             DataFlowUtils::isMemoryLocationTainted(fact, condition);
       if (isSwitchTainted) {
         const auto endOfTaintedSwitchBB = DataFlowUtils::getEndOfBlockBB(switchInst);
         const auto endOfTaintedSwitchSuccLabels = DataFlowUtils::getSuccessorLabels(switchInst->getParent(),
@@ -363,7 +358,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
         lineNumberStore.addLineNumber(switchInst);
 
-        return { ev };
+        return { fact, ev };
       }
 
       return { fact };
@@ -375,7 +370,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
    * Operands checking instruction
    */
   else
-  if (isCheckOperandsInst) {
+  if (DataFlowUtils::isCheckOperandsInst(currentInst)) {
 
     ComputeTargetsExtFunction checkOperandsFlowFunction = [](const llvm::Instruction* currentInst,
                                                              ExtendedValue& fact,
@@ -383,13 +378,17 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                              ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       for (const auto &use : currentInst->operands()) {
-        bool isOperandTainted = DataFlowUtils::isValueTainted(fact, use.get()) ||
-                                DataFlowUtils::isMemoryLocationTainted(fact, use.get());
+        const auto& operand = use.get();
+
+        bool isOperandTainted = DataFlowUtils::isValueTainted(fact, operand) ||
+                                DataFlowUtils::isMemoryLocationTainted(fact, operand);
         if (isOperandTainted) {
           lineNumberStore.addLineNumber(currentInst);
+
           return { fact, ExtendedValue(currentInst) };
         }
       }
+
       return { fact };
     };
 
