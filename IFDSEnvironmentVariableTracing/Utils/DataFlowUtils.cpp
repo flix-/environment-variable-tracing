@@ -501,7 +501,7 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
       i += numCoersedArgs - 1;
     }
 
-    const auto sanitizedParam = param != nullptr ? param : zeroValue;
+    auto sanitizedParam = param != nullptr ? param : zeroValue;
 
     sanitizedArgList.push_back({arg, argMemLocationSeq, sanitizedParam});
   }
