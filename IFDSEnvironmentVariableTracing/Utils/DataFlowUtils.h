@@ -20,11 +20,11 @@ class DataFlowUtils {
 public:
   DataFlowUtils() = delete;
 
-  static bool isValueTainted(const ExtendedValue& fact,
-                             const llvm::Value* currentInst);
+  static bool isValueTainted(const llvm::Value* currentInst,
+                             const ExtendedValue& fact);
 
-  static bool isMemoryLocationTainted(const ExtendedValue& fact,
-                                      const llvm::Value* memLocationMatr);
+  static bool isMemoryLocationTainted(const llvm::Value* memLocationMatr,
+                                      const ExtendedValue& fact);
 
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr);
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact);

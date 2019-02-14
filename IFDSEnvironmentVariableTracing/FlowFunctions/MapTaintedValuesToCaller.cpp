@@ -54,7 +54,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
     }
   }
   else {
-    bool isRetValTainted = DataFlowUtils::isValueTainted(fact, retVal);
+    bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact);
     if (isRetValTainted) {
       std::vector<const llvm::Value*> patchablePart{callInst};
 

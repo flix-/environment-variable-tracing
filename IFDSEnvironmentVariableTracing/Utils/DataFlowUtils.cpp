@@ -247,24 +247,24 @@ getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
 //}
 
 bool
-DataFlowUtils::isMemoryLocationTainted(const ExtendedValue& fact,
-                                       const llvm::Value* memLocationMatr) {
-
-  const auto memLocationFactSeq = getMemoryLocationSeqFromFact(fact);
-  if (memLocationFactSeq.empty()) return false;
+DataFlowUtils::isMemoryLocationTainted(const llvm::Value* memLocationMatr,
+                                       const ExtendedValue& fact) {
 
   const auto memLocationInstSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationInstSeq.empty()) return false;
+
+  const auto memLocationFactSeq = getMemoryLocationSeqFromFact(fact);
+  if (memLocationFactSeq.empty()) return false;
 
   return isSubsetMemoryLocationSeq(memLocationInstSeq,
                                    memLocationFactSeq);
 }
 
 bool
-DataFlowUtils::isValueTainted(const ExtendedValue& fact,
-                              const llvm::Value* currentInst) {
+DataFlowUtils::isValueTainted(const llvm::Value* currentInst,
+                              const ExtendedValue& fact) {
 
-  return fact.getValue() == currentInst;
+  return currentInst == fact.getValue();
 }
 
 bool
@@ -274,7 +274,8 @@ DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> m
   if (memLocationSeqInst.empty()) return false;
   if (memLocationSeqFact.empty()) return false;
 
-  std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(), memLocationSeqFact.size());
+  std::size_t n = std::min<std::size_t>(memLocationSeqInst.size(),
+                                        memLocationSeqFact.size());
 
   return isFirstNMemoryLocationPartsEqual(memLocationSeqInst,
                                           memLocationSeqFact,
