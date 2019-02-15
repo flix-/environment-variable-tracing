@@ -54,35 +54,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                       const llvm::Instruction* successorInst) {
 
   /*
-   * Load before return instruction
-   */
-  if (llvm::isa<llvm::LoadInst>(currentInst) && llvm::isa<llvm::ReturnInst>(successorInst)) {
-
-    ComputeTargetsExtFunction loadFlowFunction = [](const llvm::Instruction* currentInst,
-                                                    ExtendedValue& fact,
-                                                    LineNumberStore& lineNumberStore,
-                                                    ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto loadInst = llvm::cast<llvm::LoadInst>(currentInst);
-      const auto memLocation = loadInst->getPointerOperand();
-
-      bool isMemLocationTainted = DataFlowUtils::isMemoryLocationTainted(memLocation,
-                                                                         fact);
-      if (isMemLocationTainted) {
-        lineNumberStore.addLineNumber(loadInst);
-
-        return { fact, ExtendedValue(loadInst) };
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, loadFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
    * Store instruction
    */
-  else
   if (llvm::isa<llvm::StoreInst>(currentInst)) {
 
     ComputeTargetsExtFunction storeFlowFunction = [](const llvm::Instruction* currentInst,
@@ -394,7 +367,35 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
     return std::make_shared<FlowFunctionWrapper>(currentInst, checkOperandsFlowFunction, lineNumberStore, zeroValue());
   }
+  /*
+   * Return instruction
+   */
+  else
+  if (llvm::isa<llvm::ReturnInst>(successorInst)) {
 
+    ComputeTargetsExtFunction retFlowFunction = [](const llvm::Instruction* currentInst,
+                                                   ExtendedValue& fact,
+                                                   LineNumberStore& lineNumberStore,
+                                                   ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+
+      const auto retInst = llvm::cast<llvm::ReturnInst>(currentInst);
+      const auto retVal = retInst->getReturnValue();
+
+      if (retVal) {
+        bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact) ||
+                               DataFlowUtils::isMemoryLocationTainted(retVal, fact);
+        if (isRetValTainted) {
+          lineNumberStore.addLineNumber(retInst);
+
+          return { fact, ExtendedValue(retInst) };
+        }
+      }
+
+      return { fact };
+    };
+
+    return std::make_shared<FlowFunctionWrapper>(successorInst, retFlowFunction, lineNumberStore, zeroValue());
+  }
   /*
    * Default: Identity
    */
