@@ -48,7 +48,12 @@ __attribute__((destructor)) void fini() { }
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {}
+    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
+
+  this->solver_config.computeValues = false;
+  this->solver_config.computePersistedSummaries = false;
+
+}
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
