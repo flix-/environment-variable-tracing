@@ -31,8 +31,124 @@ DONE
 [TRACK]   %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13
 [TRACK] Destination:
 [TRACK]   %also_tainted = alloca i8*, align 8, !phasar.instruction.id !14
+[TRACK] Added patchable memory location (caller -> callee)
+[TRACK] Source:
+[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !13
+[TRACK] Destination:
+[TRACK] i8* %tainted### DUMP LLVMIFDSSolver results
+--- IFDS START RESULT RECORD ---
+N: %tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	i8* %tainted, ID: foo.0
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: call void @llvm.dbg.declare(metadata i8** %tainted.addr, metadata !16, metadata !17), !dbg !18, !phasar.instruction.id !19, ID: 4 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1
+
+--- IFDS START RESULT RECORD ---
+N: %0 = load i8*, i8** %tainted.addr, align 8, !dbg !23, !phasar.instruction.id !24, ID: 6 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1
+
+--- IFDS START RESULT RECORD ---
+N: %tainted = alloca i8*, align 8, !phasar.instruction.id !13, ID: 10 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %retval = alloca i32, align 4, !phasar.instruction.id !12, ID: 9 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: call void @llvm.dbg.declare(metadata i8** %also_tainted, metadata !20, metadata !17), !dbg !21, !phasar.instruction.id !22, ID: 5 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1
+
+--- IFDS START RESULT RECORD ---
+N: store i8* %tainted, i8** %tainted.addr, align 8, !phasar.instruction.id !15, ID: 3 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	i8* %tainted, ID: foo.0
+
+--- IFDS START RESULT RECORD ---
+N: store i8* %0, i8** %also_tainted, align 8, !dbg !21, !phasar.instruction.id !25, ID: 7 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1
+
+--- IFDS START RESULT RECORD ---
+N: ret void, !dbg !26, !phasar.instruction.id !27, ID: 8 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%also_tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 2
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	%tainted.addr = alloca i8*, align 8, !phasar.instruction.id !13, ID: 1
+
+--- IFDS START RESULT RECORD ---
+N: %also_tainted = alloca i8*, align 8, !phasar.instruction.id !14, ID: 2 in function: foo
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+A:	i8* %tainted, ID: foo.0
+
+--- IFDS START RESULT RECORD ---
+N: store i32 0, i32* %retval, align 4, !phasar.instruction.id !14, ID: 11 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: call void @llvm.dbg.declare(metadata i8** %tainted, metadata !35, metadata !17), !dbg !36, !phasar.instruction.id !37, ID: 12 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 13 in function: main
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23, ID: 14 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 13
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: %0 = load i8*, i8** %tainted, align 8, !dbg !24, !phasar.instruction.id !25, ID: 15 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !p
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550325833-trace.txt
-### DUMP LLVMIFDSSolver results
-EMPTY
+Writing lcov trace to: static-main-1550328206-trace.txt
+hasar.instruction.id !22, ID: 13
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+D:	store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23, ID: 14
+A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !13, ID: 10
+
+--- IFDS START RESULT RECORD ---
+N: call void @foo(i8* %0), !dbg !26, !phasar.instruction.id !27, ID: 16 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 13
+
+D:	store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23, ID: 14
+A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !13, ID: 10
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
+--- IFDS START RESULT RECORD ---
+N: ret i32 0, !dbg !28, !phasar.instruction.id !29, ID: 17 in function: main
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 13
+
+D:	store i8* %call, i8** %tainted, align 8, !dbg !19, !phasar.instruction.id !23, ID: 14
+A:	%tainted = alloca i8*, align 8, !phasar.instruction.id !13, ID: 10
+
+D:	@zero_value = constant i2 0, align 4, ID: -1
+
 

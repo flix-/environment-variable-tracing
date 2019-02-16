@@ -61,7 +61,9 @@ sub write_diff {
 }
 
 # BEGIN CONFIG#
-my $diff_trace_file = "diff-trace.txt";
+
+my $diff_trace_file = "diff-" . time() . "-trace.txt";
+
 # END CONFIG#
 
 die "Usage: $0 <path_to_static_trace> <path_to_dynamic_trace>\n" if @ARGV != 2;
