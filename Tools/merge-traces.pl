@@ -8,7 +8,7 @@ print "Merging trace files\n";
 
 my @traces;
 
-foreach my $trace_file (glob("static-[0-9]*-trace.txt")) {
+foreach my $trace_file (glob("static-*-[0-9]*-trace.txt")) {
     print "Procesing $trace_file: ";
     if (-z $trace_file) {
         print "Skipping\n";
@@ -27,7 +27,7 @@ foreach my $trace_file (@traces) {
     $lcov_param .=  "-a $trace_file ";
 }
 
-my $merged_trace_file = "static-merged-" . time() . "-trace.txt";
+my $merged_trace_file = "static-" . time() . "-merged-trace.txt";
 
 system("lcov $lcov_param -o $merged_trace_file");
 
