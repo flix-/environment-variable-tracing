@@ -597,20 +597,26 @@ D:	%call1 = call i32 (...) @foo(), !dbg !37, !phasar.instruction.id !40, ID: 15
 D:	store i32 %call, i32* %taint, align 4, !dbg !26, !phasar.instruction.id !30, ID: 11
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !15, ID: 4
 
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29[TRACK] Checking end of branch bb for: entry
-[TRACK] End of branch bb: if.end10
-[TRACK] Checking end of branch bb for: if.then
-[TRACK] End of branch bb: if.end
-[TRACK] Checking end of branch bb for: if.then
-[TRACK] End of branch bb: if.end
-[TRACK] Checking end of branch bb for: entry
-[TRACK] End of branch bb: if.end10
-[TRACK] Checking end of branch bb for: if.else4
-[TRACK] End of branch bb: if.end9
-[TRACK] Checking end of branch bb for: if.else4
-[TRACK] End of branch bb: if.end9
+D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29[TRACK] Searching end of tainted branch label for BB: entry
+[TRACK] End of tainted block label: if.end10
+[TRACK] End of tainted branch label: if.end10
+[TRACK] Searching end of tainted branch label for BB: if.then
+[TRACK] End of tainted block label: if.end
+[TRACK] End of tainted branch label: if.end
+[TRACK] Searching end of tainted branch label for BB: if.then
+[TRACK] End of tainted block label: if.end
+[TRACK] End of tainted branch label: if.end
+[TRACK] Searching end of tainted branch label for BB: entry
+[TRACK] End of tainted block label: if.end10
+[TRACK] End of tainted branch label: if.end10
+[TRACK] Searching end of tainted branch label for BB: if.else4
+[TRACK] End of tainted block label: if.end9
+[TRACK] End of tainted branch label: if.end9
+[TRACK] Searching end of tainted branch label for BB: if.else4
+[TRACK] End of tainted block label: if.end9
+[TRACK] End of tainted branch label: if.end9
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550216400-trace.txt
+Writing lcov trace to: static-main-1550311257-trace.txt
 , ID: 10
 
 --- IFDS START RESULT RECORD ---

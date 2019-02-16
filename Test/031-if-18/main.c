@@ -5,6 +5,8 @@ int
 main() {
     char *tainted = getenv("gude");
 
+    int ploink;
+
     int rc;
     if (rc != 0) {
         if (tainted != NULL) {
@@ -24,7 +26,17 @@ main() {
             return -1;
         }
         char *t1 = tainted;
+
+        int no_taint = 0;
     }
+
+    if (ploink) {
+        int t2 = 1;
+    } else {
+        int t3 = 2;
+    }
+
+    int t4 = 1;
 
     return rc;
 }

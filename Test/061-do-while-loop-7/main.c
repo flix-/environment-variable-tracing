@@ -28,6 +28,8 @@ main()
         int a = i;
     }
 
+    int taint_me = 1;
+
 err:
     ;
     int ut1 = 0;

@@ -16,6 +16,7 @@ entry:
   %f = alloca i32, align 4
   %a4 = alloca i32, align 4
   %b6 = alloca i32, align 4
+  %no_taint = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !11, metadata !12), !dbg !13
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !14, metadata !12), !dbg !15
@@ -64,8 +65,10 @@ sw.default5:                                      ; preds = %entry
   br label %sw.epilog7, !dbg !39
 
 sw.epilog7:                                       ; preds = %sw.default5, %sw.bb3, %sw.epilog
-  %2 = load i32, i32* %rc, align 4, !dbg !40
-  ret i32 %2, !dbg !41
+  call void @llvm.dbg.declare(metadata i32* %no_taint, metadata !40, metadata !12), !dbg !41
+  store i32 1, i32* %no_taint, align 4, !dbg !41
+  %2 = load i32, i32* %rc, align 4, !dbg !42
+  ret i32 %2, !dbg !43
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -121,5 +124,7 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !37 = !DILocalVariable(name: "b", scope: !20, file: !1, line: 33, type: !10)
 !38 = !DILocation(line: 33, column: 13, scope: !20)
 !39 = !DILocation(line: 34, column: 5, scope: !20)
-!40 = !DILocation(line: 36, column: 12, scope: !7)
-!41 = !DILocation(line: 36, column: 5, scope: !7)
+!40 = !DILocalVariable(name: "no_taint", scope: !7, file: !1, line: 36, type: !10)
+!41 = !DILocation(line: 36, column: 9, scope: !7)
+!42 = !DILocation(line: 38, column: 12, scope: !7)
+!43 = !DILocation(line: 38, column: 5, scope: !7)

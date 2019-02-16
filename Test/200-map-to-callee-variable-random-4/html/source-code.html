@@ -74,8 +74,9 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] Checking end of branch bb for: entry<br>
-[TRACK] End of branch bb: if.end<br>
+[TRACK] Searching end of tainted branch label for BB: entry<br>
+[TRACK] End of tainted block label: if.end<br>
+[TRACK] End of tainted branch label: if.end<br>
 [TRACK] Added patchable memory location (caller -> callee)<br>
 [TRACK] Source:<br>
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
@@ -97,8 +98,9 @@ DONE<br>
 [TRACK] %struct.s3* %s3<br>
 [TRACK] Destination:<br>
 [TRACK]   %t3 = alloca i8*, align 8, !phasar.instruction.id !24<br>
-[TRACK] Checking end of branch bb for: entry<br>
-[TRACK] End of branch bb: if.end<br>
+[TRACK] Searching end of tainted branch label for BB: entry<br>
+[TRACK] End of tainted block label: if.end<br>
+[TRACK] End of tainted branch label: if.end<br>
 [TRACK] Added patchable memory location (caller -> callee)<br>
 [TRACK] Source:<br>
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
@@ -349,13 +351,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %if.end, !dbg !64, !phasar.instruction.id !65, ID: 35 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+D:	br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58, ID: 32<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>
 A:	%s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33<br>
 <br>
-D:	br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58, ID: 32<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
@@ -369,9 +371,9 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 <br>
-D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>
@@ -384,17 +386,17 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 <br>
-D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58, ID: 32<br>
 <br>
 D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !47, !phasar.instruction.id !48, ID: 26<br>
 <br>
@@ -408,13 +410,13 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58, ID: 32<br>
 <br>
 D:	%s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %s22 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !66, !phasar.instruction.id !67, ID: 36 in function: main<br>
@@ -424,11 +426,11 @@ D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruct
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>
 A:	%s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !57, !phasar.instruction.id !58, ID: 32<br>
 <br>
 D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
@@ -441,9 +443,9 @@ D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruct
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>
 A:	%s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61, ID: 33<br>
 <br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
@@ -452,15 +454,15 @@ A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 N: call void @foo(%struct.s3* byval align 8 %s3), !dbg !71, !phasar.instruction.id !72, ID: 39 in function: main<br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550216430-trace.txt<br>
+Writing lcov trace to: static-main-1550311288-trace.txt<br>
 .str, i32 0, i32 0)) #3, !dbg !47, !phasar.instruction.id !48, ID: 26<br>
 <br>
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 <br>
-D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>
@@ -473,9 +475,9 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	store i32 %conv, i32* %is_env_set, align 4, !dbg !45, !phasar.instruction.id !52, ID: 29<br>
 A:	%is_env_set = alloca i32, align 4, !phasar.instruction.id !17, ID: 21<br>
 <br>
-D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	%tobool = icmp ne i32 %0, 0, !dbg !53, !phasar.instruction.id !56, ID: 31<br>
 <br>
 D:	store %struct.s2* %s2, %struct.s2** %s21, align 8, !dbg !62, !phasar.instruction.id !63, ID: 34<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 19<br>

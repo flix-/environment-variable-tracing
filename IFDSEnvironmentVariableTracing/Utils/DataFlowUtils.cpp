@@ -13,9 +13,9 @@
 #include <stack>
 #include <string>
 
-#include <llvm/Analysis/LoopInfo.h>
+#include <llvm/Analysis/PostDominators.h>
+
 #include <llvm/IR/IntrinsicInst.h>
-#include <llvm/IR/Dominators.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
@@ -23,7 +23,7 @@
 using namespace psr;
 
 static const llvm::Value* POISON_PILL = reinterpret_cast<const llvm::Value*>("all i need is a unique llvm::Value ptr...");
-static const std::string SUBSTITUTION_WILDCARD = "";  // Must be empty string to match .end automatically!
+static const std::string SUBSTITUTION_WILDCARD = ""; // Must be empty string to match .end automatically!
 
 static const std::vector<const llvm::Value*> EMPTY_SEQ;
 static const std::set<std::string> EMPTY_STRING_SET;
@@ -237,14 +237,12 @@ getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
   return memLocationSeq.front();
 }
 
-//static const llvm::Value*
-//getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
+bool
+DataFlowUtils::isValueTainted(const llvm::Value* currentInst,
+                              const ExtendedValue& fact) {
 
-//  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
-//  if (memLocationSeq.empty()) return nullptr;
-
-//  return memLocationSeq.front();
-//}
+  return currentInst == fact.getValue();
+}
 
 bool
 DataFlowUtils::isMemoryLocationTainted(const llvm::Value* memLocationMatr,
@@ -258,13 +256,6 @@ DataFlowUtils::isMemoryLocationTainted(const llvm::Value* memLocationMatr,
 
   return isSubsetMemoryLocationSeq(memLocationInstSeq,
                                    memLocationFactSeq);
-}
-
-bool
-DataFlowUtils::isValueTainted(const llvm::Value* currentInst,
-                              const ExtendedValue& fact) {
-
-  return currentInst == fact.getValue();
 }
 
 bool
@@ -510,7 +501,7 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
 }
 
 static const llvm::BasicBlock*
-getEndOfSwitchBBRec(const llvm::TerminatorInst* terminatorInst,
+getEndOfSwitchBlock(const llvm::TerminatorInst* terminatorInst,
                     std::stack<std::string> labelPrefixStack,
                     std::set<std::string> visitedNodes) {
 
@@ -539,7 +530,7 @@ getEndOfSwitchBBRec(const llvm::TerminatorInst* terminatorInst,
 
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    const auto endOfSwitchBB = getEndOfSwitchBBRec(nextTerminatorInst,
+    const auto endOfSwitchBB = getEndOfSwitchBlock(nextTerminatorInst,
                                                    labelPrefixStack,
                                                    visitedNodes);
 
@@ -547,14 +538,6 @@ getEndOfSwitchBBRec(const llvm::TerminatorInst* terminatorInst,
   }
 
   return nullptr;
-}
-
-static const llvm::BasicBlock*
-getEndOfSwitchBB(const llvm::SwitchInst* const switchInst) {
-
-  return getEndOfSwitchBBRec(switchInst,
-                             std::stack<std::string>(),
-                             std::set<std::string>());
 }
 
 static bool
@@ -594,7 +577,7 @@ getPrefixFromLabel(std::string bbLabel) {
  * and 3) we match every *.end block with the SUBSTITUTION_WILDCARD.
  */
 const llvm::BasicBlock*
-getEndOfBranchBBRec(const llvm::TerminatorInst* terminatorInst,
+getEndOfBranchBlock(const llvm::TerminatorInst* terminatorInst,
                     std::stack<std::string> labelPrefixStack,
                     std::set<std::string> visitedNodes) {
 
@@ -633,7 +616,7 @@ getEndOfBranchBBRec(const llvm::TerminatorInst* terminatorInst,
 
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    const auto endOfBranchBB = getEndOfBranchBBRec(nextTerminatorInst,
+    const auto endOfBranchBB = getEndOfBranchBlock(nextTerminatorInst,
                                                    nextLabelPrefixStack,
                                                    visitedNodes);
 
@@ -643,105 +626,75 @@ getEndOfBranchBBRec(const llvm::TerminatorInst* terminatorInst,
   return nullptr;
 }
 
-const llvm::BasicBlock*
-getEndOfBranchBB(const llvm::BranchInst* branchInst) {
+static const std::vector<llvm::BasicBlock*>
+getPostDominators(const llvm::DomTreeNodeBase<llvm::BasicBlock>* postDomTreeNode,
+                  const llvm::BasicBlock* startOfTaintedBlockBB) {
 
-  return getEndOfBranchBBRec(branchInst,
-                             std::stack<std::string>(),
-                             std::set<std::string>());
-}
+  const auto currentBB = postDomTreeNode->getBlock();
+  bool isStartOfTaintedBlockBB = currentBB == startOfTaintedBlockBB;
 
-const llvm::BasicBlock*
-DataFlowUtils::getEndOfBlockBB(const llvm::Instruction* currentInst) {
+  if (isStartOfTaintedBlockBB) return { currentBB };
 
-  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(currentInst)) {
-    llvm::outs() << "[TRACK] Checking end of branch bb for: " << branchInst->getParent()->getName() << "\n";
+  for (const auto postDomTreeChild : postDomTreeNode->getChildren()) {
+    auto childNodes = getPostDominators(postDomTreeChild,
+                                        startOfTaintedBlockBB);
+    if (!childNodes.empty()) {
+      childNodes.push_back(currentBB);
 
-    const auto endOfBranchBB = getEndOfBranchBB(branchInst);
-    const auto endOfBranchLabel = endOfBranchBB ? endOfBranchBB->getName() : "";
-    llvm::outs() << "[TRACK] End of branch bb: " << endOfBranchLabel << "\n";
-
-    return endOfBranchBB;
-  }
-  else
-  if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(currentInst)) {
-    llvm::outs() << "[TRACK] Checking end of switch bb for: " << switchInst->getParent()->getName() << "\n";
-
-    const auto endOfSwitchBB = getEndOfSwitchBB(switchInst);
-    const auto endOfSwitchLabel = endOfSwitchBB ? endOfSwitchBB->getName() : "";
-    llvm::outs() << "[TRACK] End of switch label: " << endOfSwitchLabel << "\n";
-
-    return endOfSwitchBB;
-  }
-
-  return nullptr;
-}
-
-static const std::set<std::string>
-getSuccessorLabelsRec(const llvm::BasicBlock* basicBlock,
-                      std::set<std::string> visitedNodes) {
-
-  const auto bbLabel = basicBlock->getName();
-
-  visitedNodes.insert(bbLabel);
-
-  std::set<std::string> parentLabels = { bbLabel };
-
-  const auto terminatorInst = basicBlock->getTerminator();
-  for (unsigned int i = 0; i < terminatorInst->getNumSuccessors(); ++i) {
-    const auto nextBB = terminatorInst->getSuccessor(i);
-    const auto nextLabel = nextBB->getName();
-
-    bool isNextNodeAlreadyVisited = visitedNodes.find(nextLabel) != visitedNodes.end();
-    if (isNextNodeAlreadyVisited) continue;
-
-    const auto childLabels = getSuccessorLabelsRec(nextBB,
-                                                   visitedNodes);
-
-    parentLabels.insert(childLabels.begin(), childLabels.end());
-  }
-
-  return parentLabels;
-}
-
-const std::set<std::string>
-DataFlowUtils::getSuccessorLabels(const llvm::BasicBlock* taintedBBStart,
-                                  const llvm::BasicBlock* taintedBBEnd) {
-
-  if (!taintedBBEnd) return EMPTY_STRING_SET;
-
-  llvm::Function* function = const_cast<llvm::Function*>(taintedBBStart->getParent());
-  llvm::DominatorTree dominatorTree(*function);
-  llvm::LoopInfo loopInfo;
-
-  loopInfo.analyze(dominatorTree);
-
-  std::set<std::string> taintedLoopLabels;
-
-  const auto taintedLoop = loopInfo.getLoopFor(taintedBBStart);
-  if (taintedLoop) {
-    for (const auto& bb : taintedLoop->getBlocks()) {
-      const auto label = bb->getName();
-      taintedLoopLabels.insert(label);
+      return childNodes;
     }
   }
 
-  std::set<std::string> successorLabels;
-  std::set<std::string> successorLabelsOverApprox = getSuccessorLabelsRec(taintedBBEnd,
-                                                                          std::set<std::string>());
+  return std::vector<llvm::BasicBlock*>();
+}
 
-  std::set_difference(successorLabelsOverApprox.begin(), successorLabelsOverApprox.end(),
-                      taintedLoopLabels.begin(), taintedLoopLabels.end(),
-                      std::inserter(successorLabels, successorLabels.end()));
+const llvm::BasicBlock*
+DataFlowUtils::getEndOfTaintedBlock(const llvm::BasicBlock* basicBlock) {
 
-  return successorLabels;
+  const auto terminatorInst = basicBlock->getTerminator();
+  const auto function = const_cast<llvm::Function*>(basicBlock->getParent());
+
+  llvm::PostDominatorTree postDominatorTree;
+  postDominatorTree.recalculate(*function);
+
+  const auto postDominators = getPostDominators(postDominatorTree.getRootNode(),
+                                                basicBlock);
+
+  const llvm::BasicBlock* endOfTaintedBlock;
+
+  if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
+    endOfTaintedBlock = getEndOfBranchBlock(branchInst,
+                                            std::stack<std::string>(),
+                                            std::set<std::string>());
+  }
+  else
+  if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInst)) {
+    endOfTaintedBlock = getEndOfSwitchBlock(switchInst,
+                                            std::stack<std::string>(),
+                                            std::set<std::string>());
+  }
+  else {
+    return nullptr;
+  }
+
+  const auto endOfTaintedBlockLabel = endOfTaintedBlock ? endOfTaintedBlock->getName() : "";
+
+  llvm::outs() << "[TRACK] End of tainted block label: " << endOfTaintedBlockLabel << "\n";
+
+  bool isBlockClosed = std::find(postDominators.begin(),
+                                 postDominators.end(),
+                                 endOfTaintedBlock) != postDominators.end();
+
+  if (isBlockClosed) return endOfTaintedBlock;
+
+  return postDominators.size() > 1 ? postDominators[1] : nullptr;
 }
 
 /*
  * We are removing the tainted branch instruction from facts if the instruction's
- * basic block label matches the one of the trainted branch end block or one of
- * its successors. Note that we remove it after the phi node making sure that the
- * phi node is auto added whenever we came from a tainted branch.
+ * basic block label matches the one of the trainted branch end block. Note that
+ * we remove it after the phi node making sure that the phi node is auto added
+ * whenever we came from a tainted branch.
  */
 bool
 DataFlowUtils::removeTaintedBlockInst(const ExtendedValue& fact,
@@ -750,16 +703,10 @@ DataFlowUtils::removeTaintedBlockInst(const ExtendedValue& fact,
   bool isPhiNode = llvm::isa<llvm::PHINode>(currentInst);
   if (isPhiNode) return false;
 
-  const auto endOfTaintedBlockSuccLabels = fact.getEndOfTaintedBlockSuccLabels();
-  if (endOfTaintedBlockSuccLabels.empty()) return false;
-
   const auto currentBB = currentInst->getParent();
   const auto currentLabel = currentBB->getName();
 
-  bool isCurrentInstAfterTaintedBlock = endOfTaintedBlockSuccLabels.find(currentLabel) != endOfTaintedBlockSuccLabels.end();
-  if (isCurrentInstAfterTaintedBlock) return true;
-
-  return false;
+  return currentLabel == fact.getEndOfTaintedBlockLabel();
 }
 
 bool

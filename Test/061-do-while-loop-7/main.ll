@@ -15,6 +15,7 @@ entry:
   %ut = alloca i32, align 4
   %i = alloca i32, align 4
   %a17 = alloca i32, align 4
+  %taint_me = alloca i32, align 4
   %ut1 = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !13, metadata !14), !dbg !15
@@ -108,13 +109,15 @@ for.inc:                                          ; preds = %for.body
   br label %for.cond, !dbg !73, !llvm.loop !74
 
 for.end:                                          ; preds = %for.cond
-  br label %err, !dbg !75
+  call void @llvm.dbg.declare(metadata i32* %taint_me, metadata !76, metadata !14), !dbg !77
+  store i32 1, i32* %taint_me, align 4, !dbg !77
+  br label %err, !dbg !78
 
 err:                                              ; preds = %for.end, %if.then
-  call void @llvm.dbg.declare(metadata i32* %ut1, metadata !76, metadata !14), !dbg !77
-  store i32 0, i32* %ut1, align 4, !dbg !77
-  %6 = load i32, i32* %rc, align 4, !dbg !78
-  ret i32 %6, !dbg !79
+  call void @llvm.dbg.declare(metadata i32* %ut1, metadata !79, metadata !14), !dbg !80
+  store i32 0, i32* %ut1, align 4, !dbg !80
+  %6 = load i32, i32* %rc, align 4, !dbg !81
+  ret i32 %6, !dbg !82
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -213,7 +216,10 @@ attributes #4 = { nounwind }
 !73 = !DILocation(line: 27, column: 5, scope: !64)
 !74 = distinct !{!74, !66, !75}
 !75 = !DILocation(line: 29, column: 5, scope: !60)
-!76 = !DILocalVariable(name: "ut1", scope: !9, file: !1, line: 33, type: !12)
-!77 = !DILocation(line: 33, column: 9, scope: !9)
-!78 = !DILocation(line: 35, column: 12, scope: !9)
-!79 = !DILocation(line: 35, column: 5, scope: !9)
+!76 = !DILocalVariable(name: "taint_me", scope: !9, file: !1, line: 31, type: !12)
+!77 = !DILocation(line: 31, column: 9, scope: !9)
+!78 = !DILocation(line: 31, column: 5, scope: !9)
+!79 = !DILocalVariable(name: "ut1", scope: !9, file: !1, line: 35, type: !12)
+!80 = !DILocation(line: 35, column: 9, scope: !9)
+!81 = !DILocation(line: 37, column: 12, scope: !9)
+!82 = !DILocation(line: 37, column: 5, scope: !9)

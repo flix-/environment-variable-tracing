@@ -12,7 +12,7 @@ entry:
   %rc = alloca i32, align 4
   %taint = alloca i32, align 4
   %a = alloca i32, align 4
-  %a1 = alloca i32, align 4
+  %no_taint = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !11, metadata !12), !dbg !13
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !14, metadata !12), !dbg !15
@@ -33,8 +33,8 @@ sw.bb:                                            ; preds = %entry, %sw.default
   br label %sw.epilog, !dbg !24
 
 sw.epilog:                                        ; preds = %sw.bb
-  call void @llvm.dbg.declare(metadata i32* %a1, metadata !25, metadata !12), !dbg !26
-  store i32 0, i32* %a1, align 4, !dbg !26
+  call void @llvm.dbg.declare(metadata i32* %no_taint, metadata !25, metadata !12), !dbg !26
+  store i32 0, i32* %no_taint, align 4, !dbg !26
   %1 = load i32, i32* %rc, align 4, !dbg !27
   ret i32 %1, !dbg !28
 }
@@ -77,7 +77,7 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !22 = !DILocalVariable(name: "a", scope: !20, file: !1, line: 16, type: !10)
 !23 = !DILocation(line: 16, column: 13, scope: !20)
 !24 = !DILocation(line: 17, column: 9, scope: !20)
-!25 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 19, type: !10)
-!26 = !DILocation(line: 19, column: 9, scope: !7)
-!27 = !DILocation(line: 21, column: 12, scope: !7)
-!28 = !DILocation(line: 21, column: 5, scope: !7)
+!25 = !DILocalVariable(name: "no_taint", scope: !7, file: !1, line: 20, type: !10)
+!26 = !DILocation(line: 20, column: 9, scope: !7)
+!27 = !DILocation(line: 22, column: 12, scope: !7)
+!28 = !DILocation(line: 22, column: 5, scope: !7)

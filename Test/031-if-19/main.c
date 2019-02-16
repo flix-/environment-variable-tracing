@@ -21,7 +21,7 @@ main() {
         } else {
             rc = 1;
         }
-        int eob = 2;
+        int t = 2;
     } else {
         if (rc == 1) {
             return -1;

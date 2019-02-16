@@ -11,6 +11,7 @@ entry:
   %retval = alloca i32, align 4
   %tainted = alloca i8*, align 8
   %rc = alloca i32, align 4
+  %t = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !11, metadata !14), !dbg !15
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !16
@@ -26,8 +27,10 @@ if.then:                                          ; preds = %entry
   unreachable, !dbg !24
 
 if.end:                                           ; preds = %entry
-  %1 = load i32, i32* %rc, align 4, !dbg !25
-  ret i32 %1, !dbg !26
+  call void @llvm.dbg.declare(metadata i32* %t, metadata !25, metadata !14), !dbg !26
+  store i32 0, i32* %t, align 4, !dbg !26
+  %1 = load i32, i32* %rc, align 4, !dbg !27
+  ret i32 %1, !dbg !28
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -75,5 +78,7 @@ attributes #5 = { noreturn nounwind }
 !22 = !DILocation(line: 11, column: 12, scope: !23)
 !23 = distinct !DILexicalBlock(scope: !20, file: !1, line: 10, column: 18)
 !24 = !DILocation(line: 12, column: 9, scope: !23)
-!25 = !DILocation(line: 15, column: 12, scope: !7)
-!26 = !DILocation(line: 15, column: 5, scope: !7)
+!25 = !DILocalVariable(name: "t", scope: !7, file: !1, line: 15, type: !10)
+!26 = !DILocation(line: 15, column: 9, scope: !7)
+!27 = !DILocation(line: 17, column: 12, scope: !7)
+!28 = !DILocation(line: 17, column: 5, scope: !7)

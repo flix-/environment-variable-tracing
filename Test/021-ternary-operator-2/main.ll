@@ -11,6 +11,8 @@ entry:
   %retval = alloca i32, align 4
   %taint = alloca i32, align 4
   %a = alloca i32, align 4
+  %a3 = alloca i32, align 4
+  %b = alloca i32, align 4
   %ut = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i32* %taint, metadata !11, metadata !12), !dbg !13
@@ -31,9 +33,24 @@ cond.end:                                         ; preds = %cond.false, %cond.t
   call void @llvm.dbg.declare(metadata i32* %a, metadata !17, metadata !12), !dbg !18
   %0 = load i32, i32* %taint, align 4, !dbg !19
   store i32 %0, i32* %a, align 4, !dbg !18
-  call void @llvm.dbg.declare(metadata i32* %ut, metadata !20, metadata !12), !dbg !21
-  store i32 1, i32* %ut, align 4, !dbg !21
-  ret i32 0, !dbg !22
+  %call2 = call i32 (...) @foo(), !dbg !20
+  %tobool = icmp ne i32 %call2, 0, !dbg !20
+  br i1 %tobool, label %if.then, label %if.else, !dbg !22
+
+if.then:                                          ; preds = %cond.end
+  call void @llvm.dbg.declare(metadata i32* %a3, metadata !23, metadata !12), !dbg !25
+  store i32 0, i32* %a3, align 4, !dbg !25
+  br label %if.end, !dbg !26
+
+if.else:                                          ; preds = %cond.end
+  call void @llvm.dbg.declare(metadata i32* %b, metadata !27, metadata !12), !dbg !29
+  store i32 0, i32* %b, align 4, !dbg !29
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  call void @llvm.dbg.declare(metadata i32* %ut, metadata !30, metadata !12), !dbg !31
+  store i32 1, i32* %ut, align 4, !dbg !31
+  ret i32 0, !dbg !32
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -71,6 +88,16 @@ attributes #2 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-
 !17 = !DILocalVariable(name: "a", scope: !7, file: !1, line: 9, type: !10)
 !18 = !DILocation(line: 9, column: 9, scope: !7)
 !19 = !DILocation(line: 9, column: 13, scope: !7)
-!20 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 11, type: !10)
-!21 = !DILocation(line: 11, column: 9, scope: !7)
-!22 = !DILocation(line: 13, column: 5, scope: !7)
+!20 = !DILocation(line: 11, column: 9, scope: !21)
+!21 = distinct !DILexicalBlock(scope: !7, file: !1, line: 11, column: 9)
+!22 = !DILocation(line: 11, column: 9, scope: !7)
+!23 = !DILocalVariable(name: "a", scope: !24, file: !1, line: 12, type: !10)
+!24 = distinct !DILexicalBlock(scope: !21, file: !1, line: 11, column: 16)
+!25 = !DILocation(line: 12, column: 13, scope: !24)
+!26 = !DILocation(line: 13, column: 5, scope: !24)
+!27 = !DILocalVariable(name: "b", scope: !28, file: !1, line: 14, type: !10)
+!28 = distinct !DILexicalBlock(scope: !21, file: !1, line: 13, column: 12)
+!29 = !DILocation(line: 14, column: 13, scope: !28)
+!30 = !DILocalVariable(name: "ut", scope: !7, file: !1, line: 17, type: !10)
+!31 = !DILocation(line: 17, column: 9, scope: !7)
+!32 = !DILocation(line: 19, column: 5, scope: !7)

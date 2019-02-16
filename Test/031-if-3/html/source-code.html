@@ -52,8 +52,9 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] Checking end of branch bb for: entry<br>
-[TRACK] End of branch bb: if.end<br>
+[TRACK] Searching end of tainted branch label for BB: entry<br>
+[TRACK] End of tainted block label: if.end<br>
+[TRACK] End of tainted branch label: if.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !15<br>
@@ -137,12 +138,12 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %1 = load i32, i32* %a, align 4, !dbg !41, !phasar.instruction.id !42, ID: 16 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	store i32 42, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 15<br>
 A:	%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !24, !phasar.instruction.id !25, ID: 8<br>
 <br>
@@ -160,6 +161,8 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.id !35, ID: 13<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruction.id !50, ID: 19<br>
 <br>
 D:	store i32 0, i32* %a1, align 4, !dbg !49, !phasar.instruction.id !51, ID: 20<br>
@@ -167,8 +170,6 @@ A:	%a1 = alloca i32, align 4, !phasar.instruction.id !16, ID: 5<br>
 <br>
 D:	store i32 100, i32* %ret, align 4, !dbg !52, !phasar.instruction.id !53, ID: 21<br>
 A:	%ret = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14 in function: main<br>
@@ -194,18 +195,18 @@ D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.
 <br>
 D:	%tobool = icmp ne i8* %0, null, !dbg !30, !phasar.instruction.id !33, ID: 12<br>
 <br>
-D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
-<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
+D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 %1, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44, ID: 17 in function: main<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
 D:	store i32 42, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 15<br>
 A:	%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%1 = load i32, i32* %a, align 4, !dbg !41, !phasar.instruction.id !42, ID: 16<br>
 <br>
@@ -220,8 +221,6 @@ A:	%taint = alloca i8*, align 8, !phasar.instruction.id !13, ID: 2<br>
 N: %2 = load i32, i32* %ret, align 4, !dbg !55, !phasar.instruction.id !56, ID: 23 in function: main<br>
 D:	store i8* %call, i8** %taint, align 8, !dbg !22, !phasar.instruction.id !26, ID: 9<br>
 A:	%taint = alloca i8*, align 8, !phasar.instruction.id !13, ID: 2<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	store i32 100, i32* %ret, align 4, !dbg !52, !phasar.instruction.id !53, ID: 21<br>
 A:	%ret = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
@@ -242,6 +241,8 @@ A:	%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.id !35, ID: 13<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !24, !phasar.instruction.id !25, ID: 8<br>
@@ -255,6 +256,8 @@ D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.id !35, ID: 13<br>
 <br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
+<br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
 <br>
 D:	store i32 42, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 15<br>
@@ -265,8 +268,6 @@ A:	%ret = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	store i32 %1, i32* %ret, align 4, !dbg !43, !phasar.instruction.id !44, ID: 17<br>
 A:	%ret = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruction.id !50, ID: 19 in function: main<br>
@@ -292,23 +293,24 @@ D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.
 <br>
 D:	%tobool = icmp ne i8* %0, null, !dbg !30, !phasar.instruction.id !33, ID: 12<br>
 <br>
-D:	call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruction.id !50, ID: 19<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
-D:	@zero_value = constant i2 <br>
-[TRACK] Checking end of branch bb for: entry<br>
-[TRACK] End of branch bb: if.end<br>
+D:	call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruct<br>
+[TRACK] Searching end of tainted branch label for BB: entry<br>
+[TRACK] End of tainted block label: if.end<br>
+[TRACK] End of tainted branch label: if.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550216407-trace.txt<br>
-0, align 4, ID: -1<br>
+Writing lcov trace to: static-main-1550311265-trace.txt<br>
+ion.id !50, ID: 19<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 100, i32* %ret, align 4, !dbg !52, !phasar.instruction.id !53, ID: 21 in function: main<br>
+D:	call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruction.id !50, ID: 19<br>
+<br>
 D:	store i32 0, i32* %a1, align 4, !dbg !49, !phasar.instruction.id !51, ID: 20<br>
 A:	%a1 = alloca i32, align 4, !phasar.instruction.id !16, ID: 5<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
-<br>
-D:	call void @llvm.dbg.declare(metadata i32* %a1, metadata !47, metadata !21), !dbg !49, !phasar.instruction.id !50, ID: 19<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.else, !dbg !34, !phasar.instruction.id !35, ID: 13<br>
 <br>
@@ -323,6 +325,8 @@ D:	store i8* %call, i8** %taint, align 8, !dbg !22, !phasar.instruction.id !26, 
 A:	%taint = alloca i8*, align 8, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !24, !phasar.instruction.id !25, ID: 8<br>
+<br>
+D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !36, metadata !21), !dbg !38, !phasar.instruction.id !39, ID: 14<br>
 <br>
@@ -344,8 +348,6 @@ D:	store i32 100, i32* %ret, align 4, !dbg !52, !phasar.instruction.id !53, ID: 
 A:	%ret = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	ret i32 %2, !dbg !57, !phasar.instruction.id !58, ID: 24<br>
-<br>
-D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 <br>
 </div>

@@ -21,6 +21,8 @@ main()
         int b = 2;
     }
 
+    int no_taint = 1;
+
     return rc;
 }
 

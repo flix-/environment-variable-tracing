@@ -12,6 +12,8 @@ main() {
         abort();
     }
 
+    int t = 0;
+
     return rc;
 }
 

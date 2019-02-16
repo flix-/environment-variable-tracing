@@ -12,6 +12,7 @@ entry:
   %tainted = alloca i8*, align 8
   %rc = alloca i32, align 4
   %a = alloca i32, align 4
+  %t = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !11, metadata !14), !dbg !15
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !16
@@ -31,13 +32,15 @@ if.else:                                          ; preds = %entry
   br label %if.end
 
 if.end:                                           ; preds = %if.else
-  %1 = load i32, i32* %rc, align 4, !dbg !27
-  store i32 %1, i32* %retval, align 4, !dbg !28
-  br label %return, !dbg !28
+  call void @llvm.dbg.declare(metadata i32* %t, metadata !27, metadata !14), !dbg !28
+  store i32 1, i32* %t, align 4, !dbg !28
+  %1 = load i32, i32* %rc, align 4, !dbg !29
+  store i32 %1, i32* %retval, align 4, !dbg !30
+  br label %return, !dbg !30
 
 return:                                           ; preds = %if.end, %if.then
-  %2 = load i32, i32* %retval, align 4, !dbg !29
-  ret i32 %2, !dbg !29
+  %2 = load i32, i32* %retval, align 4, !dbg !31
+  ret i32 %2, !dbg !31
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -82,6 +85,8 @@ attributes #3 = { nounwind }
 !24 = !DILocalVariable(name: "a", scope: !25, file: !1, line: 12, type: !10)
 !25 = distinct !DILexicalBlock(scope: !20, file: !1, line: 11, column: 12)
 !26 = !DILocation(line: 12, column: 13, scope: !25)
-!27 = !DILocation(line: 15, column: 12, scope: !7)
-!28 = !DILocation(line: 15, column: 5, scope: !7)
-!29 = !DILocation(line: 16, column: 1, scope: !7)
+!27 = !DILocalVariable(name: "t", scope: !7, file: !1, line: 15, type: !10)
+!28 = !DILocation(line: 15, column: 9, scope: !7)
+!29 = !DILocation(line: 17, column: 12, scope: !7)
+!30 = !DILocation(line: 17, column: 5, scope: !7)
+!31 = !DILocation(line: 18, column: 1, scope: !7)

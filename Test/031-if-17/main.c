@@ -12,6 +12,8 @@ main() {
         int a = 0;
     }
 
+    int t = 1;
+
     return rc;
 }
 

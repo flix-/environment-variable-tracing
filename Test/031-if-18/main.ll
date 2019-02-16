@@ -10,77 +10,102 @@ define i32 @main() #0 !dbg !9 {
 entry:
   %retval = alloca i32, align 4
   %tainted = alloca i8*, align 8
+  %ploink = alloca i32, align 4
   %rc = alloca i32, align 4
   %a = alloca i32, align 4
   %t1 = alloca i8*, align 8
+  %no_taint = alloca i32, align 4
+  %t2 = alloca i32, align 4
+  %t3 = alloca i32, align 4
+  %t4 = alloca i32, align 4
   store i32 0, i32* %retval, align 4
   call void @llvm.dbg.declare(metadata i8** %tainted, metadata !13, metadata !16), !dbg !17
   %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !18
   store i8* %call, i8** %tainted, align 8, !dbg !17
-  call void @llvm.dbg.declare(metadata i32* %rc, metadata !19, metadata !16), !dbg !20
-  %0 = load i32, i32* %rc, align 4, !dbg !21
-  %cmp = icmp ne i32 %0, 0, !dbg !23
-  br i1 %cmp, label %if.then, label %if.else7, !dbg !24
+  call void @llvm.dbg.declare(metadata i32* %ploink, metadata !19, metadata !16), !dbg !20
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !21, metadata !16), !dbg !22
+  %0 = load i32, i32* %rc, align 4, !dbg !23
+  %cmp = icmp ne i32 %0, 0, !dbg !25
+  br i1 %cmp, label %if.then, label %if.else7, !dbg !26
 
 if.then:                                          ; preds = %entry
-  %1 = load i8*, i8** %tainted, align 8, !dbg !25
-  %cmp1 = icmp ne i8* %1, null, !dbg !28
-  br i1 %cmp1, label %if.then2, label %if.else5, !dbg !29
+  %1 = load i8*, i8** %tainted, align 8, !dbg !27
+  %cmp1 = icmp ne i8* %1, null, !dbg !30
+  br i1 %cmp1, label %if.then2, label %if.else5, !dbg !31
 
 if.then2:                                         ; preds = %if.then
-  %2 = load i8*, i8** %tainted, align 8, !dbg !30
-  %cmp3 = icmp ne i8* %2, null, !dbg !33
-  br i1 %cmp3, label %if.then4, label %if.else, !dbg !34
+  %2 = load i8*, i8** %tainted, align 8, !dbg !32
+  %cmp3 = icmp ne i8* %2, null, !dbg !35
+  br i1 %cmp3, label %if.then4, label %if.else, !dbg !36
 
 if.then4:                                         ; preds = %if.then2
-  br label %do.body, !dbg !35, !llvm.loop !37
+  br label %do.body, !dbg !37, !llvm.loop !39
 
 do.body:                                          ; preds = %if.then4
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !39, metadata !16), !dbg !41
-  store i32 0, i32* %a, align 4, !dbg !41
-  br label %do.end, !dbg !42
+  call void @llvm.dbg.declare(metadata i32* %a, metadata !41, metadata !16), !dbg !43
+  store i32 0, i32* %a, align 4, !dbg !43
+  br label %do.end, !dbg !44
 
 do.end:                                           ; preds = %do.body
-  br label %if.end, !dbg !43
+  br label %if.end, !dbg !45
 
 if.else:                                          ; preds = %if.then2
-  store i32 -1, i32* %retval, align 4, !dbg !44
-  br label %return, !dbg !44
+  store i32 -1, i32* %retval, align 4, !dbg !46
+  br label %return, !dbg !46
 
 if.end:                                           ; preds = %do.end
-  store i32 1, i32* %rc, align 4, !dbg !46
-  br label %if.end6, !dbg !47
+  store i32 1, i32* %rc, align 4, !dbg !48
+  br label %if.end6, !dbg !49
 
 if.else5:                                         ; preds = %if.then
-  store i32 -1, i32* %retval, align 4, !dbg !48
-  br label %return, !dbg !48
+  store i32 -1, i32* %retval, align 4, !dbg !50
+  br label %return, !dbg !50
 
 if.end6:                                          ; preds = %if.end
-  br label %if.end11, !dbg !50
+  br label %if.end11, !dbg !52
 
 if.else7:                                         ; preds = %entry
-  %3 = load i32, i32* %rc, align 4, !dbg !51
-  %cmp8 = icmp eq i32 %3, 1, !dbg !54
-  br i1 %cmp8, label %if.then9, label %if.end10, !dbg !55
+  %3 = load i32, i32* %rc, align 4, !dbg !53
+  %cmp8 = icmp eq i32 %3, 1, !dbg !56
+  br i1 %cmp8, label %if.then9, label %if.end10, !dbg !57
 
 if.then9:                                         ; preds = %if.else7
-  store i32 -1, i32* %retval, align 4, !dbg !56
-  br label %return, !dbg !56
+  store i32 -1, i32* %retval, align 4, !dbg !58
+  br label %return, !dbg !58
 
 if.end10:                                         ; preds = %if.else7
-  call void @llvm.dbg.declare(metadata i8** %t1, metadata !58, metadata !16), !dbg !59
-  %4 = load i8*, i8** %tainted, align 8, !dbg !60
-  store i8* %4, i8** %t1, align 8, !dbg !59
+  call void @llvm.dbg.declare(metadata i8** %t1, metadata !60, metadata !16), !dbg !61
+  %4 = load i8*, i8** %tainted, align 8, !dbg !62
+  store i8* %4, i8** %t1, align 8, !dbg !61
+  call void @llvm.dbg.declare(metadata i32* %no_taint, metadata !63, metadata !16), !dbg !64
+  store i32 0, i32* %no_taint, align 4, !dbg !64
   br label %if.end11
 
 if.end11:                                         ; preds = %if.end10, %if.end6
-  %5 = load i32, i32* %rc, align 4, !dbg !61
-  store i32 %5, i32* %retval, align 4, !dbg !62
-  br label %return, !dbg !62
+  %5 = load i32, i32* %ploink, align 4, !dbg !65
+  %tobool = icmp ne i32 %5, 0, !dbg !65
+  br i1 %tobool, label %if.then12, label %if.else13, !dbg !67
 
-return:                                           ; preds = %if.end11, %if.then9, %if.else5, %if.else
-  %6 = load i32, i32* %retval, align 4, !dbg !63
-  ret i32 %6, !dbg !63
+if.then12:                                        ; preds = %if.end11
+  call void @llvm.dbg.declare(metadata i32* %t2, metadata !68, metadata !16), !dbg !70
+  store i32 1, i32* %t2, align 4, !dbg !70
+  br label %if.end14, !dbg !71
+
+if.else13:                                        ; preds = %if.end11
+  call void @llvm.dbg.declare(metadata i32* %t3, metadata !72, metadata !16), !dbg !74
+  store i32 2, i32* %t3, align 4, !dbg !74
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.else13, %if.then12
+  call void @llvm.dbg.declare(metadata i32* %t4, metadata !75, metadata !16), !dbg !76
+  store i32 1, i32* %t4, align 4, !dbg !76
+  %6 = load i32, i32* %rc, align 4, !dbg !77
+  store i32 %6, i32* %retval, align 4, !dbg !78
+  br label %return, !dbg !78
+
+return:                                           ; preds = %if.end14, %if.then9, %if.else5, %if.else
+  %7 = load i32, i32* %retval, align 4, !dbg !79
+  ret i32 %7, !dbg !79
 }
 
 ; Function Attrs: nounwind readnone speculatable
@@ -117,48 +142,64 @@ attributes #3 = { nounwind }
 !16 = !DIExpression()
 !17 = !DILocation(line: 6, column: 11, scope: !9)
 !18 = !DILocation(line: 6, column: 21, scope: !9)
-!19 = !DILocalVariable(name: "rc", scope: !9, file: !1, line: 8, type: !12)
+!19 = !DILocalVariable(name: "ploink", scope: !9, file: !1, line: 8, type: !12)
 !20 = !DILocation(line: 8, column: 9, scope: !9)
-!21 = !DILocation(line: 9, column: 9, scope: !22)
-!22 = distinct !DILexicalBlock(scope: !9, file: !1, line: 9, column: 9)
-!23 = !DILocation(line: 9, column: 12, scope: !22)
-!24 = !DILocation(line: 9, column: 9, scope: !9)
-!25 = !DILocation(line: 10, column: 13, scope: !26)
-!26 = distinct !DILexicalBlock(scope: !27, file: !1, line: 10, column: 13)
-!27 = distinct !DILexicalBlock(scope: !22, file: !1, line: 9, column: 18)
-!28 = !DILocation(line: 10, column: 21, scope: !26)
-!29 = !DILocation(line: 10, column: 13, scope: !27)
-!30 = !DILocation(line: 11, column: 17, scope: !31)
-!31 = distinct !DILexicalBlock(scope: !32, file: !1, line: 11, column: 17)
-!32 = distinct !DILexicalBlock(scope: !26, file: !1, line: 10, column: 30)
-!33 = !DILocation(line: 11, column: 25, scope: !31)
-!34 = !DILocation(line: 11, column: 17, scope: !32)
-!35 = !DILocation(line: 12, column: 17, scope: !36)
-!36 = distinct !DILexicalBlock(scope: !31, file: !1, line: 11, column: 34)
-!37 = distinct !{!37, !35, !38}
-!38 = !DILocation(line: 14, column: 27, scope: !36)
-!39 = !DILocalVariable(name: "a", scope: !40, file: !1, line: 13, type: !12)
-!40 = distinct !DILexicalBlock(scope: !36, file: !1, line: 12, column: 20)
-!41 = !DILocation(line: 13, column: 25, scope: !40)
-!42 = !DILocation(line: 14, column: 17, scope: !40)
-!43 = !DILocation(line: 15, column: 13, scope: !36)
-!44 = !DILocation(line: 16, column: 17, scope: !45)
-!45 = distinct !DILexicalBlock(scope: !31, file: !1, line: 15, column: 20)
-!46 = !DILocation(line: 18, column: 16, scope: !32)
-!47 = !DILocation(line: 19, column: 9, scope: !32)
-!48 = !DILocation(line: 20, column: 13, scope: !49)
-!49 = distinct !DILexicalBlock(scope: !26, file: !1, line: 19, column: 16)
-!50 = !DILocation(line: 22, column: 5, scope: !27)
-!51 = !DILocation(line: 23, column: 13, scope: !52)
-!52 = distinct !DILexicalBlock(scope: !53, file: !1, line: 23, column: 13)
-!53 = distinct !DILexicalBlock(scope: !22, file: !1, line: 22, column: 12)
-!54 = !DILocation(line: 23, column: 16, scope: !52)
-!55 = !DILocation(line: 23, column: 13, scope: !53)
-!56 = !DILocation(line: 24, column: 13, scope: !57)
-!57 = distinct !DILexicalBlock(scope: !52, file: !1, line: 23, column: 22)
-!58 = !DILocalVariable(name: "t1", scope: !53, file: !1, line: 26, type: !14)
-!59 = !DILocation(line: 26, column: 15, scope: !53)
-!60 = !DILocation(line: 26, column: 20, scope: !53)
-!61 = !DILocation(line: 29, column: 12, scope: !9)
-!62 = !DILocation(line: 29, column: 5, scope: !9)
-!63 = !DILocation(line: 30, column: 1, scope: !9)
+!21 = !DILocalVariable(name: "rc", scope: !9, file: !1, line: 10, type: !12)
+!22 = !DILocation(line: 10, column: 9, scope: !9)
+!23 = !DILocation(line: 11, column: 9, scope: !24)
+!24 = distinct !DILexicalBlock(scope: !9, file: !1, line: 11, column: 9)
+!25 = !DILocation(line: 11, column: 12, scope: !24)
+!26 = !DILocation(line: 11, column: 9, scope: !9)
+!27 = !DILocation(line: 12, column: 13, scope: !28)
+!28 = distinct !DILexicalBlock(scope: !29, file: !1, line: 12, column: 13)
+!29 = distinct !DILexicalBlock(scope: !24, file: !1, line: 11, column: 18)
+!30 = !DILocation(line: 12, column: 21, scope: !28)
+!31 = !DILocation(line: 12, column: 13, scope: !29)
+!32 = !DILocation(line: 13, column: 17, scope: !33)
+!33 = distinct !DILexicalBlock(scope: !34, file: !1, line: 13, column: 17)
+!34 = distinct !DILexicalBlock(scope: !28, file: !1, line: 12, column: 30)
+!35 = !DILocation(line: 13, column: 25, scope: !33)
+!36 = !DILocation(line: 13, column: 17, scope: !34)
+!37 = !DILocation(line: 14, column: 17, scope: !38)
+!38 = distinct !DILexicalBlock(scope: !33, file: !1, line: 13, column: 34)
+!39 = distinct !{!39, !37, !40}
+!40 = !DILocation(line: 16, column: 27, scope: !38)
+!41 = !DILocalVariable(name: "a", scope: !42, file: !1, line: 15, type: !12)
+!42 = distinct !DILexicalBlock(scope: !38, file: !1, line: 14, column: 20)
+!43 = !DILocation(line: 15, column: 25, scope: !42)
+!44 = !DILocation(line: 16, column: 17, scope: !42)
+!45 = !DILocation(line: 17, column: 13, scope: !38)
+!46 = !DILocation(line: 18, column: 17, scope: !47)
+!47 = distinct !DILexicalBlock(scope: !33, file: !1, line: 17, column: 20)
+!48 = !DILocation(line: 20, column: 16, scope: !34)
+!49 = !DILocation(line: 21, column: 9, scope: !34)
+!50 = !DILocation(line: 22, column: 13, scope: !51)
+!51 = distinct !DILexicalBlock(scope: !28, file: !1, line: 21, column: 16)
+!52 = !DILocation(line: 24, column: 5, scope: !29)
+!53 = !DILocation(line: 25, column: 13, scope: !54)
+!54 = distinct !DILexicalBlock(scope: !55, file: !1, line: 25, column: 13)
+!55 = distinct !DILexicalBlock(scope: !24, file: !1, line: 24, column: 12)
+!56 = !DILocation(line: 25, column: 16, scope: !54)
+!57 = !DILocation(line: 25, column: 13, scope: !55)
+!58 = !DILocation(line: 26, column: 13, scope: !59)
+!59 = distinct !DILexicalBlock(scope: !54, file: !1, line: 25, column: 22)
+!60 = !DILocalVariable(name: "t1", scope: !55, file: !1, line: 28, type: !14)
+!61 = !DILocation(line: 28, column: 15, scope: !55)
+!62 = !DILocation(line: 28, column: 20, scope: !55)
+!63 = !DILocalVariable(name: "no_taint", scope: !55, file: !1, line: 30, type: !12)
+!64 = !DILocation(line: 30, column: 13, scope: !55)
+!65 = !DILocation(line: 33, column: 9, scope: !66)
+!66 = distinct !DILexicalBlock(scope: !9, file: !1, line: 33, column: 9)
+!67 = !DILocation(line: 33, column: 9, scope: !9)
+!68 = !DILocalVariable(name: "t2", scope: !69, file: !1, line: 34, type: !12)
+!69 = distinct !DILexicalBlock(scope: !66, file: !1, line: 33, column: 17)
+!70 = !DILocation(line: 34, column: 13, scope: !69)
+!71 = !DILocation(line: 35, column: 5, scope: !69)
+!72 = !DILocalVariable(name: "t3", scope: !73, file: !1, line: 36, type: !12)
+!73 = distinct !DILexicalBlock(scope: !66, file: !1, line: 35, column: 12)
+!74 = !DILocation(line: 36, column: 13, scope: !73)
+!75 = !DILocalVariable(name: "t4", scope: !9, file: !1, line: 39, type: !12)
+!76 = !DILocation(line: 39, column: 9, scope: !9)
+!77 = !DILocation(line: 41, column: 12, scope: !9)
+!78 = !DILocation(line: 41, column: 5, scope: !9)
+!79 = !DILocation(line: 42, column: 1, scope: !9)

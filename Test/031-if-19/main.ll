@@ -14,7 +14,7 @@ entry:
   %a = alloca i32, align 4
   %a5 = alloca i32, align 4
   %eob = alloca i32, align 4
-  %eob8 = alloca i32, align 4
+  %t = alloca i32, align 4
   %t1 = alloca i8*, align 8
   %ut = alloca i8*, align 8
   store i32 0, i32* %retval, align 4
@@ -24,7 +24,7 @@ entry:
   call void @llvm.dbg.declare(metadata i32* %rc, metadata !19, metadata !16), !dbg !20
   %0 = load i32, i32* %rc, align 4, !dbg !21
   %cmp = icmp ne i32 %0, 0, !dbg !23
-  br i1 %cmp, label %if.then, label %if.else9, !dbg !24
+  br i1 %cmp, label %if.then, label %if.else8, !dbg !24
 
 if.then:                                          ; preds = %entry
   %1 = load i8*, i8** %tainted, align 8, !dbg !25
@@ -64,33 +64,33 @@ if.else6:                                         ; preds = %if.then
   br label %if.end7
 
 if.end7:                                          ; preds = %if.else6
-  call void @llvm.dbg.declare(metadata i32* %eob8, metadata !52, metadata !16), !dbg !53
-  store i32 2, i32* %eob8, align 4, !dbg !53
-  br label %if.end13, !dbg !54
+  call void @llvm.dbg.declare(metadata i32* %t, metadata !52, metadata !16), !dbg !53
+  store i32 2, i32* %t, align 4, !dbg !53
+  br label %if.end12, !dbg !54
 
-if.else9:                                         ; preds = %entry
+if.else8:                                         ; preds = %entry
   %3 = load i32, i32* %rc, align 4, !dbg !55
-  %cmp10 = icmp eq i32 %3, 1, !dbg !58
-  br i1 %cmp10, label %if.then11, label %if.end12, !dbg !59
+  %cmp9 = icmp eq i32 %3, 1, !dbg !58
+  br i1 %cmp9, label %if.then10, label %if.end11, !dbg !59
 
-if.then11:                                        ; preds = %if.else9
+if.then10:                                        ; preds = %if.else8
   store i32 -1, i32* %retval, align 4, !dbg !60
   br label %return, !dbg !60
 
-if.end12:                                         ; preds = %if.else9
+if.end11:                                         ; preds = %if.else8
   call void @llvm.dbg.declare(metadata i8** %t1, metadata !62, metadata !16), !dbg !63
   %4 = load i8*, i8** %tainted, align 8, !dbg !64
   store i8* %4, i8** %t1, align 8, !dbg !63
-  br label %if.end13
+  br label %if.end12
 
-if.end13:                                         ; preds = %if.end12, %if.end7
+if.end12:                                         ; preds = %if.end11, %if.end7
   call void @llvm.dbg.declare(metadata i8** %ut, metadata !65, metadata !16), !dbg !66
   store i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0), i8** %ut, align 8, !dbg !66
   %5 = load i32, i32* %rc, align 4, !dbg !67
   store i32 %5, i32* %retval, align 4, !dbg !68
   br label %return, !dbg !68
 
-return:                                           ; preds = %if.end13, %if.then11, %if.end, %do.end
+return:                                           ; preds = %if.end12, %if.then10, %if.end, %do.end
   %6 = load i32, i32* %retval, align 4, !dbg !69
   ret i32 %6, !dbg !69
 }
@@ -162,7 +162,7 @@ attributes #3 = { nounwind }
 !49 = !DILocation(line: 20, column: 13, scope: !32)
 !50 = !DILocation(line: 22, column: 16, scope: !51)
 !51 = distinct !DILexicalBlock(scope: !26, file: !1, line: 21, column: 16)
-!52 = !DILocalVariable(name: "eob", scope: !27, file: !1, line: 24, type: !12)
+!52 = !DILocalVariable(name: "t", scope: !27, file: !1, line: 24, type: !12)
 !53 = !DILocation(line: 24, column: 13, scope: !27)
 !54 = !DILocation(line: 25, column: 5, scope: !27)
 !55 = !DILocation(line: 26, column: 13, scope: !56)

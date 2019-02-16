@@ -16,7 +16,8 @@ main()
         int a = 1;
         break;
     }
-    int a = 0;
+
+    int no_taint = 0;
 
     return rc;
 }

@@ -53,9 +53,7 @@ public:
                                   const llvm::Function* destMthd,
                                   const llvm::Value* zeroValue);
 
-  static const llvm::BasicBlock* getEndOfBlockBB(const llvm::Instruction* currentInst);
-  static const std::set<std::string> getSuccessorLabels(const llvm::BasicBlock* taintedBBStart,
-                                                        const llvm::BasicBlock* taintedBBEnd);
+  static const llvm::BasicBlock* getEndOfTaintedBlock(const llvm::BasicBlock* basicBlock);
   static bool removeTaintedBlockInst(const ExtendedValue& fact,
                                      const llvm::Instruction* currentInst);
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* currentInst);
