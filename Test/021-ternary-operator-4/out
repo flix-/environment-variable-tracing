@@ -16,9 +16,9 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-[TRACK] Searching end of tainted branch label for BB: entry
-[TRACK] End of tainted block label: cond.end
-[TRACK] End of tainted branch label: cond.end
+[TRACK] Searching end of block label for: entry
+[TRACK] End of closed block label: cond.end
+[TRACK] End of block label: cond.end
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13
@@ -53,6 +53,7 @@ D:	%cmp = icmp eq i32 %call, 0, !dbg !23, !phasar.instruction.id !24, ID: 8
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7
 
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -98,12 +99,14 @@ D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7
 
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 --- IFDS START RESULT RECORD ---
 N: %call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30, ID: 12 in function: main
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -118,6 +121,7 @@ D:	%cmp = icmp eq i32 %call, 0, !dbg !23, !phasar.instruction.id !24, ID: 8
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7
 
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	%call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30, ID: 12
 
@@ -130,6 +134,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 D:	%call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30, ID: 12
 
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10
 
@@ -146,6 +151,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 D:	%call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30, ID: 12
 
 D:	br i1 %cmp, label %cond.true, label %cond.false, !dbg !21, !phasar.instruction.id !25, ID: 9
+L:	cond.end
 
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7
 
@@ -185,15 +191,15 @@ D:	%call1 = call i32 (...) @foo(), !dbg !26, !phasar.instruction.id !27, ID: 10
 
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 7
 
-D:	%call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30, ID: 12
-
-D:	store i32 %cond, i32* %taint, align 4, !dbg !19, !phasar.ins
-[TRACK] Searching end of tainted branch label for BB: entry
-[TRACK] End of tainted block label: cond.end
-[TRACK] End of tainted branch label: cond.end
+D:	%call2 = call i32 (...) @bar(), !dbg !29, !phasar.instruction.id !30,
+[TRACK] Searching end of block label for: entry
+[TRACK] End of closed block label: cond.end
+[TRACK] End of block label: cond.end
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550311256-trace.txt
-truction.id !33, ID: 15
+Writing lcov trace to: static-main-1550323329-trace.txt
+ ID: 12
+
+D:	store i32 %cond, i32* %taint, align 4, !dbg !19, !phasar.instruction.id !33, ID: 15
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
 
 D:	store i32 %cond, i32* %taint, align 4, !dbg !19, !phasar.instruction.id !33, ID: 15

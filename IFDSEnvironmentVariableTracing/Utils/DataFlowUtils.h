@@ -53,7 +53,7 @@ public:
                                   const llvm::Function* destMthd,
                                   const llvm::Value* zeroValue);
 
-  static const llvm::BasicBlock* getEndOfTaintedBlock(const llvm::BasicBlock* basicBlock);
+  static const llvm::BasicBlock* getEndOfTaintedBlock(const llvm::BasicBlock* startBasicBlock);
   static bool removeTaintedBlockInst(const ExtendedValue& fact,
                                      const llvm::Instruction* currentInst);
   static bool isAutoGENInTaintedBlock(const llvm::Instruction* currentInst);

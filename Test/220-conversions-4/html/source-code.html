@@ -49,9 +49,9 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: lor.end<br>
-[TRACK] End of tainted branch label: lor.end<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: lor.end<br>
+[TRACK] End of block label: lor.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %i = alloca i64, align 8, !phasar.instruction.id !17<br>
@@ -158,6 +158,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 D:	%1 = phi i1 [ true, %entry ], [ true, %lor.rhs ], !phasar.instruction.id !47, ID: 16<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !44, !phasar.instruction.id !45, ID: 14<br>
+L:	lor.end<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 7<br>
 <br>
@@ -174,6 +175,7 @@ A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 7<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !44, !phasar.instruction.id !45, ID: 14<br>
+L:	lor.end<br>
 <br>
 D:	%tobool = icmp ne i8* %0, null, !dbg !42, !phasar.instruction.id !43, ID: 13<br>
 <br>
@@ -192,6 +194,7 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !16, ID: 2<br>
 A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 0, !dbg !31, !phasar.instruction.id !32, ID: 8<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !44, !phasar.instruction.id !45, ID: 14<br>
+L:	lor.end<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %conv = sext i32 %lor.ext to i64, !dbg !42, !phasar.instruction.id !49, ID: 18 in function: main<br>
@@ -276,13 +279,13 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	%3 = inttoptr i64 %2 to i8*, !dbg !56, !phasar.instruction.id !57, ID: 22<br>
 <br>
-D:	store i64 %conv, i64* %i, align 8, !dbg !37, !phasar.instruction.id !50, ID:<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: lor.end<br>
-[TRACK] End of tainted branch label: lor.end<br>
+D:	store i64 %conv, i64* %i, align 8, !dbg !37<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: lor.end<br>
+[TRACK] End of block label: lor.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550311292-trace.txt<br>
- 19<br>
+Writing lcov trace to: static-main-1550323365-trace.txt<br>
+, !phasar.instruction.id !50, ID: 19<br>
 A:	%i = alloca i64, align 8, !phasar.instruction.id !17, ID: 3<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !29, !phasar.instruction.id !30, ID: 7<br>

@@ -33,6 +33,7 @@ D:	store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25, ID: 6
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -47,6 +48,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 --- IFDS START RESULT RECORD ---
 N: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !28, !phasar.instruction.id !29, ID: 8 in function: main
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -67,6 +69,7 @@ D:	store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25, ID: 6
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
 D:	%tobool = icmp ne i32 %call, 0, !dbg !26, !phasar.instruction.id !30, ID: 9
 
@@ -81,6 +84,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1
 D:	%tobool = icmp ne i32 %call, 0, !dbg !26, !phasar.instruction.id !30, ID: 9
 
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
 D:	store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25, ID: 6
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
@@ -93,16 +97,17 @@ D:	store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25, ID: 6
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
-D:	%tobool = icmp ne i32 %call, 0, !dbg !26, !phasar.instructi[TRACK] Searching end of tainted branch label for BB: do.cond
-[TRACK] End of tainted block label: do.end
-[TRACK] End of tainted branch label: do.end
-[TRACK] Searching end of tainted branch label for BB: do.cond
-[TRACK] End of tainted block label: do.end
-[TRACK] End of tainted branch label: do.end
+D:	%tobool =[TRACK] Searching end of block label for: do.cond
+[TRACK] End of closed block label: do.end
+[TRACK] End of block label: do.end
+[TRACK] Searching end of block label for: do.cond
+[TRACK] End of closed block label: do.end
+[TRACK] End of block label: do.end
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550311268-trace.txt
-on.id !30, ID: 9
+Writing lcov trace to: static-main-1550323340-trace.txt
+ icmp ne i32 %call, 0, !dbg !26, !phasar.instruction.id !30, ID: 9
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -114,6 +119,7 @@ D:	store i32 42, i32* %rc, align 4, !dbg !23, !phasar.instruction.id !25, ID: 6
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 
 D:	br i1 %tobool, label %do.body, label %do.end, !dbg !26, !llvm.loop !20, !phasar.instruction.id !31, ID: 10
+L:	do.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 

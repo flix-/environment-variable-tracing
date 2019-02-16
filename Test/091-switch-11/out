@@ -16,32 +16,32 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-[TRACK] Searching end of tainted switch label for BB: land.end
-[TRACK] End of tainted block label: sw.epilog9
-[TRACK] End of tainted switch label: return
-[TRACK] Searching end of tainted switch label for BB: land.end
-[TRACK] End of tainted block label: sw.epilog9
-[TRACK] End of tainted switch label: return
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
+[TRACK] Searching end of block label for: land.end
+[TRACK] End of closed block label: sw.epilog9
+[TRACK] End of block label: return
+[TRACK] Searching end of block label for: land.end
+[TRACK] End of closed block label: sw.epilog9
+[TRACK] End of block label: return
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %rc = alloca i32, align 4, !phasar.instruction.id !15
 [TRACK] Destination:
 [TRACK]   %retval = alloca i32, align 4, !phasar.instruction.id !14
-[TRACK] Searching end of tainted switch label for BB: land.end
-[TRACK] End of tainted block label: sw.epilog9
-[TRACK] End of tainted switch label: return
+[TRACK] Searching end of block label for: land.end
+[TRACK] End of closed block label: sw.epilog9
+[TRACK] End of block label: return
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %rc = alloca i32, align 4, !phasar.instruction.id !15
@@ -207,6 +207,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
 
@@ -221,6 +222,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%3 = phi i1 [ false, %land.lhs.true ], [ false, %lor.lhs.false ], [ %cmp, %land.rhs ], !phasar.instruction.id !55, ID: 25
 
@@ -237,6 +239,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -252,6 +255,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -291,6 +295,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -299,6 +304,7 @@ D:	switch i32 %4, label %sw.default [
     i32 1, label %sw.bb4
     i32 2, label %sw.bb5
   ], !dbg !62, !phasar.instruction.id !63, ID: 29
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: %5 = load i32, i32* %rc, align 4, !dbg !96, !phasar.instruction.id !97, ID: 46 in function: main
@@ -307,6 +313,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	store i32 1, i32* %ut, align 4, !dbg !93, !phasar.instruction.id !95, ID: 45
 A:	%ut = alloca i32, align 4, !phasar.instruction.id !20, ID: 7
@@ -330,6 +337,7 @@ D:	switch i32 %4, label %sw.default [
     i32 1, label %sw.bb4
     i32 2, label %sw.bb5
   ], !dbg !62, !phasar.instruction.id !63, ID: 29
+L:	sw.epilog
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -338,6 +346,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%4 = load i32, i32* %a, align 4, !dbg !59, !phasar.instruction.id !61, ID: 28
 
@@ -366,6 +375,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -374,6 +384,7 @@ D:	switch i32 %4, label %sw.default [
     i32 1, label %sw.bb4
     i32 2, label %sw.bb5
   ], !dbg !62, !phasar.instruction.id !63, ID: 29
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: switch i32 %4, label %sw.default [
@@ -388,6 +399,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -416,6 +428,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -424,6 +437,7 @@ D:	switch i32 %4, label %sw.default [
     i32 1, label %sw.bb4
     i32 2, label %sw.bb5
   ], !dbg !62, !phasar.instruction.id !63, ID: 29
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: store i32 1, i32* %rc, align 4, !dbg !73, !phasar.instruction.id !74, ID: 34 in function: main
@@ -434,6 +448,7 @@ D:	switch i32 %4, label %sw.default [
     i32 1, label %sw.bb4
     i32 2, label %sw.bb5
   ], !dbg !62, !phasar.instruction.id !63, ID: 29
+L:	sw.epilog
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -442,6 +457,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%4 = load i32, i32* %a, align 4, !dbg !59, !phasar.instruction.id !61, ID: 28
 
@@ -460,6 +476,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -473,6 +490,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -499,6 +517,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -509,6 +528,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	store i32 3, i32* %rc, align 4, !dbg !81, !phasar.instruction.id !82, ID: 38
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !15, ID: 2
@@ -538,6 +558,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -560,6 +581,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
 
@@ -575,6 +597,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -604,6 +627,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
 
@@ -616,6 +640,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -647,6 +672,7 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
 
@@ -681,20 +707,21 @@ D:	switch i32 %land.ext, label %sw.default8 [
     i32 1, label %sw.bb6
     i32 2, label %sw.bb7
   ], !dbg !57, !phasar.instruction.id !58, ID: 27
+L:	return
 
-D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
+D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 
+[TRACK] Searching end of block label for: land.end
+[TRACK] End of closed block label: sw.epilog9
+[TRACK] End of block label: return
+Writing simple report to: line-numbers.txt
+Writing lcov trace to: static-main-1550323345-trace.txt
+0)) #3, !dbg !50, !phasar.instruction.id !51, ID: 22
 
 --- IFDS START RESULT RECORD ---
 N: ret i32 %6, !dbg !101, !phasar.instruction.id !103, ID: 50 in function: main
 D:	ret i32 %6, !dbg !101, !phasar.instruction.id !103, ID: 50
 
-D:	store i32 %5, i32* %retval, align 4, !dbg !98, !phas
-[TRACK] Searching end of tainted switch label for BB: land.end
-[TRACK] End of tainted block label: sw.epilog9
-[TRACK] End of tainted switch label: return
-Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550311273-trace.txt
-ar.instruction.id !99, ID: 47
+D:	store i32 %5, i32* %retval, align 4, !dbg !98, !phasar.instruction.id !99, ID: 47
 A:	%retval = alloca i32, align 4, !phasar.instruction.id !14, ID: 1
 
 D:	store i32 1, i32* %ut, align 4, !dbg !93, !phasar.instruction.id !95, ID: 45

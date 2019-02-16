@@ -5,6 +5,7 @@
 #include "DataFlowUtils.h"
 
 #include <algorithm>
+#include <cassert>
 #include <ctime>
 #include <iterator>
 #include <queue>
@@ -501,9 +502,9 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
 }
 
 static const llvm::BasicBlock*
-getEndOfSwitchBlock(const llvm::TerminatorInst* terminatorInst,
-                    std::stack<std::string> labelPrefixStack,
-                    std::set<std::string> visitedNodes) {
+getEndOfClosedSwitch(const llvm::TerminatorInst* terminatorInst,
+                     std::stack<std::string> labelPrefixStack,
+                     std::set<std::string> visitedNodes) {
 
   const auto currentBB = terminatorInst->getParent();
   const auto currentLabel = currentBB->getName();
@@ -530,9 +531,9 @@ getEndOfSwitchBlock(const llvm::TerminatorInst* terminatorInst,
 
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    const auto endOfSwitchBB = getEndOfSwitchBlock(nextTerminatorInst,
-                                                   labelPrefixStack,
-                                                   visitedNodes);
+    const auto endOfSwitchBB = getEndOfClosedSwitch(nextTerminatorInst,
+                                                    labelPrefixStack,
+                                                    visitedNodes);
 
     if (endOfSwitchBB != nullptr) return endOfSwitchBB;
   }
@@ -559,7 +560,7 @@ getPrefixFromLabel(std::string bbLabel) {
 }
 
 /*
- * This algorithm finds the mergepoint for a given conditional branch instruction.
+ * This algorithm finds the close block for a given conditional branch instruction.
  * It works based on naming conventions for basic block labels. We assume that in
  * the general case a starting point label $labelPrefix.* ($labelPrefix := 'if',
  * 'for', 'do' etc.) ends in a basic block $labelPrefix.end.*.
@@ -575,11 +576,12 @@ getPrefixFromLabel(std::string bbLabel) {
  * on our stack we 1) do not push other SUBSTITUTION_WILDCARDS until substitution
  * occurs, 2) we substitute it when we have a label prefix != SUBSTITUTION_WILDCARD
  * and 3) we match every *.end block with the SUBSTITUTION_WILDCARD.
+ *
  */
 const llvm::BasicBlock*
-getEndOfBranchBlock(const llvm::TerminatorInst* terminatorInst,
-                    std::stack<std::string> labelPrefixStack,
-                    std::set<std::string> visitedNodes) {
+getEndOfClosedBranch(const llvm::TerminatorInst* terminatorInst,
+                     std::stack<std::string> labelPrefixStack,
+                     std::set<std::string> visitedNodes) {
 
   const auto currentBB = terminatorInst->getParent();
   const auto currentLabel = currentBB->getName();
@@ -616,9 +618,9 @@ getEndOfBranchBlock(const llvm::TerminatorInst* terminatorInst,
 
     const auto nextTerminatorInst = nextBB->getTerminator();
 
-    const auto endOfBranchBB = getEndOfBranchBlock(nextTerminatorInst,
-                                                   nextLabelPrefixStack,
-                                                   visitedNodes);
+    const auto endOfBranchBB = getEndOfClosedBranch(nextTerminatorInst,
+                                                    nextLabelPrefixStack,
+                                                    visitedNodes);
 
     if (endOfBranchBB != nullptr) return endOfBranchBB;
   }
@@ -628,18 +630,18 @@ getEndOfBranchBlock(const llvm::TerminatorInst* terminatorInst,
 
 static const std::vector<llvm::BasicBlock*>
 getPostDominators(const llvm::DomTreeNodeBase<llvm::BasicBlock>* postDomTreeNode,
-                  const llvm::BasicBlock* startOfTaintedBlockBB) {
+                  const llvm::BasicBlock* startBasicBlock) {
 
-  const auto currentBB = postDomTreeNode->getBlock();
-  bool isStartOfTaintedBlockBB = currentBB == startOfTaintedBlockBB;
+  const auto currentBasicBlock = postDomTreeNode->getBlock();
+  bool isStartBasicBlock = currentBasicBlock == startBasicBlock;
 
-  if (isStartOfTaintedBlockBB) return { currentBB };
+  if (isStartBasicBlock) return { currentBasicBlock };
 
   for (const auto postDomTreeChild : postDomTreeNode->getChildren()) {
     auto childNodes = getPostDominators(postDomTreeChild,
-                                        startOfTaintedBlockBB);
+                                        startBasicBlock);
     if (!childNodes.empty()) {
-      childNodes.push_back(currentBB);
+      childNodes.push_back(currentBasicBlock);
 
       return childNodes;
     }
@@ -648,28 +650,70 @@ getPostDominators(const llvm::DomTreeNodeBase<llvm::BasicBlock>* postDomTreeNode
   return std::vector<llvm::BasicBlock*>();
 }
 
+/*
+ * Given a basic block that contains a branch with a tainted condition we need
+ * to find all basic blocks that are dependend on it or put different the first
+ * one that is not. We will make use of post dominators that will give us all the
+ * join points of the starting basic block. Intuitively the immediate post dominator
+ * has to be the right basic block. However this does not hold e.g. for switch
+ * statements that contain fallthroughs or do-while loops that have short circuit
+ * evaluation within their condition. As we cannot just use the first post dominator
+ * the problem is to find the proper one given a hierarchy of post dominators.
+ *
+ * We will make use of another algorithm here that finds the basic block which joins
+ * the condition. Consider:
+ *
+ * if (getenv("gude") != NULL) {
+ *   if (a) goto out;
+ *   int a = 1;
+ * } else {
+ *   int b = 1;
+ * }
+ * int end_of_block = 1;
+ *
+ * out:
+ *   int ploink = 1;
+ *   return 0;
+ *
+ * The algorithm will find the basic block where end_of_block is residing in.
+ * Note that this is not the basic block we are searching for. Depending on whether an
+ * environment variable is set or not we are skipping the assignment to the variable
+ * 'end_of_block'. So 'end_of_block' is depending on environment variables. The first
+ * expression that is not is starting in the 'out' basic block.
+ *
+ * To find the proper basic block we first find the basic block that joins the condition.
+ * If there is no jump (e.g. through goto, return, abort, ...) out of the block this will
+ * be our searched basic block. In that case it will also be a post dominator although not
+ * necessarily the immediate post dominator. If we find that basic block within our post
+ * dominators we are done.
+ *
+ * If we have a jump out of the function then we cannot have the basic block that joins the
+ * condition in our post dominator hierarchy. In that case we will use the immediate post
+ * dominator which is ensured to not be within the block itself.
+ *
+ */
 const llvm::BasicBlock*
-DataFlowUtils::getEndOfTaintedBlock(const llvm::BasicBlock* basicBlock) {
+DataFlowUtils::getEndOfTaintedBlock(const llvm::BasicBlock* startBasicBlock) {
 
-  const auto terminatorInst = basicBlock->getTerminator();
-  const auto function = const_cast<llvm::Function*>(basicBlock->getParent());
+  const auto terminatorInst = startBasicBlock->getTerminator();
+  const auto function = const_cast<llvm::Function*>(startBasicBlock->getParent());
 
   llvm::PostDominatorTree postDominatorTree;
   postDominatorTree.recalculate(*function);
 
   const auto postDominators = getPostDominators(postDominatorTree.getRootNode(),
-                                                basicBlock);
+                                                startBasicBlock);
 
-  const llvm::BasicBlock* endOfTaintedBlock;
+  const llvm::BasicBlock* endOfClosedBlock;
 
   if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(terminatorInst)) {
-    endOfTaintedBlock = getEndOfBranchBlock(branchInst,
+    endOfClosedBlock = getEndOfClosedBranch(branchInst,
                                             std::stack<std::string>(),
                                             std::set<std::string>());
   }
   else
   if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(terminatorInst)) {
-    endOfTaintedBlock = getEndOfSwitchBlock(switchInst,
+    endOfClosedBlock = getEndOfClosedSwitch(switchInst,
                                             std::stack<std::string>(),
                                             std::set<std::string>());
   }
@@ -677,15 +721,15 @@ DataFlowUtils::getEndOfTaintedBlock(const llvm::BasicBlock* basicBlock) {
     return nullptr;
   }
 
-  const auto endOfTaintedBlockLabel = endOfTaintedBlock ? endOfTaintedBlock->getName() : "";
+  const auto endOfClosedBlockLabel = endOfClosedBlock ? endOfClosedBlock->getName() : "";
 
-  llvm::outs() << "[TRACK] End of tainted block label: " << endOfTaintedBlockLabel << "\n";
+  llvm::outs() << "[TRACK] End of closed block label: " << endOfClosedBlockLabel << "\n";
 
-  bool isBlockClosed = std::find(postDominators.begin(),
+  bool isClosedBlock = std::find(postDominators.begin(),
                                  postDominators.end(),
-                                 endOfTaintedBlock) != postDominators.end();
+                                 endOfClosedBlock) != postDominators.end();
 
-  if (isBlockClosed) return endOfTaintedBlock;
+  if (isClosedBlock) return endOfClosedBlock;
 
   return postDominators.size() > 1 ? postDominators[1] : nullptr;
 }

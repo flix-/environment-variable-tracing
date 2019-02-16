@@ -136,6 +136,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	store i32 3, i32* %rc, align 4, !dbg !54, !phasar.instruction.id !55, ID: 25
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
@@ -175,6 +176,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	call void @llvm.dbg.declare(metadata i32* %b, metadata !48, metadata !23), !dbg !49, !phasar.instruction.id !50, ID: 22
 
@@ -206,6 +208,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: store i32 1, i32* %a, align 4, !dbg !43, !phasar.instruction.id !45, ID: 20 in function: main
@@ -217,6 +220,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -236,6 +240,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !41, metadata !23), !dbg !43, !phasar.instruction.id !44, ID: 19
 
@@ -255,6 +260,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: store i32 2, i32* %b, align 4, !dbg !49, !phasar.instruction.id !51, ID: 23 in function: main
@@ -266,6 +272,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	store i32 %call, i32* %taint, align 4, !dbg !27, !phasar.instruction.id !31, ID: 14
 A:	%taint = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
@@ -285,6 +292,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 --- IFDS START RESULT RECORD ---
 N: call void @llvm.dbg.declare(metadata i32* %f, metadata !58, metadata !23), !dbg !59, !phasar.instruction.id !60, ID: 27 in function: main
@@ -292,6 +300,7 @@ D:	switch i32 %1, label %sw.default [
     i32 0, label %sw.bb1
     i32 1, label %sw.bb2
   ], !dbg !39, !phasar.instruction.id !40, ID: 18
+L:	sw.epilog
 
 D:	store i32 3, i32* %rc, align 4, !dbg !54, !phasar.instruction.id !55, ID: 25
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
@@ -428,19 +437,19 @@ A:	%b = alloca i32, align 4, !phasar.instruction.id !16, ID: 5
 
 D:	call void @llvm.dbg.declare(metadata i32* %b, metadata !48, metadata !23), !dbg !49, !phasar.instruction.id !50, ID: 22
 
-D:	store i32 1, i32* %a, align 4, !dbg !43, !phasar.instruction.id !45, ID: 20
-A:	%a = alloca i32, align 4, !phasar.in[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
-[TRACK] Searching end of tainted switch label for BB: sw.bb
-[TRACK] End of tainted block label: sw.epilog
-[TRACK] End of tainted switch label: sw.epilog
+D[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
+[TRACK] Searching end of block label for: sw.bb
+[TRACK] End of closed block label: sw.epilog
+[TRACK] End of block label: sw.epilog
 Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550311274-trace.txt
-struction.id !15, ID: 4
+Writing lcov trace to: static-main-1550323346-trace.txt
+:	store i32 1, i32* %a, align 4, !dbg !43, !phasar.instruction.id !45, ID: 20
+A:	%a = alloca i32, align 4, !phasar.instruction.id !15, ID: 4
 
 D:	call void @llvm.dbg.declare(metadata i32* %a, metadata !41, metadata !23), !dbg !43, !phasar.instruction.id !44, ID: 19
 

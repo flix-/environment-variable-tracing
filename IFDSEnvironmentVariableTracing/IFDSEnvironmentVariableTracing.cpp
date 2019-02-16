@@ -13,9 +13,10 @@
 
 #include "Utils/DataFlowUtils.h"
 
+#include <cassert>
 #include <fstream>
-#include <vector>
 #include <set>
+#include <vector>
 
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/IntrinsicInst.h>
@@ -191,6 +192,61 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
     return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, lineNumberStore, zeroValue());
   }
   /*
+   * Branch / Switch instruction
+   */
+  else
+  if (llvm::isa<llvm::BranchInst>(currentInst) ||
+      llvm::isa<llvm::SwitchInst>(currentInst)) {
+
+    ComputeTargetsExtFunction blockFlowFunction = [](const llvm::Instruction* currentInst,
+                                                     ExtendedValue& fact,
+                                                     LineNumberStore& lineNumberStore,
+                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+
+      const llvm::Value* condition = nullptr;
+
+      if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(currentInst)) {
+        bool isConditional = branchInst->isConditional();
+
+        if (isConditional) condition = branchInst->getCondition();
+      }
+      else
+      if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(currentInst)) {
+        condition = switchInst->getCondition();
+      }
+      else {
+        assert(false && "This MUST not happen");
+      }
+
+      if (condition) {
+        bool isConditionTainted = DataFlowUtils::isValueTainted(condition, fact) ||
+                                  DataFlowUtils::isMemoryLocationTainted(condition, fact);
+        if (isConditionTainted) {
+          const auto startBasicBlock = currentInst->getParent();
+          const auto startBasicBlockLabel = startBasicBlock->getName();
+
+          llvm::outs() << "[TRACK] Searching end of block label for: " << startBasicBlockLabel << "\n";
+
+          const auto endBasicBlock = DataFlowUtils::getEndOfTaintedBlock(startBasicBlock);
+          const auto endBasicBlockLabel = endBasicBlock ? endBasicBlock->getName() : "";
+
+          llvm::outs() << "[TRACK] End of block label: " << endBasicBlockLabel << "\n";
+
+          ExtendedValue ev(currentInst);
+          ev.setEndOfTaintedBlockLabel(endBasicBlockLabel);
+
+          lineNumberStore.addLineNumber(currentInst);
+
+          return { fact, ev };
+        }
+      }
+
+      return { fact };
+    };
+
+    return std::make_shared<FlowFunctionWrapper>(currentInst, blockFlowFunction, lineNumberStore, zeroValue());
+  }
+  /*
    * GetElementPtr instruction
    *
    * Sole purpose is to track increments of var arg indexes.
@@ -260,88 +316,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
     };
 
     return std::make_shared<FlowFunctionWrapper>(currentInst, phiNodeFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Branch instruction
-   */
-  else
-  if (llvm::isa<llvm::BranchInst>(currentInst)) {
-
-    ComputeTargetsExtFunction branchFlowFunction = [](const llvm::Instruction* currentInst,
-                                                      ExtendedValue& fact,
-                                                      LineNumberStore& lineNumberStore,
-                                                      ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto branchInst = llvm::cast<llvm::BranchInst>(currentInst);
-
-      bool isConditional = branchInst->isConditional();
-      if (isConditional) {
-        const auto condition = branchInst->getCondition();
-
-        bool isBranchTainted = DataFlowUtils::isValueTainted(condition, fact) ||
-                               DataFlowUtils::isMemoryLocationTainted(condition, fact);
-        if (isBranchTainted) {
-          const auto basicBlock = branchInst->getParent();
-
-          llvm::outs() << "[TRACK] Searching end of tainted branch label for BB: " << basicBlock->getName() << "\n";
-
-          const auto endOfTaintedBranchBB = DataFlowUtils::getEndOfTaintedBlock(basicBlock);
-          const auto endOfTaintedBranchLabel = endOfTaintedBranchBB ? endOfTaintedBranchBB->getName() : "";
-
-          llvm::outs() << "[TRACK] End of tainted branch label: " << endOfTaintedBranchLabel << "\n";
-
-          ExtendedValue ev(branchInst);
-          ev.setEndOfTaintedBlockLabel(endOfTaintedBranchLabel);
-
-          lineNumberStore.addLineNumber(branchInst);
-
-          return { fact, ev };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, branchFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Switch instruction
-   */
-  else
-  if (llvm::isa<llvm::SwitchInst>(currentInst)) {
-
-    ComputeTargetsExtFunction switchFlowFunction = [](const llvm::Instruction* currentInst,
-                                                      ExtendedValue& fact,
-                                                      LineNumberStore& lineNumberStore,
-                                                      ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto switchInst = llvm::cast<llvm::SwitchInst>(currentInst);
-      const auto condition = switchInst->getCondition();
-
-      bool isSwitchTainted = DataFlowUtils::isValueTainted(condition, fact) ||
-                             DataFlowUtils::isMemoryLocationTainted(condition, fact);
-      if (isSwitchTainted) {
-        const auto basicBlock = switchInst->getParent();
-
-        llvm::outs() << "[TRACK] Searching end of tainted switch label for BB: " << basicBlock->getName() << "\n";
-
-        const auto endOfTaintedSwitchBB = DataFlowUtils::getEndOfTaintedBlock(basicBlock);
-        const auto endOfTaintedSwitchLabel = endOfTaintedSwitchBB ? endOfTaintedSwitchBB->getName() : "";
-
-        llvm::outs() << "[TRACK] End of tainted switch label: " << endOfTaintedSwitchLabel << "\n";
-
-        ExtendedValue ev(switchInst);
-        ev.setEndOfTaintedBlockLabel(endOfTaintedSwitchLabel);
-
-        lineNumberStore.addLineNumber(switchInst);
-
-        return { fact, ev };
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, switchFlowFunction, lineNumberStore, zeroValue());
   }
   /*
    * Operands checking instruction

@@ -66,6 +66,7 @@ N: %tobool = icmp ne i32 %call, 0, !dbg !19, !phasar.instruction.id !23, ID: 7 i
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -88,6 +89,7 @@ D:	store i32 1, i32* %rc, align 4, !dbg !40, !phasar.instruction.id !41, ID: 16<
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
@@ -102,6 +104,7 @@ N: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -120,6 +123,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
@@ -132,6 +136,7 @@ D:	%tobool = icmp ne i32 %call, 0, !dbg !19, !phasar.instruction.id !23, ID: 7<b
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -143,6 +148,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 --- IFDS START RESULT RECORD ---<br>
 N: br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13 in function: main<br>
 D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -154,6 +160,7 @@ D:	%tobool3 = icmp ne i32 %call2, 0, !dbg !28, !phasar.instruction.id !32, ID: 1
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
@@ -168,6 +175,7 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -186,10 +194,12 @@ D:	store i32 100, i32* %rc, align 4, !dbg !25, !phasar.instruction.id !27, ID: 9
 A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %tobool3 = icmp ne i32 %call2, 0, !dbg !28, !phasar.instruction.id !32, ID: 12 in function: main<br>
@@ -199,8 +209,10 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -210,22 +222,23 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
-N: br label %while.cond1, !dbg !28, !llvm.loop !37, !phasar.instruction.id !39, ID: 15 in function: main<br>
-D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !3[TRACK] Searching end of tainted branch label for BB: while.cond<br>
-[TRACK] End of tainted block label: while.end5<br>
-[TRACK] End of tainted branch label: while.end5<br>
-[TRACK] Searching end of tainted branch label for BB: while.cond1<br>
-[TRACK] End of tainted block label: while.end<br>
-[TRACK] End of tainted branch label: while.end<br>
-[TRACK] Searching end of tainted branch label for BB: while.cond1<br>
-[TRACK] End of tainted block label: while.end<br>
-[TRACK] End of tainted branch label: while.end<br>
-[TRACK] Searching end of tainted branch label for BB: while.cond<br>
-[TRACK] End of tainted block label: while.end5<br>
-[TRACK] End of tainted branch label: while.end5<br>
+N: br label %while.cond1, !dbg ![TRACK] Searching end of block label for: while.cond<br>
+[TRACK] End of closed block label: while.end5<br>
+[TRACK] End of block label: while.end5<br>
+[TRACK] Searching end of block label for: while.cond1<br>
+[TRACK] End of closed block label: while.end<br>
+[TRACK] End of block label: while.end<br>
+[TRACK] Searching end of block label for: while.cond1<br>
+[TRACK] End of closed block label: while.end<br>
+[TRACK] End of block label: while.end<br>
+[TRACK] Searching end of block label for: while.cond<br>
+[TRACK] End of closed block label: while.end5<br>
+[TRACK] End of block label: while.end5<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550311268-trace.txt<br>
-3, ID: 13<br>
+Writing lcov trace to: static-main-1550323340-trace.txt<br>
+28, !llvm.loop !37, !phasar.instruction.id !39, ID: 15 in function: main<br>
+D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -235,6 +248,7 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
@@ -243,6 +257,7 @@ N: br label %while.cond, !dbg !19, !llvm.loop !42, !phasar.instruction.id !44, I
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
@@ -264,8 +279,10 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	%tobool3 = icmp ne i32 %call2, 0, !dbg !28, !phasar.instruction.id !32, ID: 12<br>
 <br>
 D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>
@@ -283,8 +300,10 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 D:	%call2 = call i32 (...) @foo(), !dbg !30, !phasar.instruction.id !31, ID: 11<br>
 <br>
 D:	br i1 %tobool3, label %while.body4, label %while.end, !dbg !28, !phasar.instruction.id !33, ID: 13<br>
+L:	while.end<br>
 <br>
 D:	br i1 %tobool, label %while.body, label %while.end5, !dbg !19, !phasar.instruction.id !24, ID: 8<br>
+L:	while.end5<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)), !dbg !21, !phasar.instruction.id !22, ID: 6<br>
 <br>

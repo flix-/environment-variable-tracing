@@ -98,9 +98,9 @@ DONE<br>
 [TRACK] Destination:<br>
 [TRACK]   %s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18<br>
 [TRACK]   %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !57, !phasar.instruction.id !58<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: if.end<br>
-[TRACK] End of tainted branch label: if.end<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: if.end<br>
+[TRACK] End of block label: if.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
@@ -265,6 +265,7 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 2<br>
 A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !57, !phasar.instruction.id !58, ID: 21<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !55, !phasar.instruction.id !56, ID: 20<br>
 <br>
@@ -402,6 +403,7 @@ A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !55, !phasar.instruction.id !56, ID: 20<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: %4 = load %struct.s1*, %struct.s1** %s11, align 8, !dbg !124, !phasar.instruction.id !125, ID: 53 in function: main<br>
@@ -442,6 +444,7 @@ A:	%s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg 
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata %struct.s2* %s2_ut, metadata !77, metadata !52), !dbg !79, !phasar.instruction.id !80, ID: 32 in function: main<br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !55, !phasar.instruction.id !56, ID: 20<br>
 <br>
@@ -459,6 +462,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 --- IFDS START RESULT RECORD ---<br>
 N: %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82, ID: 33 in function: main<br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -497,6 +501,7 @@ A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg 
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !55, !phasar.instruction.id !56, ID: 20<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: br label %if.end, !dbg !87, !phasar.instruction.id !88, ID: 37 in function: main<br>
@@ -526,6 +531,7 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 2<br>
 A:	%s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82, ID: 33<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: call void @llvm.dbg.declare(metadata %struct.s1** %s11, metadata !89, metadata !52), !dbg !91, !phasar.instruction.id !92, ID: 38 in function: main<br>
@@ -547,6 +553,7 @@ A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 2<br>
 A:	%t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !57, !phasar.instruction.id !58, ID: 21<br>
 <br>
 D:	br i1 %tobool, label %if.then, label %if.end, !dbg !75, !phasar.instruction.id !76, ID: 31<br>
+L:	if.end<br>
 <br>
 D:	%call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #4, !dbg !55, !phasar.instruction.id !56, ID: 20<br>
 <br>
@@ -3318,14 +3325,14 @@ D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 32, i32 8, i1 false)
 A:	%s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18, ID: 5<br>
 A:	%s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82, ID: 33<br>
 <br>
-D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 32, i32 8, i1 false), !dbg !83, !phasar.instruction.id !86, ID: 36<br>
-A:	%s22 = alloca %struct.s2*, align 8, !phasar.instruction<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: if.end<br>
-[TRACK] End of tainted branch label: if.end<br>
+D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 32, i32 8, i1 false), !dbg !83, !phasar.instruction.id <br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: if.end<br>
+[TRACK] End of block label: if.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550311258-trace.txt<br>
-.id !19, ID: 6<br>
+Writing lcov trace to: static-main-1550323331-trace.txt<br>
+!86, ID: 36<br>
+A:	%s22 = alloca %struct.s2*, align 8, !phasar.instruction.id !19, ID: 6<br>
 <br>
 D:	call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %3, i64 32, i32 8, i1 false), !dbg !83, !phasar.instruction.id !86, ID: 36<br>
 A:	%s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15, ID: 2<br>

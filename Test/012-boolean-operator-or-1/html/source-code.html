@@ -42,9 +42,9 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: lor.end<br>
-[TRACK] End of tainted branch label: lor.end<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: lor.end<br>
+[TRACK] End of block label: lor.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
@@ -67,6 +67,7 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -91,6 +92,7 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 --- IFDS START RESULT RECORD ---<br>
 N: %call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9 in function: main<br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -123,6 +125,7 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -133,6 +136,7 @@ D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 1
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
 <br>
@@ -149,6 +153,7 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @bar(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	lor.end<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !23, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -213,13 +218,13 @@ D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !3
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3<br>
 <br>
 D:	store i32 %lor.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !31, ID: 14<br>
-A:	%taint = alloca i32, align 4, !phasar.instruction.id !13, ID<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: lor.end<br>
-[TRACK] End of tainted branch label: lor.end<br>
+A:	%tain<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: lor.end<br>
+[TRACK] End of block label: lor.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550311255-trace.txt<br>
-: 2<br>
+Writing lcov trace to: static-main-1550323327-trace.txt<br>
+t = alloca i32, align 4, !phasar.instruction.id !13, ID: 2<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>

@@ -42,9 +42,9 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: land.end<br>
-[TRACK] End of tainted branch label: land.end<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: land.end<br>
+[TRACK] End of block label: land.end<br>
 [TRACK] Relocated memory location (store)<br>
 [TRACK] Source:<br>
 [TRACK]   %taint = alloca i32, align 4, !phasar.instruction.id !13<br>
@@ -79,6 +79,7 @@ D:	%tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22, ID: 7<b
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
@@ -107,6 +108,7 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -119,6 +121,7 @@ D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<b
 D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
 <br>
@@ -137,8 +140,10 @@ D:	%call3 = call i32 (...) @bar(), !dbg !30, !phasar.instruction.id !31, ID: 12<
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	br i1 %tobool2, label %land.end, label %land.rhs, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
+L:	land.end<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
@@ -155,8 +160,10 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	br i1 %tobool2, label %land.end, label %land.rhs, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
+L:	land.end<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -171,10 +178,12 @@ D:	@zero_value = constant i2 0, align 4, ID: -1<br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	br i1 %tobool2, label %land.end, label %land.rhs, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
+L:	land.end<br>
 <br>
 D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	%tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22, ID: 7<br>
 <br>
@@ -189,8 +198,10 @@ D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.st
 D:	%call1 = call i32 (...) @foo(), !dbg !25, !phasar.instruction.id !26, ID: 9<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
 D:	br i1 %tobool2, label %land.end, label %land.rhs, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
+L:	land.end<br>
 <br>
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
@@ -213,24 +224,26 @@ D:	%call3 = call i32 (...) @bar(), !dbg !30, !phasar.instruction.id !31, ID: 12<
 D:	%tobool2 = icmp ne i32 %call1, 0, !dbg !25, !phasar.instruction.id !27, ID: 10<br>
 <br>
 D:	br i1 %tobool2, label %land.end, label %land.rhs, !dbg !28, !phasar.instruction.id !29, ID: 11<br>
+L:	land.end<br>
 <br>
 D:	br i1 %tobool, label %land.rhs, label %lor.lhs.false, !dbg !23, !phasar.instruction.id !24, ID: 8<br>
+L:	land.end<br>
 <br>
-D:	%call = call i32 @getenv(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
-<br>
-D:	%tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.in<br>
-[TRACK] Searching end of tainted branch label for BB: entry<br>
-[TRACK] End of tainted block label: land.end<br>
-[TRACK] End of tainted branch label: land.end<br>
-[TRACK] Searching end of tainted branch label for BB: lor.lhs.false<br>
-[TRACK] End of tainted block label: land.end<br>
-[TRACK] End of tainted branch label: land.end<br>
-[TRACK] Searching end of tainted branch label for BB: lor.lhs.false<br>
-[TRACK] End of tainted block label: land.end<br>
-[TRACK] End of tainted branch label: land.end<br>
+D:	%call = call i32 @getenv(i8* getelementp<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: land.end<br>
+[TRACK] End of block label: land.end<br>
+[TRACK] Searching end of block label for: lor.lhs.false<br>
+[TRACK] End of closed block label: land.end<br>
+[TRACK] End of block label: land.end<br>
+[TRACK] Searching end of block label for: lor.lhs.false<br>
+[TRACK] End of closed block label: land.end<br>
+[TRACK] End of block label: land.end<br>
 Writing simple report to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1550311256-trace.txt<br>
-struction.id !22, ID: 7<br>
+Writing lcov trace to: static-main-1550323328-trace.txt<br>
+tr inbounds ([3 x i8], [3 x i8]* @.str, i32 0, i32 0)), !dbg !20, !phasar.instruction.id !21, ID: 6<br>
+<br>
+D:	%tobool = icmp ne i32 %call, 0, !dbg !20, !phasar.instruction.id !22, ID: 7<br>
 <br>
 --- IFDS START RESULT RECORD ---<br>
 N: store i32 %land.ext, i32* %taint, align 4, !dbg !18, !phasar.instruction.id !36, ID: 17 in function: main<br>

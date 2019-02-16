@@ -16,9 +16,9 @@ All modules loaded
 PTG construction ...
 PTG construction ended
 DONE
-[TRACK] Searching end of tainted branch label for BB: do.cond
-[TRACK] End of tainted block label: do.end
-[TRACK] End of tainted branch label: do.end
+[TRACK] Searching end of block label for: do.cond
+[TRACK] End of closed block label: do.end
+[TRACK] End of block label: do.end
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK]   %a = alloca i32, align 4, !phasar.instruction.id !14
@@ -77,6 +77,7 @@ D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
@@ -119,12 +120,14 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 --- IFDS START RESULT RECORD ---
 N: br label %do.cond, !dbg !41, !phasar.instruction.id !42, ID: 12 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
@@ -139,6 +142,7 @@ N: %call = call i32 @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.st
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
@@ -161,12 +165,14 @@ D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 --- IFDS START RESULT RECORD ---
 N: %0 = load i32, i32* %a, align 4, !dbg !47, !phasar.instruction.id !48, ID: 16 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	br i1 %tobool, label %do.body2, label %do.end, !dbg !41, !llvm.loop !35, !phasar.instruction.id !46, ID: 15
+L:	do.end
 
 D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
 A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
@@ -262,15 +268,15 @@ A:	%rc = alloca i32, align 4, !phasar.instruction.id !13, ID: 2
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
 D:	store i32 1, i32* %a, align 4, !dbg !38, !phasar.instruction.id !40, ID: 11
-A:	%a = alloca i32, align 4, !phasar.instruction.id !14, ID: 3
+A:	%a = alloca i32, align 4, !phasar
+[TRACK] Searching end of block label for: do.cond
+[TRACK] End of closed block label: do.end
+[TRACK] End of block label: do.end
+Writing simple report to: line-numbers.txt
+Writing lcov trace to: static-main-1550323341-trace.txt
+.instruction.id !14, ID: 3
 
 --- IFDS START RESULT RECORD ---
-[TRACK] Searching end of tainted branch label for BB: do.cond
-[TRACK] End of tainted block label: do.end
-[TRACK] End of tainted branch label: do.end
-Writing simple report to: line-numbers.txt
-Writing lcov trace to: static-main-1550311268-trace.txt
-
 N: br label %do.cond7, !dbg !61, !phasar.instruction.id !62, ID: 24 in function: main
 D:	@zero_value = constant i2 0, align 4, ID: -1
 
