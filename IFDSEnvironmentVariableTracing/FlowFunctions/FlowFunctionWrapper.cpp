@@ -45,16 +45,18 @@ FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
      * are generated.
      */
     if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
-      ExtendedValue ev(currentInst);
       const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+
+      ExtendedValue ev(currentInst);
       ev.setMemLocationSeq(memLocationSeq);
 
       targetFacts.insert(ev);
     }
     else
     if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(currentInst)) {
-      ExtendedValue ev(currentInst);
       const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
+
+      ExtendedValue ev(currentInst);
       ev.setMemLocationSeq(memLocationSeq);
 
       targetFacts.insert(ev);
