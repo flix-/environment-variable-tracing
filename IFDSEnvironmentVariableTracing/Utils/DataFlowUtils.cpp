@@ -744,6 +744,9 @@ bool
 DataFlowUtils::removeTaintedBlockInst(const ExtendedValue& fact,
                                       const llvm::Instruction* currentInst) {
 
+  bool isEndOfFunctionTaint = fact.getEndOfTaintedBlockLabel().empty();
+  if (isEndOfFunctionTaint) return false;
+
   bool isPhiNode = llvm::isa<llvm::PHINode>(currentInst);
   if (isPhiNode) return false;
 
