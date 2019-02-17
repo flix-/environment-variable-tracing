@@ -59,6 +59,8 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
+  currentInst->print(llvm::outs()); llvm::outs() << "\n";
+
   /*
    * Store instruction
    */
