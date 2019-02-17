@@ -59,7 +59,12 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
+  static int C = 0;
   currentInst->print(llvm::outs()); llvm::outs() << "\n";
+  if (!C) {
+    this->interproceduralCFG().printAsDot("icfg.dot");
+    ++C;
+  }
 
   /*
    * Store instruction
