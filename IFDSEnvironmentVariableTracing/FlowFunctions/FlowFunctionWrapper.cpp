@@ -13,6 +13,8 @@ namespace psr {
 std::set<ExtendedValue>
 FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
 
+  lineNumberStore.addLineNumber(currentInst);
+
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
   if (isBranchOrSwitchFact) {
