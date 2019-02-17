@@ -59,13 +59,6 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
-  static int C = 0;
-  currentInst->print(llvm::outs()); llvm::outs() << "\n";
-  if (!C) {
-    this->interproceduralCFG().printAsDot("icfg.dot");
-    ++C;
-  }
-
   /*
    * Store instruction
    */
@@ -476,9 +469,9 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
    * We exclude function ptr calls as they will be applied to every
    * function matching its signature (@see LLVMBasedICFG.cpp:217)
    */
-//  const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
-//  bool isStaticCallSite = callInst->getCalledFunction();
-//  if (!isStaticCallSite) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
+  const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
+  bool isStaticCallSite = callInst->getCalledFunction();
+  if (!isStaticCallSite) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
 
   /*
    * Memcpy / Memmove instruction
