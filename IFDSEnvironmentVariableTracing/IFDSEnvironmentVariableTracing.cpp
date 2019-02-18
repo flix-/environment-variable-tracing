@@ -610,16 +610,18 @@ std::map<const llvm::Instruction*, std::set<ExtendedValue>>
 IFDSEnvironmentVariableTracing::initialSeeds() {
 
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
+
   for (const auto& entryPoint : this->EntryPoints) {
     seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
-                                  std::set<ExtendedValue>({zeroValue()})));
+                                  std::set<ExtendedValue>({ zeroValue() })));
   }
 
   return seedMap;
 }
 
 void
-IFDSEnvironmentVariableTracing::printReport() {
+IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
+                                                SolverResults<const llvm::Instruction*,ExtendedValue, BinaryDomain> &SR) {
 
   /*
    * 1) Simple report for tests (compatibility)

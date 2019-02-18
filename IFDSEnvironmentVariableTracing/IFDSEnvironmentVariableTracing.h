@@ -43,8 +43,8 @@ public:
   std::map<const llvm::Instruction*, std::set<ExtendedValue>>
   initialSeeds() override;
 
-  void
-  printReport() override;
+  void printIFDSReport(std::ostream& os,
+                       SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) override;
 
 private:
   LineNumberStore lineNumberStore;
