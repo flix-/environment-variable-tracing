@@ -23,6 +23,7 @@ LineNumberStore::addLineNumber(const llvm::Instruction* instruction) {
   const std::string absolutePath = fnScope->getDirectory().str() +
                                    "/" +
                                    fnScope->getFilename().str();
+
   unsigned int lineNumber = debugLocInst->getLine();
 
   getSetForKey(absolutePath).insert(lineNumber);

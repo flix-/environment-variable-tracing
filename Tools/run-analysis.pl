@@ -36,6 +36,8 @@ sub write_functions_to_file {
 my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501-release/bin/phasar';
 my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
 
+my $STACK_SIZE_KB = 'unlimited'; #512*1024;
+
 # END CONFIG
 
 die "Usage: $0 <path_to_llvm_ir> <path_to_functions>\n" if (@ARGV != 1 && @ARGV != 2);
@@ -74,6 +76,7 @@ close($ir_fh);
 
 print "Entry points: $entry_points\n";
 print "Writing analysis to: $analysis_out\n";
+print "Stack size (kbyte): $STACK_SIZE_KB\n";
 
-system("$PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points > $analysis_out 2>&1");
+system("ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points > $analysis_out 2>&1");
 
