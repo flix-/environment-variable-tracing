@@ -365,7 +365,7 @@ DataFlowUtils::isPatchableReturnValue(const llvm::Value* srcValue,
   /*
    * We could also check against the fact which is also a call inst when we
    * have a return value. However as we are not changing the fact after
-   * relocation it would be again be taken into account. If we use the patch
+   * relocation it would be again taken into account. If we use the patch
    * part it is gone after first patch.
    */
   const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
