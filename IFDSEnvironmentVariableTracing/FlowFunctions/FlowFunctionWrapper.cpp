@@ -13,8 +13,12 @@ namespace psr {
 std::set<ExtendedValue>
 FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
 
+  bool isNoGENInst = DataFlowUtils::isNoGENInst(currentInst);
+  if (isNoGENInst) return { fact };
+
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
+
   if (isBranchOrSwitchFact) {
     bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
     if (removeTaintedBlockInst) return { };

@@ -41,12 +41,13 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       if (genFact) {
         const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
                                                                                               argMemLocationSeq);
-        std::vector<const llvm::Value*> patchablePart{param};
+        std::vector<const llvm::Value*> patchablePart{ param };
         const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                    relocatableMemLocationSeq);
 
         ExtendedValue ev(zeroValue.getValue());
         ev.setMemLocationSeq(patchableMemLocationSeq);
+
         if (isVarArg) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
@@ -61,7 +62,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     else {
       bool isArgTainted = DataFlowUtils::isValueTainted(arg, fact);
       if (isArgTainted) {
-        std::vector<const llvm::Value*> patchablePart{param};
+        std::vector<const llvm::Value*> patchablePart{ param };
 
         ExtendedValue ev(zeroValue.getValue());
         ev.setMemLocationSeq(patchablePart);

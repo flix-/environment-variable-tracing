@@ -346,6 +346,7 @@ DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
   bool isSrcMemLocation = !srcMemLocationSeq.empty();
   if (isSrcMemLocation) {
     const auto memLocationFrameType = getTypeName(srcMemLocationSeq.front()->getType());
+
     bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
     if (isMemLocationFrameTypeVaList) return true;
   }
@@ -788,6 +789,33 @@ DataFlowUtils::isCheckOperandsInst(const llvm::Instruction* currentInst) {
          llvm::isa<llvm::BinaryOperator>(currentInst) ||
          llvm::isa<llvm::CmpInst>(currentInst) ||
          llvm::isa<llvm::SelectInst>(currentInst);
+}
+
+/*
+ * If we are dealing with varargs we need to make sure that the internal structure
+ * va_list is never tainted (not even in an auto taint scenario). This would lead
+ * to detecting conditions as tainted for varargs internal processing branches which
+ * further leads to auto tainting of every vararg. For traceability disable this check
+ * and run test case 200-map-to-callee-varargs-15. The interesting part begins at line
+ * 101 in the IR.
+ */
+bool
+DataFlowUtils::isNoGENInst(const llvm::Instruction* currentInst) {
+
+  if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
+    const auto dstMemLocationMatr = storeInst->getPointerOperand();
+    const auto dstMemLocationSeq = getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+
+    bool isDstMemLocation = !dstMemLocationSeq.empty();
+    if (isDstMemLocation) {
+      const auto memLocationFrameType = getTypeName(dstMemLocationSeq.front()->getType());
+
+      bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
+      if (isMemLocationFrameTypeVaList) return true;
+    }
+  }
+
+  return false;
 }
 
 void
