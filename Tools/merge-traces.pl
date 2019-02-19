@@ -34,4 +34,5 @@ system("lcov $lcov_param -o $merged_trace_file");
 print "Creating HTML page\n";
 
 system("genhtml -o html $merged_trace_file");
+#EOF
 

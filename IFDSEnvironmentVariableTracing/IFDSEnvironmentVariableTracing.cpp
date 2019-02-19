@@ -621,7 +621,7 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
 
 void
 IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
-                                                SolverResults<const llvm::Instruction*,ExtendedValue, BinaryDomain> &SR) {
+                                                SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) {
 
   /*
    * 1) Simple report for tests (compatibility)

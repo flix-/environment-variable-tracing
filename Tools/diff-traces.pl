@@ -4,6 +4,27 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+# BEGIN CONFIG#
+
+my $diff_trace_file = "diff-" . time() . "-trace.txt";
+
+# END CONFIG#
+
+die "Usage: $0 <path_to_static_trace> <path_to_dynamic_trace>\n" if @ARGV != 2;
+
+my $static_trace_file = shift(@ARGV);
+my $dynamic_trace_file = shift(@ARGV);
+
+my $static_trace = get_trace_from_file($static_trace_file);
+my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
+
+#print Dumper $static_trace;
+#print Dumper $dynamic_trace;
+
+diff_traces($static_trace, $dynamic_trace);
+
+write_diff($static_trace, $diff_trace_file);
+
 sub get_trace_from_file {
     my $trace_file = shift;
 
@@ -60,24 +81,5 @@ sub write_diff {
     close($diff_trace_fh);
 }
 
-# BEGIN CONFIG#
-
-my $diff_trace_file = "diff-" . time() . "-trace.txt";
-
-# END CONFIG#
-
-die "Usage: $0 <path_to_static_trace> <path_to_dynamic_trace>\n" if @ARGV != 2;
-
-my $static_trace_file = shift(@ARGV);
-my $dynamic_trace_file = shift(@ARGV);
-
-my $static_trace = get_trace_from_file($static_trace_file);
-my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
-
-#print Dumper $static_trace;
-#print Dumper $dynamic_trace;
-
-diff_traces($static_trace, $dynamic_trace);
-
-write_diff($static_trace, $diff_trace_file);
+#EOF
 
