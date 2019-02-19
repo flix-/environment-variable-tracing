@@ -345,9 +345,9 @@ DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
 
   bool isSrcMemLocation = !srcMemLocationSeq.empty();
   if (isSrcMemLocation) {
-    const auto memLocationFrameType = getTypeName(srcMemLocationSeq.front()->getType());
+    const auto memLocationFrameType = srcMemLocationSeq.front()->getType();
 
-    bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
+    bool isMemLocationFrameTypeVaList = isVaListType(memLocationFrameType);
     if (isMemLocationFrameTypeVaList) return true;
   }
   else
@@ -808,14 +808,29 @@ DataFlowUtils::isNoGENInst(const llvm::Instruction* currentInst) {
 
     bool isDstMemLocation = !dstMemLocationSeq.empty();
     if (isDstMemLocation) {
-      const auto memLocationFrameType = getTypeName(dstMemLocationSeq.front()->getType());
+      const auto memLocationFrameType = dstMemLocationSeq.front()->getType();
 
-      bool isMemLocationFrameTypeVaList = memLocationFrameType == "[1 x %struct.__va_list_tag]*";
+      bool isMemLocationFrameTypeVaList = isVaListType(memLocationFrameType);
       if (isMemLocationFrameTypeVaList) return true;
     }
   }
 
   return false;
+}
+
+bool
+DataFlowUtils::isVarArgParam(const llvm::Value* param,
+                             const llvm::Value* zeroValue) {
+
+  return param == zeroValue;
+}
+
+bool
+DataFlowUtils::isVaListType(const llvm::Type* type) {
+
+  const auto typeName = getTypeName(type);
+
+  return typeName.find("%struct.__va_list_tag") != std::string::npos;
 }
 
 void

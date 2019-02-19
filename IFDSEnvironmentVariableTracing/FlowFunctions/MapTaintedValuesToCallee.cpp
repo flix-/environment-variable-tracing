@@ -30,7 +30,15 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     const auto argMemLocationSeq = std::get<1>(argParamTriple);
     const auto param = std::get<2>(argParamTriple);
 
-    bool isVarArg = param == zeroValue.getValue();
+    bool isParamTypeVaList = DataFlowUtils::isVaListType(param->getType());
+    if (isParamTypeVaList) {
+      if (fact.isVarArg()) targetFacts.insert(fact);
+
+      continue;
+    }
+
+    bool isVarArg = DataFlowUtils::isVarArgParam(param,
+                                                 zeroValue.getValue());
 
     bool isArgMemLocation = !argMemLocationSeq.empty();
     if (isArgMemLocation) {

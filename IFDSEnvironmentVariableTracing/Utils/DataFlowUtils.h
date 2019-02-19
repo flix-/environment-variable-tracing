@@ -62,6 +62,9 @@ public:
   static bool isKillAfterStoreFact(const ExtendedValue& ev);
   static bool isCheckOperandsInst(const llvm::Instruction* currentInst);
   static bool isNoGENInst(const llvm::Instruction* currentInst);
+  static bool isVarArgParam(const llvm::Value* param,
+                            const llvm::Value* zeroValue);
+  static bool isVaListType(const llvm::Type* type);
 
   static void dumpMemoryLocation(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
