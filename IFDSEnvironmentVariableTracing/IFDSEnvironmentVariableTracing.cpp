@@ -118,9 +118,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
           llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(fact);
+          DataFlowUtils::dumpFact(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(ev);
+          DataFlowUtils::dumpFact(ev);
         }
       }
       /*
@@ -147,9 +147,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
           llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(fact);
+          DataFlowUtils::dumpFact(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(ev);
+          DataFlowUtils::dumpFact(ev);
         }
       }
       /*
@@ -179,9 +179,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
           llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(fact);
+          DataFlowUtils::dumpFact(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(ev);
+          DataFlowUtils::dumpFact(ev);
         }
         if (!killFact) targetFacts.insert(fact);
       }
@@ -276,20 +276,23 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
       const auto gepInstPtr = gepInst->getPointerOperand();
 
-      bool isVarArgFact = fact.isVarArg();
+      bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
       if (isVarArgFact) {
-        bool genFact = gepInst->getName().contains_lower("overflow_arg_area.next");
         bool killFact = gepInstPtr->getName().contains_lower("reg_save_area");
+        if (killFact) return { };
 
-        if (genFact) {
-          ExtendedValue ev(fact);
-          ev.incrementCurrentVarArgIndex();
+        bool incrementCurrentVarArgIndex = gepInst->getName().contains_lower("overflow_arg_area.next");
+        if (incrementCurrentVarArgIndex) {
+          const auto gepVaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(gepInstPtr);
 
-          return { ev };
-        }
-        else
-        if (killFact) {
-          return { };
+          bool isSameVaList = DataFlowUtils::isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
+                                                                       gepVaListMemLocationSeq);
+          if (isSameVaList) {
+            ExtendedValue ev(fact);
+            ev.incrementCurrentVarArgIndex();
+
+            return { ev };
+          }
         }
       }
       else {
@@ -537,9 +540,9 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
         llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
-        DataFlowUtils::dumpMemoryLocation(fact);
+        DataFlowUtils::dumpFact(fact);
         llvm::outs() << "[TRACK] Destination:" << "\n";
-        DataFlowUtils::dumpMemoryLocation(ev);
+        DataFlowUtils::dumpFact(ev);
       }
       else {
         bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
@@ -558,9 +561,9 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
           llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
           llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(fact);
+          DataFlowUtils::dumpFact(fact);
           llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpMemoryLocation(ev);
+          DataFlowUtils::dumpFact(ev);
         }
         if (!killFact) targetFacts.insert(fact);
       }
@@ -599,6 +602,84 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
     };
 
     return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, lineNumberStore, zeroValue());
+  }
+  /*
+   * va_start instruction
+   */
+  else
+  if (llvm::isa<llvm::VAStartInst>(callStmt)) {
+
+    ComputeTargetsExtFunction vaStartFlowFunction = [](const llvm::Instruction* currentInst,
+                                                       ExtendedValue& fact,
+                                                       LineNumberStore& lineNumberStore,
+                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+
+      std::set<ExtendedValue> targetFacts;
+      targetFacts.insert(fact);
+
+      bool isVarArgTemplateFact = fact.isVarArgTemplate();
+      if (!isVarArgTemplateFact) return targetFacts;
+
+      const auto vaStartInst = llvm::cast<llvm::VAStartInst>(currentInst);
+      const auto vaListMemLocationMatr = vaStartInst->getArgList();
+
+      const auto vaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(vaListMemLocationMatr);
+
+      bool isValidMemLocationSeq = !vaListMemLocationSeq.empty();
+      if (isValidMemLocationSeq) {
+        ExtendedValue ev(fact);
+        ev.setVaListMemLocationSeq(vaListMemLocationSeq);
+
+        targetFacts.insert(ev);
+        //lineNumberStore.addLineNumber(vaStartInst);
+
+        llvm::outs() << "[TRACK] Created new VarArg from template" << "\n";
+        llvm::outs() << "[TRACK] Template:" << "\n";
+        DataFlowUtils::dumpFact(fact);
+        llvm::outs() << "[TRACK] VarArg:" << "\n";
+        DataFlowUtils::dumpFact(ev);
+      }
+
+      return targetFacts;
+    };
+
+    return std::make_shared<FlowFunctionWrapper>(callStmt, vaStartFlowFunction, lineNumberStore, zeroValue());
+  }
+  /*
+   * va_end instruction
+   */
+  else
+  if (llvm::isa<llvm::VAEndInst>(callStmt)) {
+
+    ComputeTargetsExtFunction vaEndFlowFunction = [](const llvm::Instruction* currentInst,
+                                                     ExtendedValue& fact,
+                                                     LineNumberStore& lineNumberStore,
+                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+
+      bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
+      if (!isVarArgFact) return { fact };
+
+      const auto vaEndInst = llvm::cast<llvm::VAEndInst>(currentInst);
+      const auto vaEndMemLocationMatr = vaEndInst->getArgList();
+
+      const auto vaEndMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(vaEndMemLocationMatr);
+
+      bool isValidMemLocationSeq = !vaEndMemLocationSeq.empty();
+      if (isValidMemLocationSeq) {
+        bool isVaListEqual = DataFlowUtils::isMemoryLocationSeqsEqual(vaEndMemLocationSeq,
+                                                                      fact.getVaListMemLocationSeq());
+        if (isVaListEqual) {
+          llvm::outs() << "[TRACK] Killed VarArg" << "\n";
+          DataFlowUtils::dumpFact(fact);
+
+          return { };
+        }
+      }
+
+      return { fact };
+    };
+
+    return std::make_shared<FlowFunctionWrapper>(callStmt, vaEndFlowFunction, lineNumberStore, zeroValue());
   }
 
   /*

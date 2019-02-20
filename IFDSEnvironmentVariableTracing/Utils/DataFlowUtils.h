@@ -29,6 +29,9 @@ public:
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr);
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact);
 
+  static bool isMemoryLocationSeqsEqual(const std::vector<const llvm::Value*> memLocationSeq1,
+                                        const std::vector<const llvm::Value*> memLocationSeq2);
+
   static bool isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
                                         const std::vector<const llvm::Value*> memLocationSeqFact);
   static const std::vector<const llvm::Value*> getRelocatableMemoryLocationSeq(const std::vector<const llvm::Value*> taintedMemLocationSeq,
@@ -66,7 +69,7 @@ public:
                             const llvm::Value* zeroValue);
   static bool isVaListType(const llvm::Type* type);
 
-  static void dumpMemoryLocation(const ExtendedValue& ev);
+  static void dumpFact(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 
   static std::string getTraceFilename(std::string entryPoint);

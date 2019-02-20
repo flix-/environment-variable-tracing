@@ -273,6 +273,25 @@ DataFlowUtils::isMemoryLocationTainted(const llvm::Value* memLocationMatr,
 }
 
 bool
+DataFlowUtils::isMemoryLocationSeqsEqual(const std::vector<const llvm::Value*> memLocationSeq1,
+                                         const std::vector<const llvm::Value*> memLocationSeq2) {
+
+  bool isSizeEqual = memLocationSeq1.size() == memLocationSeq2.size();
+  if (!isSizeEqual) return false;
+
+  bool isEmptySeq = memLocationSeq1.empty();
+  if (isEmptySeq) return false;
+
+  std::size_t n = memLocationSeq1.size();
+  bool isMemLocationsEqual = isFirstNMemoryLocationPartsEqual(memLocationSeq1,
+                                                              memLocationSeq2,
+                                                              n);
+  if (!isMemLocationsEqual) return false;
+
+  return true;
+}
+
+bool
 DataFlowUtils::isSubsetMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeqInst,
                                          const std::vector<const llvm::Value*> memLocationSeqFact) {
 
@@ -317,14 +336,32 @@ bool
 DataFlowUtils::isPatchableArgumentStore(const llvm::Value* srcValue,
                                         ExtendedValue& fact) {
 
-  bool isVarArgFact = fact.isVarArg();
+  bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
   if (isVarArgFact) {
     bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
     if (!isIndexEqual) return false;
 
     if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(srcValue)) {
-      bool isSrcVarArg = loadInst->getPointerOperand()->getName().contains_lower("vaarg.addr");
-      if (isSrcVarArg) return true;
+      const auto pointerOperand = loadInst->getPointerOperand();
+      bool isSrcVarArg = pointerOperand->getName().contains_lower("vaarg.addr");
+      if (!isSrcVarArg) return false;
+
+      if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(pointerOperand)) {
+        for (const auto& block : phiNodeInst->blocks()) {
+          const auto blockName = block->getName();
+          bool isVarArgInMem = blockName.contains_lower("vaarg.in_mem");
+          if (!isVarArgInMem) continue;
+
+          const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
+          const auto incomingValueMemLocationSeq = getMemoryLocationSeqFromMatr(incomingValue);
+
+          if (incomingValueMemLocationSeq.empty()) continue;
+
+          bool isVaListEqual = isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
+                                                         incomingValueMemLocationSeq);
+          if (isVaListEqual) return true;
+        }
+      }
     }
 
     return false;
@@ -350,7 +387,7 @@ DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
                                          const std::vector<const llvm::Value*> srcMemLocationSeq,
                                          ExtendedValue& fact) {
 
-  bool isVarArgFact = fact.isVarArg();
+  bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
   if (!isVarArgFact) return false;
 
   bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
@@ -365,8 +402,26 @@ DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
   }
   else
   if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(srcValue)) {
-    bool isSrcVarArg = bitCastInst->getOperand(0)->getName().contains_lower("vaarg.addr");
-    if (isSrcVarArg) return true;
+    const auto pointerOperand = bitCastInst->getOperand(0);
+    bool isSrcVarArg = pointerOperand->getName().contains_lower("vaarg.addr");
+    if (!isSrcVarArg) return true;
+
+    if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(pointerOperand)) {
+      for (const auto& block : phiNodeInst->blocks()) {
+        const auto blockName = block->getName();
+        bool isVarArgInMem = blockName.contains_lower("vaarg.in_mem");
+        if (!isVarArgInMem) continue;
+
+        const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
+        const auto incomingValueMemLocationSeq = getMemoryLocationSeqFromMatr(incomingValue);
+
+        if (incomingValueMemLocationSeq.empty()) continue;
+
+        bool isVaListEqual = isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
+                                                       incomingValueMemLocationSeq);
+        if (isVaListEqual) return true;
+      }
+    }
   }
 
   return false;
@@ -789,6 +844,7 @@ bool
 DataFlowUtils::isKillAfterStoreFact(const ExtendedValue& ev) {
 
   return !isMemoryLocationFact(ev) &&
+         !ev.isVarArgTemplate() &&
          !llvm::isa<llvm::CallInst>(ev.getValue());
 }
 
@@ -846,19 +902,33 @@ DataFlowUtils::isVaListType(const llvm::Type* type) {
   return typeName.find("%struct.__va_list_tag") != std::string::npos;
 }
 
-void
-DataFlowUtils::dumpMemoryLocation(const ExtendedValue& ev) {
+static void
+dumpMemoryLocation(const std::vector<const llvm::Value*> memLocationSeq) {
 
-  bool isMemLocation = isMemoryLocationFact(ev);
-  if (isMemLocation) {
-    for (const auto memLocationPart : ev.getMemLocationSeq()) {
-      llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+  for (const auto memLocationPart : memLocationSeq) {
+    llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+  }
+}
+
+void
+DataFlowUtils::dumpFact(const ExtendedValue& ev) {
+
+  if (!ev.getMemLocationSeq().empty()) {
+    llvm::outs() << "[TRACK] memLocationSeq: " << "\n";
+    dumpMemoryLocation(ev.getMemLocationSeq());
+  }
+
+  if (!ev.getEndOfTaintedBlockLabel().empty()) {
+    llvm::outs() << "[TRACK] endOfTaintedBlockLabel: " << ev.getEndOfTaintedBlockLabel() << "\n";
+  }
+
+  if (ev.isVarArg()) {
+    if (!ev.isVarArgTemplate()) {
+      llvm::outs() << "[TRACK] vaListMemLocationSeq: " << "\n";
+      dumpMemoryLocation(ev.getVaListMemLocationSeq());
     }
-    bool isVarArg = ev.getVarArgIndex() > -1L;
-    if (isVarArg) {
-      llvm::outs() << "[TRACK] VarArg Index: " << ev.getVarArgIndex() << "\n";
-      llvm::outs() << "[TRACK] Current VarArg Index: " << ev.getCurrentVarArgIndex() << "\n";
-    }
+    llvm::outs() << "[TRACK] varArgIndex: " << ev.getVarArgIndex() << "\n";
+    llvm::outs() << "[TRACK] currentVarArgIndex: " << ev.getCurrentVarArgIndex() << "\n";
   }
 }
 
