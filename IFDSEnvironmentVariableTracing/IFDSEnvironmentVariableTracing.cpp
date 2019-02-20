@@ -59,7 +59,7 @@ IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& ic
                                                                std::vector<std::string> entryPoints)
     : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
 
-  this->solver_config.computeValues = true;
+  this->solver_config.computeValues = false;
   this->solver_config.computePersistedSummaries = false;
 
 }
@@ -263,7 +263,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
   /*
    * GetElementPtr instruction
    *
-   * Sole purpose is to track increments of var arg indexes.
+   * Track increments of vararg indexes + value taints
    */
   else
   if (llvm::isa<llvm::GetElementPtrInst>(currentInst)) {
@@ -274,22 +274,27 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                        ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
       const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
+      const auto gepInstPtr = gepInst->getPointerOperand();
 
       bool isVarArgFact = fact.isVarArg();
-      if (!isVarArgFact) return { fact };
+      if (isVarArgFact) {
+        bool genFact = gepInst->getName().contains_lower("overflow_arg_area.next");
+        bool killFact = gepInstPtr->getName().contains_lower("reg_save_area");
 
-      bool genFact = gepInst->getName().contains_lower("overflow_arg_area.next");
-      bool killFact = gepInst->getPointerOperand()->getName().contains_lower("reg_save_area");
+        if (genFact) {
+          ExtendedValue ev(fact);
+          ev.incrementCurrentVarArgIndex();
 
-      if (genFact) {
-        ExtendedValue ev(fact);
-        ev.incrementCurrentVarArgIndex();
-
-        return { ev };
+          return { ev };
+        }
+        else
+        if (killFact) {
+          return { };
+        }
       }
-      else
-      if (killFact) {
-        return { };
+      else {
+        bool isPtrTainted = DataFlowUtils::isValueTainted(gepInstPtr, fact);
+        if (isPtrTainted) return { fact, ExtendedValue(gepInst) };
       }
 
       return { fact };

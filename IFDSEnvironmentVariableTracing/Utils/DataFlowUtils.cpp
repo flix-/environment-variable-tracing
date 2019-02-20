@@ -48,12 +48,20 @@ isConstantIntEqual(const llvm::ConstantInt* ci1,
 }
 
 static bool
+isValidGEPPart(const llvm::GetElementPtrInst* gepPart) {
+
+  bool hasAllConstantIndices = gepPart->hasAllConstantIndices();
+
+  return hasAllConstantIndices;
+}
+
+static bool
 isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
                const llvm::GetElementPtrInst* memLocationInstGEP) {
 
-  bool haveAllConstantIndices = memLocationFactGEP->hasAllConstantIndices() &&
-                                memLocationInstGEP->hasAllConstantIndices();
-  if (!haveAllConstantIndices) return false;
+  bool haveValidGEPParts = isValidGEPPart(memLocationFactGEP) &&
+                           isValidGEPPart(memLocationInstGEP);
+  if (!haveValidGEPParts) return false;
 
   bool isNumIndicesEqual = memLocationFactGEP->getNumIndices() == memLocationInstGEP->getNumIndices();
 
@@ -178,14 +186,19 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   }
   else
   if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationPart)) {
-    memLocationSeq = getMemoryLocationSeqFromMatrRec(gepInst->getPointerOperand());
+    bool isValidGEP = isValidGEPPart(gepInst);
+    if (isValidGEP) {
+      memLocationSeq = getMemoryLocationSeqFromMatrRec(gepInst->getPointerOperand());
 
-    bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
-    if (isSeqPoisoned) return memLocationSeq;
+      bool isSeqPoisoned = !memLocationSeq.empty() && memLocationSeq.back() == POISON_PILL;
+      if (isSeqPoisoned) return memLocationSeq;
 
-    memLocationSeq.push_back(gepInst);
+      memLocationSeq.push_back(gepInst);
 
-    return memLocationSeq;
+      return memLocationSeq;
+    }
+
+    // FALLTHROUGH
   }
 
   // Poison seq
