@@ -39,7 +39,6 @@ static const std::set<std::string> BLACKLISTED_CALLS = {
                                                          "BIO_vsnprintf",
                                                          "ERR_add_error_data",
                                                          "OPENSSL_showfatal",
-                                                         "OSSL_STORE_ctrl"
                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
@@ -60,7 +59,7 @@ IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& ic
                                                                std::vector<std::string> entryPoints)
     : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
 
-  this->solver_config.computeValues = false;
+  this->solver_config.computeValues = true;
   this->solver_config.computePersistedSummaries = false;
 
 }
