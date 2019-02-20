@@ -27,10 +27,20 @@
 
 namespace psr {
 
-static const std::set<std::string> TAINTED_CALLS = { "getenv",
+static const std::set<std::string> TAINTED_CALLS = {
+                                                     "getenv",
                                                      "secure_getenv"
                                                    };
 
+static const std::set<std::string> BLACKLISTED_CALLS = {
+                                                         "BIO_printf",
+                                                         "BIO_vprintf",
+                                                         "BIO_snprintf",
+                                                         "BIO_vsnprintf",
+                                                         "ERR_add_error_data",
+                                                         "OPENSSL_showfatal",
+                                                         "OSSL_STORE_ctrl"
+                                                       };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
@@ -465,6 +475,8 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* callStmt,
                                                        const llvm::Function* destMthd) {
 
+  const auto destMthdName = destMthd->getName().lower();
+
   /*
    * We exclude function ptr calls as they will be applied to every
    * function matching its signature (@see LLVMBasedICFG.cpp:217)
@@ -472,6 +484,16 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
   bool isStaticCallSite = callInst->getCalledFunction();
   if (!isStaticCallSite) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
+
+  /*
+   * Exclude certain functions here.
+   */
+  bool isBlackListedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
+  if (isBlackListedCall) {
+    llvm::outs() << "[TRACK]: Skipping blacklisted call: " << destMthdName << "\n";
+
+    return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
+  }
 
   /*
    * Memcpy / Memmove instruction
@@ -578,7 +600,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   /*
    * Provide summary for tainted call
    */
-  bool isTaintedCall = TAINTED_CALLS.find(destMthd->getName().lower()) != TAINTED_CALLS.end();
+  bool isTaintedCall = TAINTED_CALLS.find(destMthdName) != TAINTED_CALLS.end();
   if (isTaintedCall) {
     ComputeTargetsExtFunction taintedCallFlowFunction = [](const llvm::Instruction* currentInst,
                                                            ExtendedValue& fact,
