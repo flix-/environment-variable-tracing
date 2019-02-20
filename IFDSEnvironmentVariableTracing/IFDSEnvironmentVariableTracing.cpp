@@ -475,7 +475,7 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* callStmt,
                                                        const llvm::Function* destMthd) {
 
-  const auto destMthdName = destMthd->getName().lower();
+  const auto destMthdName = destMthd->getName();
 
   /*
    * We exclude function ptr calls as they will be applied to every
