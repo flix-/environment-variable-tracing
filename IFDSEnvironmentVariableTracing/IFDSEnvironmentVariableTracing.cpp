@@ -88,6 +88,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
       bool isArgumentPatch = DataFlowUtils::isPatchableArgumentStore(srcValue, fact);
+      bool isVaListArgumentPatch = DataFlowUtils::isPatchableVaListArgument(srcValue, fact);
+
       bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
 
       bool isSrcMemLocation = !srcMemLocationSeq.empty();
@@ -96,6 +98,13 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
       /*
        * Patch argument
+       *
+       * We have 3 differenct cases to consider here:
+       *
+       * 1) Patching of memory location sequence for a regular argument
+       * 2) Patching of memory location sequence for a vararg (int foo(int n, ...))
+       * 3) Patching of va list memory location sequence for a vararg (int foo(va_list args))
+       *
        */
       if (isArgumentPatch) {
         bool patchMemLocation = !dstMemLocationSeq.empty();
@@ -106,12 +115,21 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
             dstMemLocationSeq.pop_back();
           }
 
-          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
+          const auto patchableMemLocationSeq = isVaListArgumentPatch ? DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact) :
+                                                                       DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+
+          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(patchableMemLocationSeq,
                                                                                      dstMemLocationSeq);
 
           ExtendedValue ev(fact);
-          ev.setMemLocationSeq(patchedMemLocationSeq);
-          ev.resetVarArgIndex();
+
+          if (isVaListArgumentPatch) {
+            ev.setVaListMemLocationSeq(patchedMemLocationSeq);
+          }
+          else {
+            ev.setMemLocationSeq(patchedMemLocationSeq);
+            ev.resetVarArgIndex();
+          }
 
           targetFacts.insert(ev);
           lineNumberStore.addLineNumber(storeInst);
@@ -276,7 +294,7 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
       const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
       const auto gepInstPtr = gepInst->getPointerOperand();
 
-      bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
+      bool isVarArgFact = fact.isVarArg();
       if (isVarArgFact) {
         bool killFact = gepInstPtr->getName().contains_lower("reg_save_area");
         if (killFact) return { };
@@ -285,9 +303,9 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
         if (incrementCurrentVarArgIndex) {
           const auto gepVaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(gepInstPtr);
 
-          bool isSameVaList = DataFlowUtils::isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
-                                                                       gepVaListMemLocationSeq);
-          if (isSameVaList) {
+          bool isVaListEqual = DataFlowUtils::isSubsetMemoryLocationSeq(DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact),
+                                                                        gepVaListMemLocationSeq);
+          if (isVaListEqual) {
             ExtendedValue ev(fact);
             ev.incrementCurrentVarArgIndex();
 
@@ -465,7 +483,8 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
      * Need to keep the list in sync with "killing" functions in getSummaryFlowFunction()!
      */
     bool isHandledInSummaryFlowFunction = llvm::isa<llvm::MemTransferInst>(currentInst) ||
-                                          llvm::isa<llvm::MemSetInst>(currentInst);
+                                          llvm::isa<llvm::MemSetInst>(currentInst) ||
+                                          llvm::isa<llvm::VAEndInst>(currentInst);
     if (isHandledInSummaryFlowFunction) return { };
 
     return { fact };
@@ -631,7 +650,6 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
         ev.setVaListMemLocationSeq(vaListMemLocationSeq);
 
         targetFacts.insert(ev);
-        //lineNumberStore.addLineNumber(vaStartInst);
 
         llvm::outs() << "[TRACK] Created new VarArg from template" << "\n";
         llvm::outs() << "[TRACK] Template:" << "\n";
@@ -656,7 +674,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
                                                      LineNumberStore& lineNumberStore,
                                                      ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
 
-      bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
+      bool isVarArgFact = fact.isVarArg();
       if (!isVarArgFact) return { fact };
 
       const auto vaEndInst = llvm::cast<llvm::VAEndInst>(currentInst);
@@ -666,8 +684,8 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
       bool isValidMemLocationSeq = !vaEndMemLocationSeq.empty();
       if (isValidMemLocationSeq) {
-        bool isVaListEqual = DataFlowUtils::isMemoryLocationSeqsEqual(vaEndMemLocationSeq,
-                                                                      fact.getVaListMemLocationSeq());
+        bool isVaListEqual = DataFlowUtils::isMemoryLocationSeqsEqual(DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact),
+                                                                      vaEndMemLocationSeq);
         if (isVaListEqual) {
           llvm::outs() << "[TRACK] Killed VarArg" << "\n";
           DataFlowUtils::dumpFact(fact);

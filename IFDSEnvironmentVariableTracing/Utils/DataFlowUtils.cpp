@@ -242,10 +242,34 @@ DataFlowUtils::getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact
   return memLocationFact.getMemLocationSeq();
 }
 
+const std::vector<const llvm::Value*>
+DataFlowUtils::getVaListMemoryLocationSeqFromFact(const ExtendedValue& vaListFact) {
+
+  return vaListFact.getVaListMemLocationSeq();
+}
+
 static const llvm::Value*
 getMemoryLocationFrameFromFact(const ExtendedValue& memLocationFact) {
 
   const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(memLocationFact);
+  if (memLocationSeq.empty()) return nullptr;
+
+  return memLocationSeq.front();
+}
+
+static const llvm::Value*
+getVaListMemoryLocationFrameFromFact(const ExtendedValue& vaListFact) {
+
+  const auto memLocationSeq = DataFlowUtils::getVaListMemoryLocationSeqFromFact(vaListFact);
+  if (memLocationSeq.empty()) return nullptr;
+
+  return memLocationSeq.front();
+}
+
+static const llvm::Value*
+getMemoryLocationFrameFromMatr(const llvm::Value* memLocationMatr) {
+
+  const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationSeq.empty()) return nullptr;
 
   return memLocationSeq.front();
@@ -332,42 +356,39 @@ DataFlowUtils::joinMemoryLocationSeqs(const std::vector<const llvm::Value*> memL
   return joinedMemLocationSeq;
 }
 
-bool
-DataFlowUtils::isPatchableArgumentStore(const llvm::Value* srcValue,
-                                        ExtendedValue& fact) {
+const std::vector<const llvm::Value*>
+getVaListMemoryLocationSeq(const llvm::Value* value) {
 
-  bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
-  if (isVarArgFact) {
-    bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
-    if (!isIndexEqual) return false;
+  if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(value)) {
+    const auto phiNodeName = phiNodeInst->getName();
+    bool isVarArgAddr = phiNodeName.contains_lower("vaarg.addr");
+    if (!isVarArgAddr) return EMPTY_SEQ;
 
-    if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(srcValue)) {
-      const auto pointerOperand = loadInst->getPointerOperand();
-      bool isSrcVarArg = pointerOperand->getName().contains_lower("vaarg.addr");
-      if (!isSrcVarArg) return false;
+    for (const auto& block : phiNodeInst->blocks()) {
+      const auto blockName = block->getName();
+      bool isVarArgInMem = blockName.contains_lower("vaarg.in_mem");
+      if (!isVarArgInMem) continue;
 
-      if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(pointerOperand)) {
-        for (const auto& block : phiNodeInst->blocks()) {
-          const auto blockName = block->getName();
-          bool isVarArgInMem = blockName.contains_lower("vaarg.in_mem");
-          if (!isVarArgInMem) continue;
+      const auto vaListMemLocationMatr = phiNodeInst->getIncomingValueForBlock(block);
+      const auto vaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(vaListMemLocationMatr);
 
-          const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
-          const auto incomingValueMemLocationSeq = getMemoryLocationSeqFromMatr(incomingValue);
+      bool isValidMemLocation = !vaListMemLocationSeq.empty();
+      if (!isValidMemLocation) return EMPTY_SEQ;
 
-          if (incomingValueMemLocationSeq.empty()) continue;
-
-          bool isVaListEqual = isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
-                                                         incomingValueMemLocationSeq);
-          if (isVaListEqual) return true;
-        }
-      }
+      return vaListMemLocationSeq;
     }
-
-    return false;
   }
 
-  const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
+  return EMPTY_SEQ;
+}
+
+static bool
+isArgumentEqual(const llvm::Value* srcValue,
+                const ExtendedValue& fact,
+                bool isVarArgFact) {
+
+  const auto factMemLocationFrame = isVarArgFact ? getVaListMemoryLocationFrameFromFact(fact) :
+                                                   getMemoryLocationFrameFromFact(fact);
   if (factMemLocationFrame == nullptr) return false;
 
   if (const auto patchableArgument = llvm::dyn_cast<llvm::Argument>(factMemLocationFrame)) {
@@ -383,44 +404,30 @@ DataFlowUtils::isPatchableArgumentStore(const llvm::Value* srcValue,
 }
 
 bool
-DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
-                                         const std::vector<const llvm::Value*> srcMemLocationSeq,
-                                         ExtendedValue& fact) {
+DataFlowUtils::isPatchableArgumentStore(const llvm::Value* srcValue,
+                                        const ExtendedValue& fact) {
 
-  bool isVarArgFact = fact.isVarArg() && !fact.isVarArgTemplate();
-  if (!isVarArgFact) return false;
+  bool isVarArgFact = fact.isVarArg();
 
-  bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
-  if (!isIndexEqual) return false;
+  bool isArgEqual = isArgumentEqual(srcValue, fact, isVarArgFact);
+  if (isArgEqual) return true;
 
-  bool isSrcMemLocation = !srcMemLocationSeq.empty();
-  if (isSrcMemLocation) {
-    const auto memLocationFrameType = srcMemLocationSeq.front()->getType();
+  /*
+   * Patch of varargs passed through '...'
+   */
+  if (isVarArgFact) {
+    bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
+    if (!isIndexEqual) return false;
 
-    bool isMemLocationFrameTypeVaList = isVaListType(memLocationFrameType);
-    if (isMemLocationFrameTypeVaList) return true;
-  }
-  else
-  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(srcValue)) {
-    const auto pointerOperand = bitCastInst->getOperand(0);
-    bool isSrcVarArg = pointerOperand->getName().contains_lower("vaarg.addr");
-    if (!isSrcVarArg) return true;
+    if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(srcValue)) {
+      const auto pointerOperand = loadInst->getPointerOperand();
 
-    if (const auto phiNodeInst = llvm::dyn_cast<llvm::PHINode>(pointerOperand)) {
-      for (const auto& block : phiNodeInst->blocks()) {
-        const auto blockName = block->getName();
-        bool isVarArgInMem = blockName.contains_lower("vaarg.in_mem");
-        if (!isVarArgInMem) continue;
+      const auto vaListMemLocationSeq = getVaListMemoryLocationSeq(pointerOperand);
+      bool isValidMemLocation = !vaListMemLocationSeq.empty();
+      if (!isValidMemLocation) return false;
 
-        const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
-        const auto incomingValueMemLocationSeq = getMemoryLocationSeqFromMatr(incomingValue);
-
-        if (incomingValueMemLocationSeq.empty()) continue;
-
-        bool isVaListEqual = isSubsetMemoryLocationSeq(fact.getVaListMemLocationSeq(),
-                                                       incomingValueMemLocationSeq);
-        if (isVaListEqual) return true;
-      }
+      return isSubsetMemoryLocationSeq(getVaListMemoryLocationSeqFromFact(fact),
+                                       vaListMemLocationSeq);
     }
   }
 
@@ -428,8 +435,50 @@ DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
 }
 
 bool
+DataFlowUtils::isPatchableVaListArgument(const llvm::Value* srcValue,
+                                         const ExtendedValue& fact) {
+
+  bool isVarArgFact = fact.isVarArg();
+  bool isArgEqual = isArgumentEqual(srcValue, fact, isVarArgFact);
+
+  return isVarArgFact && isArgEqual;
+}
+
+bool
+DataFlowUtils::isPatchableArgumentMemcpy(const llvm::Value* srcValue,
+                                         const std::vector<const llvm::Value*> srcMemLocationSeq,
+                                         const ExtendedValue& fact) {
+
+  bool isVarArgFact = fact.isVarArg();
+  if (!isVarArgFact) return false;
+
+  bool isIndexEqual = fact.getVarArgIndex() == fact.getCurrentVarArgIndex();
+  if (!isIndexEqual) return false;
+
+  bool isSrcMemLocation = !srcMemLocationSeq.empty();
+  if (isSrcMemLocation) {
+
+    return isSubsetMemoryLocationSeq(getVaListMemoryLocationSeqFromFact(fact),
+                                     srcMemLocationSeq);
+  }
+  else
+  if (const auto bitCastInst = llvm::dyn_cast<llvm::BitCastInst>(srcValue)) {
+    const auto pointerOperand = bitCastInst->getOperand(0);
+
+    const auto vaListMemLocationSeq = getVaListMemoryLocationSeq(pointerOperand);
+    bool isValidMemLocation = !vaListMemLocationSeq.empty();
+    if (!isValidMemLocation) return false;
+
+    return isSubsetMemoryLocationSeq(getVaListMemoryLocationSeqFromFact(fact),
+                                     vaListMemLocationSeq);
+  }
+
+  return false;
+}
+
+bool
 DataFlowUtils::isPatchableReturnValue(const llvm::Value* srcValue,
-                                      ExtendedValue& fact) {
+                                      const ExtendedValue& fact) {
 
   /*
    * We could also check against the fact which is also a call inst when we
@@ -844,7 +893,6 @@ bool
 DataFlowUtils::isKillAfterStoreFact(const ExtendedValue& ev) {
 
   return !isMemoryLocationFact(ev) &&
-         !ev.isVarArgTemplate() &&
          !llvm::isa<llvm::CallInst>(ev.getValue());
 }
 
@@ -860,18 +908,31 @@ DataFlowUtils::isCheckOperandsInst(const llvm::Instruction* currentInst) {
          llvm::isa<llvm::SelectInst>(currentInst);
 }
 
-/*
- * If we are dealing with varargs we need to make sure that the internal structure
- * va_list is never tainted (not even in an auto taint scenario). This would lead
- * to detecting conditions as tainted for varargs internal processing branches which
- * further leads to auto tainting of every vararg. For traceability disable this check
- * and run test case 200-map-to-callee-varargs-15. The interesting part begins at line
- * 101 in the IR.
- */
 bool
-DataFlowUtils::isNoGENInst(const llvm::Instruction* currentInst) {
+DataFlowUtils::isAutoIdentity(const llvm::Instruction* currentInst,
+                              const ExtendedValue& fact) {
 
+  bool isVarArgTemplate = fact.isVarArgTemplate();
+  if (isVarArgTemplate) {
+
+    return !llvm::isa<llvm::VAStartInst>(currentInst);
+  }
+
+  /*
+   * If we are dealing with varargs we need to make sure that the internal structure
+   * va_list is never tainted (not even in an auto taint scenario). This would lead
+   * to detecting conditions as tainted for varargs internal processing branches which
+   * further leads to auto tainting of every vararg. For traceability disable this check
+   * and run test case 200-map-to-callee-varargs-15. The interesting part begins at line
+   * 101 in the IR.
+   */
   if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
+    const auto srcMemLocationMatr = storeInst->getValueOperand();
+    const auto srcMemLocationFrame = getMemoryLocationFrameFromMatr(srcMemLocationMatr);
+
+    bool isArgumentPatch = srcMemLocationFrame && llvm::isa<llvm::Argument>(srcMemLocationFrame);
+    if (isArgumentPatch) return false;
+
     const auto dstMemLocationMatr = storeInst->getPointerOperand();
     const auto dstMemLocationSeq = getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
@@ -925,7 +986,7 @@ DataFlowUtils::dumpFact(const ExtendedValue& ev) {
   if (ev.isVarArg()) {
     if (!ev.isVarArgTemplate()) {
       llvm::outs() << "[TRACK] vaListMemLocationSeq: " << "\n";
-      dumpMemoryLocation(ev.getVaListMemLocationSeq());
+      dumpMemoryLocation(getVaListMemoryLocationSeqFromFact(ev));
     }
     llvm::outs() << "[TRACK] varArgIndex: " << ev.getVarArgIndex() << "\n";
     llvm::outs() << "[TRACK] currentVarArgIndex: " << ev.getCurrentVarArgIndex() << "\n";

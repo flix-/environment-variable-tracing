@@ -28,6 +28,7 @@ public:
 
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromMatr(const llvm::Value* memLocationMatr);
   static const std::vector<const llvm::Value*> getMemoryLocationSeqFromFact(const ExtendedValue& memLocationFact);
+  static const std::vector<const llvm::Value*> getVaListMemoryLocationSeqFromFact(const ExtendedValue& vaListFact);
 
   static bool isMemoryLocationSeqsEqual(const std::vector<const llvm::Value*> memLocationSeq1,
                                         const std::vector<const llvm::Value*> memLocationSeq2);
@@ -40,12 +41,14 @@ public:
                                                                       const std::vector<const llvm::Value*> memLocationSeq2);
 
   static bool isPatchableArgumentStore(const llvm::Value* srcValue,
-                                       ExtendedValue& fact);
+                                       const ExtendedValue& fact);
   static bool isPatchableArgumentMemcpy(const llvm::Value* srcValue,
                                         const std::vector<const llvm::Value*> srcMemLocationSeq,
-                                        ExtendedValue& fact);
+                                        const ExtendedValue& fact);
+  static bool isPatchableVaListArgument(const llvm::Value* srcValue,
+                                        const ExtendedValue& fact);
   static bool isPatchableReturnValue(const llvm::Value* srcValue,
-                                     ExtendedValue& fact);
+                                     const ExtendedValue& fact);
   static const std::vector<const llvm::Value*> patchMemoryLocationFrame(const std::vector<const llvm::Value*> patchableMemLocationSeq,
                                                                         const std::vector<const llvm::Value*> patchMemLocationSeq);
 
@@ -64,7 +67,8 @@ public:
   static bool isMemoryLocationFact(const ExtendedValue& ev);
   static bool isKillAfterStoreFact(const ExtendedValue& ev);
   static bool isCheckOperandsInst(const llvm::Instruction* currentInst);
-  static bool isNoGENInst(const llvm::Instruction* currentInst);
+  static bool isAutoIdentity(const llvm::Instruction* currentInst,
+                             const ExtendedValue& fact);
   static bool isVarArgParam(const llvm::Value* param,
                             const llvm::Value* zeroValue);
   static bool isVaListType(const llvm::Type* type);

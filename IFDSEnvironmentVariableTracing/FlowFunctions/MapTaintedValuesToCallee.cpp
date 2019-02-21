@@ -17,32 +17,29 @@ namespace psr {
 std::set<ExtendedValue>
 MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
+  bool isFactVarArgTemplate = fact.isVarArgTemplate();
+  if (isFactVarArgTemplate) return { };
+
   std::set<ExtendedValue> targetFacts;
 
   long varArgIndex = 0L;
 
-  const auto sanitizedArgList = DataFlowUtils::getSanitizedArgList(callInst,
-                                                                   destMthd,
-                                                                   zeroValue.getValue());
+  const auto sanitizedArgList = DataFlowUtils::getSanitizedArgList(callInst, destMthd, zeroValue.getValue());
+
   for (const auto& argParamTriple : sanitizedArgList) {
 
     const auto arg = std::get<0>(argParamTriple);
     const auto argMemLocationSeq = std::get<1>(argParamTriple);
     const auto param = std::get<2>(argParamTriple);
 
-    bool isParamTypeVaList = DataFlowUtils::isVaListType(param->getType());
-    if (isParamTypeVaList) {
-      if (fact.isVarArg()) targetFacts.insert(fact);
-
-      continue;
-    }
-
-    bool isVarArg = DataFlowUtils::isVarArgParam(param,
-                                                 zeroValue.getValue());
+    bool isVarArgParam = DataFlowUtils::isVarArgParam(param, zeroValue.getValue());
+    bool isVarArgFact = fact.isVarArg();
 
     bool isArgMemLocation = !argMemLocationSeq.empty();
     if (isArgMemLocation) {
-      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+
+      const auto factMemLocationSeq = isVarArgFact ? DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact) :
+                                                     DataFlowUtils::getMemoryLocationSeqFromFact(fact);
 
       bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(argMemLocationSeq,
                                                               factMemLocationSeq);
@@ -53,10 +50,15 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
         const auto patchableMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(patchablePart,
                                                                                    relocatableMemLocationSeq);
 
-        ExtendedValue ev(zeroValue.getValue());
-        ev.setMemLocationSeq(patchableMemLocationSeq);
+        ExtendedValue ev(fact);
+        if (isVarArgFact) {
+          ev.setVaListMemLocationSeq(patchableMemLocationSeq);
+        }
+        else {
+          ev.setMemLocationSeq(patchableMemLocationSeq);
+        }
 
-        if (isVarArg) ev.setVarArgIndex(varArgIndex);
+        if (isVarArgParam) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
 
@@ -72,9 +74,9 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       if (isArgTainted) {
         std::vector<const llvm::Value*> patchablePart{ param };
 
-        ExtendedValue ev(zeroValue.getValue());
+        ExtendedValue ev(fact);
         ev.setMemLocationSeq(patchablePart);
-        if (isVarArg) ev.setVarArgIndex(varArgIndex);
+        if (isVarArgParam) ev.setVarArgIndex(varArgIndex);
 
         targetFacts.insert(ev);
 
@@ -86,7 +88,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       }
     }
 
-    if (isVarArg) ++varArgIndex;
+    if (isVarArgParam) ++varArgIndex;
   }
 
   bool addLineNumber = !targetFacts.empty();

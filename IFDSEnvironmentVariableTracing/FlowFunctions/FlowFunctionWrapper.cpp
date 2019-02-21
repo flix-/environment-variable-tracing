@@ -13,8 +13,8 @@ namespace psr {
 std::set<ExtendedValue>
 FlowFunctionWrapper::computeTargets(ExtendedValue fact) {
 
-  bool isNoGENInst = DataFlowUtils::isNoGENInst(currentInst);
-  if (isNoGENInst) return { fact };
+  bool isAutoIdentity = DataFlowUtils::isAutoIdentity(currentInst, fact);
+  if (isAutoIdentity) return { fact };
 
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());

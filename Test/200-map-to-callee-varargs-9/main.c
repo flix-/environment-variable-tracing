@@ -18,16 +18,26 @@ struct s1 {
 void
 foo(int n, ...)
 {
-    va_list ap;
-    va_start(ap, n);
+    va_list ap1;
+    va_start(ap1, n);
+    va_list ap2;
+    va_start(ap2, n);
 
-    struct s2 s2 = va_arg(ap, struct s2);
+    struct s2 s2 = va_arg(ap1, struct s2);
 
     char *t1 = s2.t1;
     char *t2 = s2.t2;
     char *ut1 = s2.ut1;
 
-    va_end(ap);
+    va_end(ap1);
+
+    struct s2 s21 = va_arg(ap2, struct s2);
+
+    char *t12 = s21.t1;
+    char *t22 = s21.t2;
+    char *ut12 = s21.ut1;
+
+    va_end(ap2);
 }
 
 int
