@@ -30,6 +30,7 @@
 #include <set>
 #include <vector>
 
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/IntrinsicInst.h>
 
 #include <llvm/Support/raw_ostream.h>
