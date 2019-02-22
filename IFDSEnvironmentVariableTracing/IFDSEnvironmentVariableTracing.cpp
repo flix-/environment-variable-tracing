@@ -59,7 +59,7 @@ IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& ic
                                                                std::vector<std::string> entryPoints)
     : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
 
-  this->solver_config.computeValues = false;
+  this->solver_config.computeValues = true;
   this->solver_config.computePersistedSummaries = false;
 
 }
