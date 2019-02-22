@@ -28,8 +28,7 @@ public:
       zeroValue(_zeroValue) {}
   ~MapTaintedValuesToCallee() override = default;
 
-  std::set<ExtendedValue>
-  computeTargets(ExtendedValue fact) override;
+  std::set<ExtendedValue> computeTargets(ExtendedValue fact) override;
 
 private:
   const llvm::CallInst* callInst;

@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdarg.h>
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+
+struct s5 {
+    char *t1;
+    char *ut1;
+};
+
+struct s2 {
+    int a;
+    int b;
+    char *t;
+    struct s5 s5;
+    va_list vas;
+    char *f;
+};
+
+struct s1 {
+    int a;
+    int b;
+    char *t;
+    struct s2 s;
+};
+
+struct s4 {
+    int a;
+    int b;
+    char *t1;
+    char *ut2;
+    struct s5 *s5;
+};
+
+void
+foo(struct s2 s) {
+    struct s4 ss;
+    ss.s5 = va_arg(s.vas, struct s5*);
+
+    char *t = ss.s5->t1;
+}
+
+int
+forwarder(int n, ...)
+{
+    struct s1 s;
+
+    va_start(s.s.vas, n);
+    
+    foo(s.s);
+
+    va_end(s.s.vas);
+
+    return 0;
+}
+
+int
+main()
+{
+    struct s4 s;
+    struct s5 ss;
+    s.s5 = &ss;
+
+    s.s5->t1 = getenv("gude");
+
+    int rc = forwarder(1, &s.s5);
+
+    return rc;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s4, align 8, !phasar.instruction.id !13<br>
+[TRACK]   %s51 = getelementptr inbounds %struct.s4, %struct.s4* %s, i32 0, i32 4, !dbg !44, !phasar.instruction.id !45<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 3, !dbg !56, !phasar.instruction.id !57<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 4, !dbg !56, !phasar.instruction.id !58<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 3, !dbg !56, !phasar.instruction.id !57<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 4, !dbg !56, !phasar.instruction.id !58<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.s2* %s<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 4, !dbg !56, !phasar.instruction.id !58<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.s2* %s<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 4, !dbg !56, !phasar.instruction.id !58<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %ss = alloca %struct.s4, align 8, !phasar.instruction.id !40<br>
+[TRACK]   %s5 = getelementptr inbounds %struct.s4, %struct.s4* %ss, i32 0, i32 4, !dbg !79, !phasar.instruction.id !80<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %ss = alloca %struct.s4, align 8, !phasar.instruction.id !40<br>
+[TRACK]   %s5 = getelementptr inbounds %struct.s4, %struct.s4* %ss, i32 0, i32 4, !dbg !79, !phasar.instruction.id !80<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !41<br>
+[TRACK] Killed VarArg<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK]   %t1 = getelementptr inbounds %struct.s5, %struct.s5* %0, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 3, !dbg !56, !phasar.instruction.id !57<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 4, !dbg !56, !phasar.instruction.id !58<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+Writing simple report to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1550836642-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

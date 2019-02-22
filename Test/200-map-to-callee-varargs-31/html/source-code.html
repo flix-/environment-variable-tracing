@@ -1,0 +1,401 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdarg.h>
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+
+struct s2 {
+    va_list vas;
+};
+
+struct s1 {
+    struct s2 s;
+};
+
+int
+foo(va_list args)
+{
+    if (getenv("gude") != NULL) {
+        int t = va_arg(args, int);
+    }
+
+    char *t2 = va_arg(args, char *);
+
+    char *nt = va_arg(args, char *);
+
+    int nt2 = 1;
+
+    return -1;
+}
+
+int
+user(struct s2 *s2, va_list args, ...)
+{
+    char *nt1 = va_arg(s2->vas, char *);
+    char *t2 = va_arg(s2->vas, char *);
+    char *nt2 = va_arg(s2->vas, char *);
+    char *nt3 = va_arg(s2->vas, char *);
+
+    char *t12 = va_arg(args, char *);
+    char *nt12 = va_arg(args, char *);
+    char *t22 = va_arg(args, char *);
+    char *nt22 = va_arg(args, char *);
+
+    va_list ap1;
+    va_start(ap1, args);
+
+    int a = va_arg(ap1, int);
+    char *t123 = va_arg(ap1, char *);
+
+    va_end(ap1);
+
+    va_list ap2;
+    va_start(ap2, args);
+
+    foo(ap2);
+
+    va_end(ap2);
+
+    return 0;
+}
+
+int
+forwarder(int n, ...)
+{
+    struct s1 s;
+
+    va_start(s.s.vas, n);
+    
+    char *t1 = va_arg(s.s.vas, char *);
+
+    int rc = user(&s.s, s.s.vas, 4711, getenv("gude"));
+
+    va_end(s.s.vas);
+
+    return rc;
+}
+
+int
+main()
+{
+    char *not_tainted = "hello world";
+    char *tainted = getenv("gude");
+
+    int rc = forwarder(6, tainted, not_tainted, tainted, not_tainted, not_tainted);
+
+    return rc;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !17<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %tainted = alloca i8*, align 8, !phasar.instruction.id !17<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !17<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.s2* %s2<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.__va_list_tag* %args<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.s2* %s2<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s2.addr = alloca %struct.s2*, align 8, !phasar.instruction.id !33<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s2.addr = alloca %struct.s2*, align 8, !phasar.instruction.id !33<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 2<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !36<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.__va_list_tag* %args<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %args.addr = alloca %struct.__va_list_tag*, align 8, !phasar.instruction.id !34<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %args.addr = alloca %struct.__va_list_tag*, align 8, !phasar.instruction.id !34<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 2<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %nt12 = alloca i8*, align 8, !phasar.instruction.id !40<br>
+[TRACK] Killed VarArg<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !16<br>
+[TRACK]   %s1 = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 0, !dbg !46, !phasar.instruction.id !47<br>
+[TRACK]   %vas = getelementptr inbounds %struct.s2, %struct.s2* %s1, i32 0, i32 0, !dbg !46, !phasar.instruction.id !48<br>
+[TRACK] varArgIndex: 2<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap1 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !43<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !46<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !46<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.__va_list_tag* %args<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK] %struct.__va_list_tag* %args<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %args.addr = alloca %struct.__va_list_tag*, align 8, !phasar.instruction.id !23<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %args.addr = alloca %struct.__va_list_tag*, align 8, !phasar.instruction.id !23<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: 1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !25<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %args.addr = alloca %struct.__va_list_tag*, align 8, !phasar.instruction.id !23<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: 1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %nt = alloca i8*, align 8, !phasar.instruction.id !26<br>
+[TRACK] Killed VarArg<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !46<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap1 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !43<br>
+[TRACK] varArgIndex: 1<br>
+[TRACK] currentVarArgIndex: 1<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t123 = alloca i8*, align 8, !phasar.instruction.id !45<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: if.end<br>
+[TRACK] End of block label: if.end<br>
+[TRACK] Searching end of block label for: if.then<br>
+[TRACK] End of closed block label: vaarg.end<br>
+[TRACK] End of block label: vaarg.end<br>
+[TRACK] Searching end of block label for: if.then<br>
+[TRACK] End of closed block label: vaarg.end<br>
+[TRACK] End of block label: vaarg.end<br>
+[TRACK] Searching end of block label for: entry<br>
+[TRACK] End of closed block label: if.end<br>
+[TRACK] End of block label: if.end<br>
+Writing simple report to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1550836641-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

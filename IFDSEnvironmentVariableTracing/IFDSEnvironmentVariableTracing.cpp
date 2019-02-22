@@ -6,19 +6,30 @@
 
 #include "LineNumberStore.h"
 
-#include "FlowFunctions/FlowFunctionWrapper.h"
-#include "FlowFunctions/Identity.h"
+#include "FlowFunctions/StoreInstFlowFunction.h"
+#include "FlowFunctions/BranchSwitchInstFlowFunction.h"
+#include "FlowFunctions/GEPInstFlowFunction.h"
+#include "FlowFunctions/PHINodeFlowFunction.h"
+#include "FlowFunctions/CheckOperandsFlowFunction.h"
+#include "FlowFunctions/ReturnInstFlowFunction.h"
+#include "FlowFunctions/CallToRetFlowFunction.h"
+#include "FlowFunctions/MemTransferInstFlowFunction.h"
+#include "FlowFunctions/MemSetInstFlowFunction.h"
+#include "FlowFunctions/VAStartInstFlowFunction.h"
+#include "FlowFunctions/VAEndInstFlowFunction.h"
+
+#include "FlowFunctions/IdentityFlowFunction.h"
+#include "FlowFunctions/GenerateFlowFunction.h"
+
 #include "FlowFunctions/MapTaintedValuesToCallee.h"
 #include "FlowFunctions/MapTaintedValuesToCaller.h"
 
 #include "Utils/DataFlowUtils.h"
 
-#include <cassert>
 #include <fstream>
 #include <set>
 #include <vector>
 
-#include <llvm/IR/Constants.h>
 #include <llvm/IR/IntrinsicInst.h>
 
 #include <llvm/Support/raw_ostream.h>
@@ -61,363 +72,31 @@ IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& ic
 
   this->solver_config.computeValues = false;
   this->solver_config.computePersistedSummaries = false;
-
 }
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
-  /*
-   * Store instruction
-   */
-  if (llvm::isa<llvm::StoreInst>(currentInst)) {
+  if (llvm::isa<llvm::StoreInst>(currentInst))
+    return std::make_shared<StoreInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
 
-    ComputeTargetsExtFunction storeFlowFunction = [](const llvm::Instruction* currentInst,
-                                                     ExtendedValue& fact,
-                                                     LineNumberStore& lineNumberStore,
-                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+  if (llvm::isa<llvm::BranchInst>(currentInst) || llvm::isa<llvm::SwitchInst>(currentInst))
+    return std::make_shared<BranchSwitchInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
 
-      const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
+  if (llvm::isa<llvm::GetElementPtrInst>(currentInst))
+    return std::make_shared<GEPInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
 
-      const auto srcValue = storeInst->getValueOperand();
-      const auto dstMemLocationMatr = storeInst->getPointerOperand();
+  if (llvm::isa<llvm::PHINode>(currentInst))
+    return std::make_shared<PHINodeFlowFunction>(currentInst, lineNumberStore, zeroValue());
 
-      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-      const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
-      auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+  if (DataFlowUtils::isCheckOperandsInst(currentInst))
+    return std::make_shared<CheckOperandsFlowFunction>(currentInst, lineNumberStore, zeroValue());
 
-      bool isArgumentPatch = DataFlowUtils::isPatchableArgumentStore(srcValue, fact);
-      bool isVaListArgumentPatch = DataFlowUtils::isPatchableVaListArgument(srcValue, fact);
+  if (llvm::isa<llvm::ReturnInst>(successorInst))
+    return std::make_shared<ReturnInstFlowFunction>(successorInst, lineNumberStore, zeroValue());
 
-      bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
-
-      bool isSrcMemLocation = !srcMemLocationSeq.empty();
-
-      std::set<ExtendedValue> targetFacts;
-
-      /*
-       * Patch argument
-       *
-       * We have 3 differenct cases to consider here:
-       *
-       * 1) Patching of memory location sequence for a regular argument
-       * 2) Patching of memory location sequence for a vararg (int foo(int n, ...))
-       * 3) Patching of va list memory location sequence for a vararg (int foo(va_list args))
-       *
-       */
-      if (isArgumentPatch) {
-        bool patchMemLocation = !dstMemLocationSeq.empty();
-        if (patchMemLocation) {
-          bool isArgCoerced = srcValue->getName().contains_lower("coerce");
-          if (isArgCoerced) {
-            assert(dstMemLocationSeq.size() > 1);
-            dstMemLocationSeq.pop_back();
-          }
-
-          const auto patchableMemLocationSeq = isVaListArgumentPatch ? DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact) :
-                                                                       DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-
-          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(patchableMemLocationSeq,
-                                                                                     dstMemLocationSeq);
-
-          ExtendedValue ev(fact);
-
-          if (isVaListArgumentPatch) {
-            ev.setVaListMemLocationSeq(patchedMemLocationSeq);
-          }
-          else {
-            ev.setMemLocationSeq(patchedMemLocationSeq);
-            ev.resetVarArgIndex();
-          }
-
-          targetFacts.insert(ev);
-          lineNumberStore.addLineNumber(storeInst);
-
-          llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
-          llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpFact(fact);
-          llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpFact(ev);
-        }
-      }
-      /*
-       * Patch return value
-       */
-      else
-      if (isReturnValuePatch) {
-        bool patchMemLocation = !dstMemLocationSeq.empty();
-        if (patchMemLocation) {
-          bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcValue);
-          if (isExtractValue) {
-            assert(dstMemLocationSeq.size() > 1);
-            dstMemLocationSeq.pop_back();
-          }
-
-          const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
-                                                                                     dstMemLocationSeq);
-
-          ExtendedValue ev(fact);
-          ev.setMemLocationSeq(patchedMemLocationSeq);
-
-          targetFacts.insert(ev);
-          lineNumberStore.addLineNumber(storeInst);
-
-          llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
-          llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpFact(fact);
-          llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpFact(ev);
-        }
-      }
-      /*
-       * If we got a memory location then we need to find all tainted memory locations for
-       * it and create a new relocated address that relatively works from the memory location
-       * destination. If the value is a pointer so is the desination as the store instruction
-       * is defined as <store, ty val, *ty dst> that means we need to remove all facts that
-       * started at the destination.
-       */
-      else
-      if (isSrcMemLocation) {
-        bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
-                        DataFlowUtils::isKillAfterStoreFact(fact);
-
-        if (genFact) {
-          const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
-                                                                                                srcMemLocationSeq);
-          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
-                                                                                     relocatableMemLocationSeq);
-
-          ExtendedValue ev(fact);
-          ev.setMemLocationSeq(relocatedMemLocationSeq);
-
-          targetFacts.insert(ev);
-          lineNumberStore.addLineNumber(storeInst);
-
-          llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
-          llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpFact(fact);
-          llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpFact(ev);
-        }
-        if (!killFact) targetFacts.insert(fact);
-      }
-      else {
-        bool genFact = DataFlowUtils::isValueTainted(srcValue, fact);
-        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
-                        DataFlowUtils::isKillAfterStoreFact(fact);
-
-        if (genFact) {
-          ExtendedValue ev(storeInst);
-          ev.setMemLocationSeq(dstMemLocationSeq);
-
-          targetFacts.insert(ev);
-          lineNumberStore.addLineNumber(storeInst);
-        }
-        if (!killFact) targetFacts.insert(fact);
-      }
-
-      return targetFacts;
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, storeFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Branch / Switch instruction
-   */
-  else
-  if (llvm::isa<llvm::BranchInst>(currentInst) ||
-      llvm::isa<llvm::SwitchInst>(currentInst)) {
-
-    ComputeTargetsExtFunction blockFlowFunction = [](const llvm::Instruction* currentInst,
-                                                     ExtendedValue& fact,
-                                                     LineNumberStore& lineNumberStore,
-                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const llvm::Value* condition = nullptr;
-
-      if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(currentInst)) {
-        bool isConditional = branchInst->isConditional();
-
-        if (isConditional) condition = branchInst->getCondition();
-      }
-      else
-      if (const auto switchInst = llvm::dyn_cast<llvm::SwitchInst>(currentInst)) {
-        condition = switchInst->getCondition();
-      }
-      else {
-        assert(false && "This MUST not happen");
-      }
-
-      if (condition) {
-        bool isConditionTainted = DataFlowUtils::isValueTainted(condition, fact) ||
-                                  DataFlowUtils::isMemoryLocationTainted(condition, fact);
-        if (isConditionTainted) {
-          const auto startBasicBlock = currentInst->getParent();
-          const auto startBasicBlockLabel = startBasicBlock->getName();
-
-          llvm::outs() << "[TRACK] Searching end of block label for: " << startBasicBlockLabel << "\n";
-
-          const auto endBasicBlock = DataFlowUtils::getEndOfTaintedBlock(startBasicBlock);
-          const auto endBasicBlockLabel = endBasicBlock ? endBasicBlock->getName() : "";
-
-          llvm::outs() << "[TRACK] End of block label: " << endBasicBlockLabel << "\n";
-
-          ExtendedValue ev(currentInst);
-          ev.setEndOfTaintedBlockLabel(endBasicBlockLabel);
-
-          lineNumberStore.addLineNumber(currentInst);
-
-          return { fact, ev };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, blockFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * GetElementPtr instruction
-   *
-   * Track increments of vararg indexes + value taints
-   */
-  else
-  if (llvm::isa<llvm::GetElementPtrInst>(currentInst)) {
-
-    ComputeTargetsExtFunction gepInstFlowFunction = [](const llvm::Instruction* currentInst,
-                                                       ExtendedValue& fact,
-                                                       LineNumberStore& lineNumberStore,
-                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
-      const auto gepInstPtr = gepInst->getPointerOperand();
-
-      bool isVarArgFact = fact.isVarArg();
-      if (isVarArgFact) {
-        bool killFact = gepInstPtr->getName().contains_lower("reg_save_area");
-        if (killFact) return { };
-
-        bool incrementCurrentVarArgIndex = gepInst->getName().contains_lower("overflow_arg_area.next");
-        if (incrementCurrentVarArgIndex) {
-          const auto gepVaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(gepInstPtr);
-
-          bool isVaListEqual = DataFlowUtils::isSubsetMemoryLocationSeq(DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact),
-                                                                        gepVaListMemLocationSeq);
-          if (isVaListEqual) {
-            ExtendedValue ev(fact);
-            ev.incrementCurrentVarArgIndex();
-
-            return { ev };
-          }
-        }
-      }
-      else {
-        bool isPtrTainted = DataFlowUtils::isValueTainted(gepInstPtr, fact);
-        if (isPtrTainted) return { fact, ExtendedValue(gepInst) };
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, gepInstFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Phi node instruction
-   *
-   * Every Phi node that appears after a tainted branch is automatically added
-   * through the flow function wrapper. We need to consider the case here that
-   * the branch itself is not tainted but one of its values.
-   */
-  else
-  if (llvm::isa<llvm::PHINode>(currentInst)) {
-
-    ComputeTargetsExtFunction phiNodeFlowFunction = [](const llvm::Instruction* currentInst,
-                                                       ExtendedValue& fact,
-                                                       LineNumberStore& lineNumberStore,
-                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto phiNodeInst = llvm::cast<llvm::PHINode>(currentInst);
-
-      for (const auto block : phiNodeInst->blocks()) {
-        const auto incomingValue = phiNodeInst->getIncomingValueForBlock(block);
-
-        bool isIncomingValueTainted = DataFlowUtils::isValueTainted(incomingValue, fact) ||
-                                      DataFlowUtils::isMemoryLocationTainted(incomingValue, fact);
-        if (isIncomingValueTainted) {
-          lineNumberStore.addLineNumber(phiNodeInst);
-
-          return { fact, ExtendedValue(phiNodeInst) };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, phiNodeFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Operands checking instruction
-   */
-  else
-  if (DataFlowUtils::isCheckOperandsInst(currentInst)) {
-
-    ComputeTargetsExtFunction checkOperandsFlowFunction = [](const llvm::Instruction* currentInst,
-                                                             ExtendedValue& fact,
-                                                             LineNumberStore& lineNumberStore,
-                                                             ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      for (const auto& use : currentInst->operands()) {
-        const auto& operand = use.get();
-
-        bool isOperandTainted = DataFlowUtils::isValueTainted(operand, fact) ||
-                                DataFlowUtils::isMemoryLocationTainted(operand, fact);
-        if (isOperandTainted) {
-          lineNumberStore.addLineNumber(currentInst);
-
-          return { fact, ExtendedValue(currentInst) };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(currentInst, checkOperandsFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Return instruction
-   */
-  else
-  if (llvm::isa<llvm::ReturnInst>(successorInst)) {
-
-    ComputeTargetsExtFunction retFlowFunction = [](const llvm::Instruction* currentInst,
-                                                   ExtendedValue& fact,
-                                                   LineNumberStore& lineNumberStore,
-                                                   ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto retInst = llvm::cast<llvm::ReturnInst>(currentInst);
-      const auto retVal = retInst->getReturnValue();
-
-      if (retVal) {
-        bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact) ||
-                               DataFlowUtils::isMemoryLocationTainted(retVal, fact);
-        if (isRetValTainted) {
-          lineNumberStore.addLineNumber(retInst);
-
-          return { fact, ExtendedValue(retInst) };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(successorInst, retFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Default: Identity
-   */
-  return Identity::getInstance(currentInst, lineNumberStore, zeroValue());
+  return std::make_shared<IdentityFlowFunction>(currentInst, lineNumberStore, zeroValue());
 }
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
@@ -469,28 +148,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
    * the function. If we intercept here the call instruction will be pushed when the flow
    * function is called with the branch instruction fact.
    */
-  ComputeTargetsExtFunction getCallToRetFlowFunction = [](const llvm::Instruction* currentInst,
-                                                          ExtendedValue& fact,
-                                                          LineNumberStore& lineNumberStore,
-                                                          ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-    /*
-     * For functions that kill facts and are handled in getSummaryFlowFunction()
-     * we kill all facts here and just use what they have returned. This is
-     * important e.g. if memset removes a store fact then it is not readded here
-     * e.g. through identity function.
-     *
-     * Need to keep the list in sync with "killing" functions in getSummaryFlowFunction()!
-     */
-    bool isHandledInSummaryFlowFunction = llvm::isa<llvm::MemTransferInst>(currentInst) ||
-                                          llvm::isa<llvm::MemSetInst>(currentInst) ||
-                                          llvm::isa<llvm::VAEndInst>(currentInst);
-    if (isHandledInSummaryFlowFunction) return { };
-
-    return { fact };
-  };
-
-  return std::make_shared<FlowFunctionWrapper>(callSite, getCallToRetFlowFunction, lineNumberStore, zeroValue());
+  return std::make_shared<CallToRetFlowFunction>(callSite, lineNumberStore, zeroValue());
 }
 
 /*
@@ -505,225 +163,48 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 
   /*
    * We exclude function ptr calls as they will be applied to every
-   * function matching its signature (@see LLVMBasedICFG.cpp:217)
+   * function matching its signature (@see LLVMBasedICFG.cpp:217).
    */
   const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
   bool isStaticCallSite = callInst->getCalledFunction();
-  if (!isStaticCallSite) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
+  if (!isStaticCallSite)
+    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
   /*
-   * Exclude certain functions here.
+   * Exclude blacklisted functions here.
    */
   bool isBlackListedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
-  if (isBlackListedCall) {
-    llvm::outs() << "[TRACK]: Skipping blacklisted call: " << destMthdName << "\n";
-
-    return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
-  }
+  if (isBlackListedCall)
+    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
   /*
-   * Memcpy / Memmove instruction
+   * Intrinsics.
    */
-  if (llvm::isa<llvm::MemTransferInst>(callStmt)) {
+  if (llvm::isa<llvm::MemTransferInst>(callStmt))
+    return std::make_shared<MemTransferInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
-    ComputeTargetsExtFunction memTransferFlowFunction = [](const llvm::Instruction* currentInst,
-                                                           ExtendedValue& fact,
-                                                           LineNumberStore& lineNumberStore,
-                                                           ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
+  if (llvm::isa<llvm::MemSetInst>(callStmt))
+    return std::make_shared<MemSetInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
-      const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
+  if (llvm::isa<llvm::VAStartInst>(callStmt))
+    return std::make_shared<VAStartInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
-      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-      const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawSource());
-      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
-
-      bool isArgumentPatch = DataFlowUtils::isPatchableArgumentMemcpy(memTransferInst->getRawSource(),
-                                                                      srcMemLocationSeq,
-                                                                      fact);
-
-      std::set<ExtendedValue> targetFacts;
-
-      /*
-       * Patch argument
-       */
-      if (isArgumentPatch) {
-        const auto patchedMemLocationSeq = DataFlowUtils::patchMemoryLocationFrame(factMemLocationSeq,
-                                                                                   dstMemLocationSeq);
-
-        ExtendedValue ev(fact);
-        ev.setMemLocationSeq(patchedMemLocationSeq);
-        ev.resetVarArgIndex();
-
-        targetFacts.insert(ev);
-        lineNumberStore.addLineNumber(memTransferInst);
-
-        llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
-        llvm::outs() << "[TRACK] Source:" << "\n";
-        DataFlowUtils::dumpFact(fact);
-        llvm::outs() << "[TRACK] Destination:" << "\n";
-        DataFlowUtils::dumpFact(ev);
-      }
-      else {
-        bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
-        bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
-
-        if (genFact) {
-          const auto relocatableMemLocationSeq = DataFlowUtils::getRelocatableMemoryLocationSeq(factMemLocationSeq,
-                                                                                                srcMemLocationSeq);
-          const auto relocatedMemLocationSeq = DataFlowUtils::joinMemoryLocationSeqs(dstMemLocationSeq,
-                                                                                     relocatableMemLocationSeq);
-          ExtendedValue ev(fact);
-          ev.setMemLocationSeq(relocatedMemLocationSeq);
-
-          targetFacts.insert(ev);
-          lineNumberStore.addLineNumber(memTransferInst);
-
-          llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
-          llvm::outs() << "[TRACK] Source:" << "\n";
-          DataFlowUtils::dumpFact(fact);
-          llvm::outs() << "[TRACK] Destination:" << "\n";
-          DataFlowUtils::dumpFact(ev);
-        }
-        if (!killFact) targetFacts.insert(fact);
-      }
-
-      return targetFacts;
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(callStmt, memTransferFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * Memset instruction
-   */
-  else
-  if (llvm::isa<llvm::MemSetInst>(callStmt)) {
-
-    ComputeTargetsExtFunction memSetFlowFunction = [](const llvm::Instruction* currentInst,
-                                                      ExtendedValue& fact,
-                                                      LineNumberStore& lineNumberStore,
-                                                      ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      const auto memSetInst = llvm::cast<const llvm::MemSetInst>(currentInst);
-
-      const auto dstMemLocationMatr = memSetInst->getRawDest();
-
-      const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-
-      bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
-      if (killFact) {
-        lineNumberStore.addLineNumber(memSetInst);
-
-        return { };
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(callStmt, memSetFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * va_start instruction
-   */
-  else
-  if (llvm::isa<llvm::VAStartInst>(callStmt)) {
-
-    ComputeTargetsExtFunction vaStartFlowFunction = [](const llvm::Instruction* currentInst,
-                                                       ExtendedValue& fact,
-                                                       LineNumberStore& lineNumberStore,
-                                                       ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      std::set<ExtendedValue> targetFacts;
-      targetFacts.insert(fact);
-
-      bool isVarArgTemplateFact = fact.isVarArgTemplate();
-      if (!isVarArgTemplateFact) return targetFacts;
-
-      const auto vaStartInst = llvm::cast<llvm::VAStartInst>(currentInst);
-      const auto vaListMemLocationMatr = vaStartInst->getArgList();
-
-      const auto vaListMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(vaListMemLocationMatr);
-
-      bool isValidMemLocationSeq = !vaListMemLocationSeq.empty();
-      if (isValidMemLocationSeq) {
-        ExtendedValue ev(fact);
-        ev.setVaListMemLocationSeq(vaListMemLocationSeq);
-
-        targetFacts.insert(ev);
-
-        llvm::outs() << "[TRACK] Created new VarArg from template" << "\n";
-        llvm::outs() << "[TRACK] Template:" << "\n";
-        DataFlowUtils::dumpFact(fact);
-        llvm::outs() << "[TRACK] VarArg:" << "\n";
-        DataFlowUtils::dumpFact(ev);
-      }
-
-      return targetFacts;
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(callStmt, vaStartFlowFunction, lineNumberStore, zeroValue());
-  }
-  /*
-   * va_end instruction
-   */
-  else
-  if (llvm::isa<llvm::VAEndInst>(callStmt)) {
-
-    ComputeTargetsExtFunction vaEndFlowFunction = [](const llvm::Instruction* currentInst,
-                                                     ExtendedValue& fact,
-                                                     LineNumberStore& lineNumberStore,
-                                                     ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      bool isVarArgFact = fact.isVarArg();
-      if (!isVarArgFact) return { fact };
-
-      const auto vaEndInst = llvm::cast<llvm::VAEndInst>(currentInst);
-      const auto vaEndMemLocationMatr = vaEndInst->getArgList();
-
-      const auto vaEndMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(vaEndMemLocationMatr);
-
-      bool isValidMemLocationSeq = !vaEndMemLocationSeq.empty();
-      if (isValidMemLocationSeq) {
-        bool isVaListEqual = DataFlowUtils::isMemoryLocationSeqsEqual(DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact),
-                                                                      vaEndMemLocationSeq);
-        if (isVaListEqual) {
-          llvm::outs() << "[TRACK] Killed VarArg" << "\n";
-          DataFlowUtils::dumpFact(fact);
-
-          return { };
-        }
-      }
-
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(callStmt, vaEndFlowFunction, lineNumberStore, zeroValue());
-  }
+  if (llvm::isa<llvm::VAEndInst>(callStmt))
+    return std::make_shared<VAEndInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
   /*
-   * Provide summary for tainted call
+   * Provide summary for tainted calls.
    */
   bool isTaintedCall = TAINTED_CALLS.find(destMthdName) != TAINTED_CALLS.end();
-  if (isTaintedCall) {
-    ComputeTargetsExtFunction taintedCallFlowFunction = [](const llvm::Instruction* currentInst,
-                                                           ExtendedValue& fact,
-                                                           LineNumberStore& lineNumberStore,
-                                                           ExtendedValue& zeroValue) -> std::set<ExtendedValue> {
-
-      lineNumberStore.addLineNumber(currentInst);
-
-      if (fact == zeroValue) return { ExtendedValue(currentInst) };
-      return { fact };
-    };
-
-    return std::make_shared<FlowFunctionWrapper>(callStmt, taintedCallFlowFunction, lineNumberStore, zeroValue());
-  }
+  if (isTaintedCall)
+    return std::make_shared<GenerateFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
   /*
-   * Skip all declarations
+   * Skip all (other) declarations.
    */
   bool isDeclaration = destMthd->isDeclaration();
-  if (isDeclaration) return Identity::getInstance(callStmt, lineNumberStore, zeroValue());
+  if (isDeclaration)
+    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
 
   /*
    * Follow call -> getCallFlowFunction()

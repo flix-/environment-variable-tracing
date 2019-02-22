@@ -40,4 +40,3 @@ private:
 } // namespace
 
 #endif // MAPTAINTEDVALUESTOCALLER_H
-

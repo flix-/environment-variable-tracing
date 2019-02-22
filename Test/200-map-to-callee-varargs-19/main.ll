@@ -1,0 +1,380 @@
+; ModuleID = 'main.c'
+source_filename = "main.c"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.__va_list_tag = type { i32, i32, i8*, i8* }
+
+@.str = private unnamed_addr constant [5 x i8] c"gude\00", align 1
+@.str.1 = private unnamed_addr constant [12 x i8] c"hello world\00", align 1
+
+; Function Attrs: noinline nounwind optnone uwtable
+define i32 @user(i8* %t, %struct.__va_list_tag* %args, i32 %n, i8* %tt, i8* %ntt) #0 !dbg !9 {
+entry:
+  %t.addr = alloca i8*, align 8
+  %args.addr = alloca %struct.__va_list_tag*, align 8
+  %n.addr = alloca i32, align 4
+  %tt.addr = alloca i8*, align 8
+  %ntt.addr = alloca i8*, align 8
+  %ttt = alloca i8*, align 8
+  %tttt = alloca i8*, align 8
+  %n1 = alloca i32, align 4
+  %nttt = alloca i8*, align 8
+  %t1 = alloca i8*, align 8
+  %t2 = alloca i8*, align 8
+  %t3 = alloca i8*, align 8
+  %t4 = alloca i8*, align 8
+  %nt = alloca i8*, align 8
+  store i8* %t, i8** %t.addr, align 8
+  call void @llvm.dbg.declare(metadata i8** %t.addr, metadata !23, metadata !24), !dbg !25
+  store %struct.__va_list_tag* %args, %struct.__va_list_tag** %args.addr, align 8
+  call void @llvm.dbg.declare(metadata %struct.__va_list_tag** %args.addr, metadata !26, metadata !24), !dbg !27
+  store i32 %n, i32* %n.addr, align 4
+  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !28, metadata !24), !dbg !29
+  store i8* %tt, i8** %tt.addr, align 8
+  call void @llvm.dbg.declare(metadata i8** %tt.addr, metadata !30, metadata !24), !dbg !31
+  store i8* %ntt, i8** %ntt.addr, align 8
+  call void @llvm.dbg.declare(metadata i8** %ntt.addr, metadata !32, metadata !24), !dbg !33
+  call void @llvm.dbg.declare(metadata i8** %ttt, metadata !34, metadata !24), !dbg !35
+  %0 = load i8*, i8** %t.addr, align 8, !dbg !36
+  store i8* %0, i8** %ttt, align 8, !dbg !35
+  call void @llvm.dbg.declare(metadata i8** %tttt, metadata !37, metadata !24), !dbg !38
+  %1 = load i8*, i8** %tt.addr, align 8, !dbg !39
+  store i8* %1, i8** %tttt, align 8, !dbg !38
+  call void @llvm.dbg.declare(metadata i32* %n1, metadata !40, metadata !24), !dbg !41
+  %2 = load i32, i32* %n.addr, align 4, !dbg !42
+  store i32 %2, i32* %n1, align 4, !dbg !41
+  call void @llvm.dbg.declare(metadata i8** %nttt, metadata !43, metadata !24), !dbg !44
+  %3 = load i8*, i8** %ntt.addr, align 8, !dbg !45
+  store i8* %3, i8** %nttt, align 8, !dbg !44
+  call void @llvm.dbg.declare(metadata i8** %t1, metadata !46, metadata !24), !dbg !47
+  %4 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !48
+  %gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %4, i32 0, i32 0, !dbg !48
+  %gp_offset = load i32, i32* %gp_offset_p, align 8, !dbg !48
+  %fits_in_gp = icmp ule i32 %gp_offset, 40, !dbg !48
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !48
+
+vaarg.in_reg:                                     ; preds = %entry
+  %5 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %4, i32 0, i32 3, !dbg !48
+  %reg_save_area = load i8*, i8** %5, align 8, !dbg !48
+  %6 = getelementptr i8, i8* %reg_save_area, i32 %gp_offset, !dbg !48
+  %7 = bitcast i8* %6 to i8**, !dbg !48
+  %8 = add i32 %gp_offset, 8, !dbg !48
+  store i32 %8, i32* %gp_offset_p, align 8, !dbg !48
+  br label %vaarg.end, !dbg !48
+
+vaarg.in_mem:                                     ; preds = %entry
+  %overflow_arg_area_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %4, i32 0, i32 2, !dbg !48
+  %overflow_arg_area = load i8*, i8** %overflow_arg_area_p, align 8, !dbg !48
+  %9 = bitcast i8* %overflow_arg_area to i8**, !dbg !48
+  %overflow_arg_area.next = getelementptr i8, i8* %overflow_arg_area, i32 8, !dbg !48
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !48
+  br label %vaarg.end, !dbg !48
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr = phi i8** [ %7, %vaarg.in_reg ], [ %9, %vaarg.in_mem ], !dbg !48
+  %10 = load i8*, i8** %vaarg.addr, align 8, !dbg !48
+  store i8* %10, i8** %t1, align 8, !dbg !47
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !49
+  %cmp = icmp ne i8* %call, null, !dbg !51
+  br i1 %cmp, label %if.then, label %if.end, !dbg !52
+
+if.then:                                          ; preds = %vaarg.end
+  call void @llvm.dbg.declare(metadata i8** %t2, metadata !53, metadata !24), !dbg !55
+  %11 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !56
+  %gp_offset_p1 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %11, i32 0, i32 0, !dbg !56
+  %gp_offset2 = load i32, i32* %gp_offset_p1, align 8, !dbg !56
+  %fits_in_gp3 = icmp ule i32 %gp_offset2, 40, !dbg !56
+  br i1 %fits_in_gp3, label %vaarg.in_reg4, label %vaarg.in_mem6, !dbg !56
+
+vaarg.in_reg4:                                    ; preds = %if.then
+  %12 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %11, i32 0, i32 3, !dbg !56
+  %reg_save_area5 = load i8*, i8** %12, align 8, !dbg !56
+  %13 = getelementptr i8, i8* %reg_save_area5, i32 %gp_offset2, !dbg !56
+  %14 = bitcast i8* %13 to i8**, !dbg !56
+  %15 = add i32 %gp_offset2, 8, !dbg !56
+  store i32 %15, i32* %gp_offset_p1, align 8, !dbg !56
+  br label %vaarg.end10, !dbg !56
+
+vaarg.in_mem6:                                    ; preds = %if.then
+  %overflow_arg_area_p7 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %11, i32 0, i32 2, !dbg !56
+  %overflow_arg_area8 = load i8*, i8** %overflow_arg_area_p7, align 8, !dbg !56
+  %16 = bitcast i8* %overflow_arg_area8 to i8**, !dbg !56
+  %overflow_arg_area.next9 = getelementptr i8, i8* %overflow_arg_area8, i32 8, !dbg !56
+  store i8* %overflow_arg_area.next9, i8** %overflow_arg_area_p7, align 8, !dbg !56
+  br label %vaarg.end10, !dbg !56
+
+vaarg.end10:                                      ; preds = %vaarg.in_mem6, %vaarg.in_reg4
+  %vaarg.addr11 = phi i8** [ %14, %vaarg.in_reg4 ], [ %16, %vaarg.in_mem6 ], !dbg !56
+  %17 = load i8*, i8** %vaarg.addr11, align 8, !dbg !56
+  store i8* %17, i8** %t2, align 8, !dbg !55
+  br label %if.end, !dbg !57
+
+if.end:                                           ; preds = %vaarg.end10, %vaarg.end
+  call void @llvm.dbg.declare(metadata i8** %t3, metadata !58, metadata !24), !dbg !59
+  %18 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !60
+  %gp_offset_p12 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %18, i32 0, i32 0, !dbg !60
+  %gp_offset13 = load i32, i32* %gp_offset_p12, align 8, !dbg !60
+  %fits_in_gp14 = icmp ule i32 %gp_offset13, 40, !dbg !60
+  br i1 %fits_in_gp14, label %vaarg.in_reg15, label %vaarg.in_mem17, !dbg !60
+
+vaarg.in_reg15:                                   ; preds = %if.end
+  %19 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %18, i32 0, i32 3, !dbg !60
+  %reg_save_area16 = load i8*, i8** %19, align 8, !dbg !60
+  %20 = getelementptr i8, i8* %reg_save_area16, i32 %gp_offset13, !dbg !60
+  %21 = bitcast i8* %20 to i8**, !dbg !60
+  %22 = add i32 %gp_offset13, 8, !dbg !60
+  store i32 %22, i32* %gp_offset_p12, align 8, !dbg !60
+  br label %vaarg.end21, !dbg !60
+
+vaarg.in_mem17:                                   ; preds = %if.end
+  %overflow_arg_area_p18 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %18, i32 0, i32 2, !dbg !60
+  %overflow_arg_area19 = load i8*, i8** %overflow_arg_area_p18, align 8, !dbg !60
+  %23 = bitcast i8* %overflow_arg_area19 to i8**, !dbg !60
+  %overflow_arg_area.next20 = getelementptr i8, i8* %overflow_arg_area19, i32 8, !dbg !60
+  store i8* %overflow_arg_area.next20, i8** %overflow_arg_area_p18, align 8, !dbg !60
+  br label %vaarg.end21, !dbg !60
+
+vaarg.end21:                                      ; preds = %vaarg.in_mem17, %vaarg.in_reg15
+  %vaarg.addr22 = phi i8** [ %21, %vaarg.in_reg15 ], [ %23, %vaarg.in_mem17 ], !dbg !60
+  %24 = load i8*, i8** %vaarg.addr22, align 8, !dbg !60
+  store i8* %24, i8** %t3, align 8, !dbg !59
+  call void @llvm.dbg.declare(metadata i8** %t4, metadata !61, metadata !24), !dbg !62
+  %25 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !63
+  %gp_offset_p23 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %25, i32 0, i32 0, !dbg !63
+  %gp_offset24 = load i32, i32* %gp_offset_p23, align 8, !dbg !63
+  %fits_in_gp25 = icmp ule i32 %gp_offset24, 40, !dbg !63
+  br i1 %fits_in_gp25, label %vaarg.in_reg26, label %vaarg.in_mem28, !dbg !63
+
+vaarg.in_reg26:                                   ; preds = %vaarg.end21
+  %26 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %25, i32 0, i32 3, !dbg !63
+  %reg_save_area27 = load i8*, i8** %26, align 8, !dbg !63
+  %27 = getelementptr i8, i8* %reg_save_area27, i32 %gp_offset24, !dbg !63
+  %28 = bitcast i8* %27 to i8**, !dbg !63
+  %29 = add i32 %gp_offset24, 8, !dbg !63
+  store i32 %29, i32* %gp_offset_p23, align 8, !dbg !63
+  br label %vaarg.end32, !dbg !63
+
+vaarg.in_mem28:                                   ; preds = %vaarg.end21
+  %overflow_arg_area_p29 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %25, i32 0, i32 2, !dbg !63
+  %overflow_arg_area30 = load i8*, i8** %overflow_arg_area_p29, align 8, !dbg !63
+  %30 = bitcast i8* %overflow_arg_area30 to i8**, !dbg !63
+  %overflow_arg_area.next31 = getelementptr i8, i8* %overflow_arg_area30, i32 8, !dbg !63
+  store i8* %overflow_arg_area.next31, i8** %overflow_arg_area_p29, align 8, !dbg !63
+  br label %vaarg.end32, !dbg !63
+
+vaarg.end32:                                      ; preds = %vaarg.in_mem28, %vaarg.in_reg26
+  %vaarg.addr33 = phi i8** [ %28, %vaarg.in_reg26 ], [ %30, %vaarg.in_mem28 ], !dbg !63
+  %31 = load i8*, i8** %vaarg.addr33, align 8, !dbg !63
+  store i8* %31, i8** %t4, align 8, !dbg !62
+  call void @llvm.dbg.declare(metadata i8** %nt, metadata !64, metadata !24), !dbg !65
+  %32 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !66
+  %gp_offset_p34 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %32, i32 0, i32 0, !dbg !66
+  %gp_offset35 = load i32, i32* %gp_offset_p34, align 8, !dbg !66
+  %fits_in_gp36 = icmp ule i32 %gp_offset35, 40, !dbg !66
+  br i1 %fits_in_gp36, label %vaarg.in_reg37, label %vaarg.in_mem39, !dbg !66
+
+vaarg.in_reg37:                                   ; preds = %vaarg.end32
+  %33 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %32, i32 0, i32 3, !dbg !66
+  %reg_save_area38 = load i8*, i8** %33, align 8, !dbg !66
+  %34 = getelementptr i8, i8* %reg_save_area38, i32 %gp_offset35, !dbg !66
+  %35 = bitcast i8* %34 to i8**, !dbg !66
+  %36 = add i32 %gp_offset35, 8, !dbg !66
+  store i32 %36, i32* %gp_offset_p34, align 8, !dbg !66
+  br label %vaarg.end43, !dbg !66
+
+vaarg.in_mem39:                                   ; preds = %vaarg.end32
+  %overflow_arg_area_p40 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %32, i32 0, i32 2, !dbg !66
+  %overflow_arg_area41 = load i8*, i8** %overflow_arg_area_p40, align 8, !dbg !66
+  %37 = bitcast i8* %overflow_arg_area41 to i8**, !dbg !66
+  %overflow_arg_area.next42 = getelementptr i8, i8* %overflow_arg_area41, i32 8, !dbg !66
+  store i8* %overflow_arg_area.next42, i8** %overflow_arg_area_p40, align 8, !dbg !66
+  br label %vaarg.end43, !dbg !66
+
+vaarg.end43:                                      ; preds = %vaarg.in_mem39, %vaarg.in_reg37
+  %vaarg.addr44 = phi i8** [ %35, %vaarg.in_reg37 ], [ %37, %vaarg.in_mem39 ], !dbg !66
+  %38 = load i8*, i8** %vaarg.addr44, align 8, !dbg !66
+  store i8* %38, i8** %nt, align 8, !dbg !65
+  ret i32 0, !dbg !67
+}
+
+; Function Attrs: nounwind readnone speculatable
+declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
+
+; Function Attrs: nounwind
+declare i8* @getenv(i8*) #2
+
+; Function Attrs: noinline nounwind optnone uwtable
+define i32 @forwarder(i32 %n, ...) #0 !dbg !68 {
+entry:
+  %n.addr = alloca i32, align 4
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %rc = alloca i32, align 4
+  store i32 %n, i32* %n.addr, align 4
+  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !71, metadata !24), !dbg !72
+  call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !73, metadata !24), !dbg !80
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !81
+  %arraydecay1 = bitcast %struct.__va_list_tag* %arraydecay to i8*, !dbg !81
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !81
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !82, metadata !24), !dbg !83
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !84
+  %arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !85
+  %call3 = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !86
+  %call4 = call i32 @user(i8* %call, %struct.__va_list_tag* %arraydecay2, i32 4711, i8* %call3, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1, i32 0, i32 0)), !dbg !87
+  store i32 %call4, i32* %rc, align 4, !dbg !83
+  %arraydecay5 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !88
+  %arraydecay56 = bitcast %struct.__va_list_tag* %arraydecay5 to i8*, !dbg !88
+  call void @llvm.va_end(i8* %arraydecay56), !dbg !88
+  %0 = load i32, i32* %rc, align 4, !dbg !89
+  ret i32 %0, !dbg !90
+}
+
+; Function Attrs: nounwind
+declare void @llvm.va_start(i8*) #3
+
+; Function Attrs: nounwind
+declare void @llvm.va_end(i8*) #3
+
+; Function Attrs: noinline nounwind optnone uwtable
+define i32 @main() #0 !dbg !91 {
+entry:
+  %retval = alloca i32, align 4
+  %not_tainted = alloca i8*, align 8
+  %tainted = alloca i8*, align 8
+  %rc = alloca i32, align 4
+  store i32 0, i32* %retval, align 4
+  call void @llvm.dbg.declare(metadata i8** %not_tainted, metadata !94, metadata !24), !dbg !95
+  store i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.1, i32 0, i32 0), i8** %not_tainted, align 8, !dbg !95
+  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !96, metadata !24), !dbg !97
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !98
+  store i8* %call, i8** %tainted, align 8, !dbg !97
+  call void @llvm.dbg.declare(metadata i32* %rc, metadata !99, metadata !24), !dbg !100
+  %0 = load i8*, i8** %tainted, align 8, !dbg !101
+  %1 = load i8*, i8** %not_tainted, align 8, !dbg !102
+  %2 = load i8*, i8** %tainted, align 8, !dbg !103
+  %3 = load i8*, i8** %not_tainted, align 8, !dbg !104
+  %4 = load i8*, i8** %not_tainted, align 8, !dbg !105
+  %call1 = call i32 (i32, ...) @forwarder(i32 6, i8* %0, i8* %1, i8* %2, i8* %3, i8* %4), !dbg !106
+  store i32 %call1, i32* %rc, align 4, !dbg !100
+  %5 = load i32, i32* %rc, align 4, !dbg !107
+  ret i32 %5, !dbg !108
+}
+
+attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone speculatable }
+attributes #2 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind }
+
+!llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!5, !6, !7}
+!llvm.ident = !{!8}
+
+!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "clang version 5.0.1 (tags/RELEASE_501/final 348479)", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !2, retainedTypes: !3)
+!1 = !DIFile(filename: "main.c", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-19")
+!2 = !{}
+!3 = !{!4}
+!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64)
+!5 = !{i32 2, !"Dwarf Version", i32 4}
+!6 = !{i32 2, !"Debug Info Version", i32 3}
+!7 = !{i32 1, !"wchar_size", i32 4}
+!8 = !{!"clang version 5.0.1 (tags/RELEASE_501/final 348479)"}
+!9 = distinct !DISubprogram(name: "user", scope: !1, file: !1, line: 7, type: !10, isLocal: false, isDefinition: true, scopeLine: 8, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
+!10 = !DISubroutineType(types: !11)
+!11 = !{!12, !13, !15, !12, !13, !13}
+!12 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!13 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !14, size: 64)
+!14 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+!15 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !16, size: 64)
+!16 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "__va_list_tag", file: !1, size: 192, elements: !17)
+!17 = !{!18, !20, !21, !22}
+!18 = !DIDerivedType(tag: DW_TAG_member, name: "gp_offset", scope: !16, file: !1, baseType: !19, size: 32)
+!19 = !DIBasicType(name: "unsigned int", size: 32, encoding: DW_ATE_unsigned)
+!20 = !DIDerivedType(tag: DW_TAG_member, name: "fp_offset", scope: !16, file: !1, baseType: !19, size: 32, offset: 32)
+!21 = !DIDerivedType(tag: DW_TAG_member, name: "overflow_arg_area", scope: !16, file: !1, baseType: !4, size: 64, offset: 64)
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "reg_save_area", scope: !16, file: !1, baseType: !4, size: 64, offset: 128)
+!23 = !DILocalVariable(name: "t", arg: 1, scope: !9, file: !1, line: 7, type: !13)
+!24 = !DIExpression()
+!25 = !DILocation(line: 7, column: 12, scope: !9)
+!26 = !DILocalVariable(name: "args", arg: 2, scope: !9, file: !1, line: 7, type: !15)
+!27 = !DILocation(line: 7, column: 23, scope: !9)
+!28 = !DILocalVariable(name: "n", arg: 3, scope: !9, file: !1, line: 7, type: !12)
+!29 = !DILocation(line: 7, column: 33, scope: !9)
+!30 = !DILocalVariable(name: "tt", arg: 4, scope: !9, file: !1, line: 7, type: !13)
+!31 = !DILocation(line: 7, column: 42, scope: !9)
+!32 = !DILocalVariable(name: "ntt", arg: 5, scope: !9, file: !1, line: 7, type: !13)
+!33 = !DILocation(line: 7, column: 52, scope: !9)
+!34 = !DILocalVariable(name: "ttt", scope: !9, file: !1, line: 9, type: !13)
+!35 = !DILocation(line: 9, column: 11, scope: !9)
+!36 = !DILocation(line: 9, column: 17, scope: !9)
+!37 = !DILocalVariable(name: "tttt", scope: !9, file: !1, line: 10, type: !13)
+!38 = !DILocation(line: 10, column: 11, scope: !9)
+!39 = !DILocation(line: 10, column: 18, scope: !9)
+!40 = !DILocalVariable(name: "n1", scope: !9, file: !1, line: 11, type: !12)
+!41 = !DILocation(line: 11, column: 9, scope: !9)
+!42 = !DILocation(line: 11, column: 14, scope: !9)
+!43 = !DILocalVariable(name: "nttt", scope: !9, file: !1, line: 12, type: !13)
+!44 = !DILocation(line: 12, column: 11, scope: !9)
+!45 = !DILocation(line: 12, column: 18, scope: !9)
+!46 = !DILocalVariable(name: "t1", scope: !9, file: !1, line: 14, type: !13)
+!47 = !DILocation(line: 14, column: 11, scope: !9)
+!48 = !DILocation(line: 14, column: 16, scope: !9)
+!49 = !DILocation(line: 16, column: 9, scope: !50)
+!50 = distinct !DILexicalBlock(scope: !9, file: !1, line: 16, column: 9)
+!51 = !DILocation(line: 16, column: 24, scope: !50)
+!52 = !DILocation(line: 16, column: 9, scope: !9)
+!53 = !DILocalVariable(name: "t2", scope: !54, file: !1, line: 17, type: !13)
+!54 = distinct !DILexicalBlock(scope: !50, file: !1, line: 16, column: 33)
+!55 = !DILocation(line: 17, column: 15, scope: !54)
+!56 = !DILocation(line: 17, column: 20, scope: !54)
+!57 = !DILocation(line: 18, column: 5, scope: !54)
+!58 = !DILocalVariable(name: "t3", scope: !9, file: !1, line: 20, type: !13)
+!59 = !DILocation(line: 20, column: 11, scope: !9)
+!60 = !DILocation(line: 20, column: 16, scope: !9)
+!61 = !DILocalVariable(name: "t4", scope: !9, file: !1, line: 21, type: !13)
+!62 = !DILocation(line: 21, column: 11, scope: !9)
+!63 = !DILocation(line: 21, column: 16, scope: !9)
+!64 = !DILocalVariable(name: "nt", scope: !9, file: !1, line: 23, type: !13)
+!65 = !DILocation(line: 23, column: 11, scope: !9)
+!66 = !DILocation(line: 23, column: 16, scope: !9)
+!67 = !DILocation(line: 25, column: 5, scope: !9)
+!68 = distinct !DISubprogram(name: "forwarder", scope: !1, file: !1, line: 29, type: !69, isLocal: false, isDefinition: true, scopeLine: 30, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
+!69 = !DISubroutineType(types: !70)
+!70 = !{!12, !12, null}
+!71 = !DILocalVariable(name: "n", arg: 1, scope: !68, file: !1, line: 29, type: !12)
+!72 = !DILocation(line: 29, column: 15, scope: !68)
+!73 = !DILocalVariable(name: "ap", scope: !68, file: !1, line: 31, type: !74)
+!74 = !DIDerivedType(tag: DW_TAG_typedef, name: "va_list", file: !75, line: 30, baseType: !76)
+!75 = !DIFile(filename: "/home/sebastian/documents/programming/llvm/jail/llvm501-debug/lib/clang/5.0.1/include/stdarg.h", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-19")
+!76 = !DIDerivedType(tag: DW_TAG_typedef, name: "__builtin_va_list", file: !1, line: 31, baseType: !77)
+!77 = !DICompositeType(tag: DW_TAG_array_type, baseType: !16, size: 192, elements: !78)
+!78 = !{!79}
+!79 = !DISubrange(count: 1)
+!80 = !DILocation(line: 31, column: 13, scope: !68)
+!81 = !DILocation(line: 32, column: 5, scope: !68)
+!82 = !DILocalVariable(name: "rc", scope: !68, file: !1, line: 34, type: !12)
+!83 = !DILocation(line: 34, column: 9, scope: !68)
+!84 = !DILocation(line: 34, column: 19, scope: !68)
+!85 = !DILocation(line: 34, column: 35, scope: !68)
+!86 = !DILocation(line: 34, column: 45, scope: !68)
+!87 = !DILocation(line: 34, column: 14, scope: !68)
+!88 = !DILocation(line: 36, column: 5, scope: !68)
+!89 = !DILocation(line: 38, column: 12, scope: !68)
+!90 = !DILocation(line: 38, column: 5, scope: !68)
+!91 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 42, type: !92, isLocal: false, isDefinition: true, scopeLine: 43, isOptimized: false, unit: !0, variables: !2)
+!92 = !DISubroutineType(types: !93)
+!93 = !{!12}
+!94 = !DILocalVariable(name: "not_tainted", scope: !91, file: !1, line: 44, type: !13)
+!95 = !DILocation(line: 44, column: 11, scope: !91)
+!96 = !DILocalVariable(name: "tainted", scope: !91, file: !1, line: 45, type: !13)
+!97 = !DILocation(line: 45, column: 11, scope: !91)
+!98 = !DILocation(line: 45, column: 21, scope: !91)
+!99 = !DILocalVariable(name: "rc", scope: !91, file: !1, line: 47, type: !12)
+!100 = !DILocation(line: 47, column: 9, scope: !91)
+!101 = !DILocation(line: 47, column: 27, scope: !91)
+!102 = !DILocation(line: 47, column: 36, scope: !91)
+!103 = !DILocation(line: 47, column: 49, scope: !91)
+!104 = !DILocation(line: 47, column: 58, scope: !91)
+!105 = !DILocation(line: 47, column: 71, scope: !91)
+!106 = !DILocation(line: 47, column: 14, scope: !91)
+!107 = !DILocation(line: 49, column: 12, scope: !91)
+!108 = !DILocation(line: 49, column: 5, scope: !91)
