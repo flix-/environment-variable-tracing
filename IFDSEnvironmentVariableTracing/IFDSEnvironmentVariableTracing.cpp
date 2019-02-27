@@ -40,17 +40,16 @@ namespace psr {
 
 static const std::set<std::string> TAINTED_CALLS = {
                                                      "getenv",
+                                                     "secure_getenv"
                                                      "secure_getenv",
+                                                     "curl_getenv",
+                                                     "decc_getenv",
+                                                     "vms_getenv",
+                                                     "GetEnv",
+                                                     "curlx_getenv"
                                                    };
 
-static const std::set<std::string> BLACKLISTED_CALLS = {
-                                                         "BIO_printf",
-                                                         "BIO_vprintf",
-                                                         "BIO_snprintf",
-                                                         "BIO_vsnprintf",
-                                                         "ERR_add_error_data",
-                                                         "OPENSSL_showfatal",
-                                                        };
+static const std::set<std::string> BLACKLISTED_CALLS = { };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
