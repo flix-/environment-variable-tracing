@@ -9,9 +9,9 @@ use Data::Dumper;
 my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $report_file = "report-" . time() . ".txt";
 
-my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
+my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
 
-my $print_summary_only = 0;
+my $print_summary_only = 1;
 
 # END CONFIG #
 
@@ -47,21 +47,48 @@ sub get_trace_from_file {
 
     my $trace = {};
 
-    my $current_key;
+    my $current_file;
     while (my $line = <$trace_fh>) {
         chomp($line);
 
         if ($line =~ m/SF:(.*)/) {
-            $current_key = $1;
+            $current_file = $1;
             next;
         }
 
-        next if (!$current_key || ($current_key =~ m/$skip_file_pattern/));
+        next if (!$current_file || ($current_file =~ m/$skip_file_pattern/));
         
-        $trace->{$current_key} = undef unless (exists ${trace}->{$current_key});
+        $trace->{$current_file} = undef unless (exists ${trace}->{$current_file});
 
-        $trace->{$current_key}->{"FNDA"}->{$2} = $1 if ($line =~ m/FNDA:([0-9]+),(.*)/);
-        $trace->{$current_key}->{"DA"}->{$1} = $2 if ($line =~ m/DA:([0-9]+),([0-9]+)/);
+        if ($line =~ m/FNDA:([0-9]+),(.*)/) {
+            my $function_count = $1;
+            my $function_name = $2;
+
+            if (exists $trace->{$current_file}->{"FNDA"}->{$function_name}) {
+                my $new_count = $trace->{$current_file}->{"FNDA"}->{$function_name} > $function_count ?
+                                        $trace->{$current_file}->{"FNDA"}->{$function_name} :
+                                        $function_count;
+
+                $trace->{$current_file}->{"FNDA"}->{$function_name} = $new_count;
+            } else {
+                $trace->{$current_file}->{"FNDA"}->{$function_name} = $function_count;
+            }
+        }
+
+        if ($line =~ m/DA:([0-9]+),([0-9]+)/) {
+            my $loc = $1;
+            my $loc_count = $2;
+
+            if (exists $trace->{$current_file}->{"DA"}->{$loc}) {
+                my $new_count = $trace->{$current_file}->{"DA"}->{$loc} > $loc_count ?
+                                        $trace->{$current_file}->{"DA"}->{$loc} :
+                                        $loc_count;
+
+                $trace->{$current_file}->{"DA"}->{$loc} = $new_count;
+            } else {
+                $trace->{$current_file}->{"DA"}->{$loc} = $loc_count;
+            }
+        }
     }
 
     close($trace_fh);
@@ -215,7 +242,7 @@ sub create_diff {
     my $dynamic_trace = shift;
 
     foreach my $dynamic_file (keys %{$dynamic_trace}) {
-        next unless exists($static_trace->{$dynamic_file});
+        next unless exists($static_trace->{$dynamic_file}->{"DA"});
 
         foreach my $dynamic_loc (keys %{$dynamic_trace->{$dynamic_file}->{"DA"}}) {
             next unless ($dynamic_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc} > 0);
@@ -234,7 +261,7 @@ sub write_diff {
     open(my $diff_trace_fh, '>', $diff_trace_file) or die "Cannot open $diff_trace_file for writing\n";
 
     foreach my $file (keys %{$diff_trace}) {
-        next unless keys %{$diff_trace->{$file}};
+        next unless keys %{$diff_trace->{$file}->{"DA"}};
 
         print $diff_trace_fh "SF:${file}\n";
 
