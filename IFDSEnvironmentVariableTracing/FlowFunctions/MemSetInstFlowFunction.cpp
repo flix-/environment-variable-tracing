@@ -19,7 +19,7 @@ MemSetInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
   bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
   if (killFact) {
-    lineNumberStore.addLineNumber(memSetInst);
+    traceStats.add(memSetInst);
 
     return { };
   }

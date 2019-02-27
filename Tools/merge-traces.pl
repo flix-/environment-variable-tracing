@@ -29,10 +29,19 @@ foreach my $trace_file (@traces) {
 
 my $merged_trace_file = "static-" . time() . "-merged-trace.txt";
 
-system("lcov $lcov_param -o $merged_trace_file");
+my $cmd = "lcov $lcov_param -o $merged_trace_file";
+
+print "Writing merge to: $merged_trace_file\n";
+print "Executing: $cmd\n";
+
+system($cmd);
 
 print "Creating HTML page\n";
 
-system("genhtml -o html $merged_trace_file");
+$cmd = "genhtml -o html $merged_trace_file";
+
+print "Executing: $cmd\n";
+
+system("$cmd");
 #EOF
 

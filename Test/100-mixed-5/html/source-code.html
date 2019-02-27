@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include "stdlib.h"
+
+extern char *getenv(const char *);
+
+struct SH {
+    int arena_size;
+    char *arena;
+    int minsize;
+    int freelist_size;
+};
+
+static struct SH sh;
+
+static int
+sh_getlist(char *ptr) {
+    int size = sh.freelist_size - 1;
+
+    int bit = (sh.arena_size + ptr - sh.arena) / sh.minsize;
+
+    int t = bit;
+
+    return 0;
+}
+
+int
+main() {
+    char *ptr = getenv("gude");
+
+    int rc = sh_getlist(ptr);
+
+    return rc;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %ptr = alloca i8*, align 8, !phasar.instruction.id !25<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] i8* %ptr<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] i8* %ptr<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %ptr.addr = alloca i8*, align 8, !phasar.instruction.id !24<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %bit = alloca i32, align 4, !phasar.instruction.id !26<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t = alloca i32, align 4, !phasar.instruction.id !27<br>
+Writing line number trace to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1551277520-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

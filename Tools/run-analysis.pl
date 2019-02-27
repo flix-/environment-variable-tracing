@@ -9,7 +9,7 @@ use Data::Dumper;
 my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501-release/bin/phasar';
 my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
 
-my $BULK_MODE = 0;
+my $BULK_MODE = 1;
 
 my $STACK_SIZE_KB = 'unlimited'; #512*1024;
 
@@ -61,7 +61,7 @@ if ($BULK_MODE) {
 
     my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points_bulk > $analysis_out 2>&1";
 
-    print "Command: $cmd\n";
+    print "Executing: $cmd\n";
 
     system($cmd);
 }
@@ -71,7 +71,7 @@ else {
 
         my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_point > $analysis_out 2>&1";
 
-        print "Command: $cmd\n";
+        print "Executing: $cmd\n";
 
         system($cmd);
     }

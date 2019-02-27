@@ -1,8 +1,6 @@
 add_library(IFDSEnvironmentVariableTracing MODULE
   IFDSEnvironmentVariableTracing.h
   IFDSEnvironmentVariableTracing.cpp
-  LineNumberStore.h
-  LineNumberStore.cpp
 
   FlowFunctions/FlowFunctionBase.h
   FlowFunctions/FlowFunctionBase.cpp
@@ -38,6 +36,17 @@ add_library(IFDSEnvironmentVariableTracing MODULE
   FlowFunctions/MapTaintedValuesToCallee.cpp
   FlowFunctions/MapTaintedValuesToCaller.h
   FlowFunctions/MapTaintedValuesToCaller.cpp
+
+  Stats/TraceStats.h
+  Stats/TraceStats.cpp
+
+  Stats/TraceStatsModel.h
+
+  Stats/TraceStatsWriter.h
+  Stats/LineNumberWriter.h
+  Stats/LineNumberWriter.cpp
+  Stats/LcovWriter.h
+  Stats/LcovWriter.cpp
 
   Utils/DataFlowUtils.h
   Utils/DataFlowUtils.cpp

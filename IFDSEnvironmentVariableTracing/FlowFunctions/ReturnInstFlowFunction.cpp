@@ -16,7 +16,7 @@ ReturnInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact) ||
                            DataFlowUtils::isMemoryLocationTainted(retVal, fact);
     if (isRetValTainted) {
-      lineNumberStore.addLineNumber(retInst);
+      traceStats.add(retInst);
 
       return { fact, ExtendedValue(retInst) };
     }

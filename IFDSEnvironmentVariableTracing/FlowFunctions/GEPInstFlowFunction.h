@@ -13,9 +13,9 @@ class GEPInstFlowFunction : public FlowFunctionBase {
 
 public:
   GEPInstFlowFunction(const llvm::Instruction* _currentInst,
-                      LineNumberStore& _lineNumberStore,
+                      TraceStats& _traceStats,
                       ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _lineNumberStore, _zeroValue) { }
+    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~GEPInstFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

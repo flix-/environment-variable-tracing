@@ -5,7 +5,7 @@
 #ifndef FLOWFUNCTIONBASE_H
 #define FLOWFUNCTIONBASE_H
 
-#include "../LineNumberStore.h"
+#include "../Stats/TraceStats.h"
 #include "../Utils/DataFlowUtils.h"
 
 #include <llvm/IR/Instruction.h>
@@ -22,10 +22,10 @@ class FlowFunctionBase : public FlowFunction<ExtendedValue> {
 
 public:
   FlowFunctionBase(const llvm::Instruction* _currentInst,
-                   LineNumberStore& _lineNumberStore,
+                   TraceStats& _traceStats,
                    ExtendedValue _zeroValue)
     : currentInst(_currentInst),
-      lineNumberStore(_lineNumberStore),
+      traceStats(_traceStats),
       zeroValue(_zeroValue) { }
   ~FlowFunctionBase() override = default;
 
@@ -34,7 +34,7 @@ public:
 
 protected:
   const llvm::Instruction* currentInst;
-  LineNumberStore& lineNumberStore;
+  TraceStats& traceStats;
   ExtendedValue zeroValue;
 };
 

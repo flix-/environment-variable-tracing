@@ -5,7 +5,7 @@
 #ifndef MAPTAINTEDVALUESTOCALLEE_H
 #define MAPTAINTEDVALUESTOCALLEE_H
 
-#include "../LineNumberStore.h"
+#include "../Stats/TraceStats.h"
 
 #include <llvm/IR/Instruction.h>
 #include <llvm/IR/CallSite.h>
@@ -20,11 +20,11 @@ class MapTaintedValuesToCallee : public FlowFunction<ExtendedValue> {
 public:
   MapTaintedValuesToCallee(const llvm::CallInst* _callInst,
                            const llvm::Function* _destMthd,
-                           LineNumberStore& _lineNumberStore,
+                           TraceStats& _traceStats,
                            ExtendedValue _zeroValue)
     : callInst(_callInst),
       destMthd(_destMthd),
-      lineNumberStore(_lineNumberStore),
+      traceStats(_traceStats),
       zeroValue(_zeroValue) {}
   ~MapTaintedValuesToCallee() override = default;
 
@@ -33,7 +33,7 @@ public:
 private:
   const llvm::CallInst* callInst;
   const llvm::Function* destMthd;
-  LineNumberStore& lineNumberStore;
+  TraceStats& traceStats;
   ExtendedValue zeroValue;
 };
 

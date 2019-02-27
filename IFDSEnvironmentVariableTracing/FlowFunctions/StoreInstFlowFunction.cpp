@@ -63,7 +63,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       }
 
       targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(storeInst);
+      traceStats.add(storeInst);
 
       llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
@@ -92,7 +92,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(patchedMemLocationSeq);
 
       targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(storeInst);
+      traceStats.add(storeInst);
 
       llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
@@ -124,7 +124,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(relocatedMemLocationSeq);
 
       targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(storeInst);
+      traceStats.add(storeInst);
 
       llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
@@ -144,7 +144,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(dstMemLocationSeq);
 
       targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(storeInst);
+      traceStats.add(storeInst);
     }
     if (!killFact) targetFacts.insert(fact);
   }

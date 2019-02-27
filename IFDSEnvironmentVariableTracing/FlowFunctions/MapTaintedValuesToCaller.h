@@ -5,7 +5,7 @@
 #ifndef MAPTAINTEDVALUESTOCALLER_H
 #define MAPTAINTEDVALUESTOCALLER_H
 
-#include "../LineNumberStore.h"
+#include "../Stats/TraceStats.h"
 
 #include <llvm/IR/Instructions.h>
 
@@ -19,11 +19,11 @@ class MapTaintedValuesToCaller : public FlowFunction<ExtendedValue> {
 public:
   MapTaintedValuesToCaller(const llvm::CallInst* _callInst,
                            const llvm::ReturnInst* _retInst,
-                           LineNumberStore& _lineNumberStore,
+                           TraceStats& _traceStats,
                            ExtendedValue _zeroValue)
     : callInst(_callInst),
       retInst(_retInst),
-      lineNumberStore(_lineNumberStore),
+      traceStats(_traceStats),
       zeroValue(_zeroValue) {}
   ~MapTaintedValuesToCaller() override = default;
 
@@ -33,7 +33,7 @@ public:
 private:
   const llvm::CallInst* callInst;
   const llvm::ReturnInst* retInst;
-  LineNumberStore& lineNumberStore;
+  TraceStats& traceStats;
   ExtendedValue zeroValue;
 };
 

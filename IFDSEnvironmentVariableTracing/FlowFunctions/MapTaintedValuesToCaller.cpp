@@ -73,8 +73,8 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
   bool addLineNumbers = !targetFacts.empty();
   if (addLineNumbers) {
-    lineNumberStore.addLineNumber(callInst);
-    lineNumberStore.addLineNumber(retInst);
+    traceStats.add(callInst);
+    traceStats.add(retInst);
   }
 
   return targetFacts;

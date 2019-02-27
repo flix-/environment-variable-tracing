@@ -41,7 +41,7 @@ BranchSwitchInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ExtendedValue ev(currentInst);
       ev.setEndOfTaintedBlockLabel(endBasicBlockLabel);
 
-      lineNumberStore.addLineNumber(currentInst);
+      traceStats.add(currentInst);
 
       return { fact, ev };
     }

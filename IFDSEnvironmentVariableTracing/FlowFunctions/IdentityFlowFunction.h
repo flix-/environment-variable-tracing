@@ -13,9 +13,9 @@ class IdentityFlowFunction : public FlowFunctionBase {
 
 public:
   IdentityFlowFunction(const llvm::Instruction* _currentInst,
-                      LineNumberStore& _lineNumberStore,
+                      TraceStats& _traceStats,
                       ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _lineNumberStore, _zeroValue) { }
+    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~IdentityFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

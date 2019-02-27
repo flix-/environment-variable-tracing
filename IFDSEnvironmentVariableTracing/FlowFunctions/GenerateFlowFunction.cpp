@@ -9,7 +9,7 @@ namespace psr {
 std::set<ExtendedValue>
 GenerateFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
-  lineNumberStore.addLineNumber(currentInst);
+  traceStats.add(currentInst);
 
   if (fact == zeroValue) return { ExtendedValue(currentInst) };
 

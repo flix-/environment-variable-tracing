@@ -21,7 +21,7 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
     bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
     if (removeTaintedBlockInst) return { };
 
-    lineNumberStore.addLineNumber(currentInst);
+    traceStats.add(currentInst);
 
     bool isAutoGEN = DataFlowUtils::isAutoGENInTaintedBlock(currentInst);
     if (isAutoGEN) return { fact, ExtendedValue(currentInst) };

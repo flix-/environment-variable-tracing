@@ -33,7 +33,7 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     ev.resetVarArgIndex();
 
     targetFacts.insert(ev);
-    lineNumberStore.addLineNumber(memTransferInst);
+    traceStats.add(memTransferInst);
 
     llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
     llvm::outs() << "[TRACK] Source:" << "\n";
@@ -54,7 +54,7 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(relocatedMemLocationSeq);
 
       targetFacts.insert(ev);
-      lineNumberStore.addLineNumber(memTransferInst);
+      traceStats.add(memTransferInst);
 
       llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";

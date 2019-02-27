@@ -5,7 +5,7 @@
 #ifndef IFDSENVIRONMENTVARIABLETRACING_H
 #define IFDSENVIRONMENTVARIABLETRACING_H
 
-#include "LineNumberStore.h"
+#include "Stats/TraceStats.h"
 
 #include <phasar/PhasarLLVM/Plugins/Interfaces/IfdsIde/IFDSTabulationProblemPluginExtendedValue.h>
 
@@ -48,7 +48,7 @@ public:
                   SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) override;
 
 private:
-  LineNumberStore lineNumberStore;
+  TraceStats traceStats;
 };
 
 } // namespace

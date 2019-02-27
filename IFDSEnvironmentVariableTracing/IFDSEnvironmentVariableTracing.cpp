@@ -4,7 +4,10 @@
 
 #include "IFDSEnvironmentVariableTracing.h"
 
-#include "LineNumberStore.h"
+#include "Stats/TraceStats.h"
+#include "Stats/TraceStatsWriter.h"
+#include "Stats/LineNumberWriter.h"
+#include "Stats/LcovWriter.h"
 
 #include "FlowFunctions/StoreInstFlowFunction.h"
 #include "FlowFunctions/BranchSwitchInstFlowFunction.h"
@@ -26,13 +29,10 @@
 
 #include "Utils/DataFlowUtils.h"
 
-#include <fstream>
 #include <set>
 #include <vector>
 
 #include <llvm/IR/IntrinsicInst.h>
-
-#include <llvm/Support/raw_ostream.h>
 
 #include <phasar/PhasarLLVM/ControlFlow/LLVMBasedICFG.h>
 
@@ -41,14 +41,16 @@ namespace psr {
 static const std::set<std::string> TAINTED_CALLS = {
                                                      "getenv",
                                                      "secure_getenv",
-                                                     "curl_getenv",
-                                                     "decc_getenv",
-                                                     "vms_getenv",
-                                                     "GetEnv",
-                                                     "curlx_getenv"
                                                    };
 
-static const std::set<std::string> BLACKLISTED_CALLS = { };
+static const std::set<std::string> BLACKLISTED_CALLS = {
+                                                         "BIO_printf",
+                                                         "BIO_vprintf",
+                                                         "BIO_snprintf",
+                                                         "BIO_vsnprintf",
+                                                         "ERR_add_error_data",
+                                                         "OPENSSL_showfatal",
+                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
@@ -77,24 +79,24 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
                                                       const llvm::Instruction* successorInst) {
 
   if (llvm::isa<llvm::StoreInst>(currentInst))
-    return std::make_shared<StoreInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
+    return std::make_shared<StoreInstFlowFunction>(currentInst, traceStats, zeroValue());
 
   if (llvm::isa<llvm::BranchInst>(currentInst) || llvm::isa<llvm::SwitchInst>(currentInst))
-    return std::make_shared<BranchSwitchInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
+    return std::make_shared<BranchSwitchInstFlowFunction>(currentInst, traceStats, zeroValue());
 
   if (llvm::isa<llvm::GetElementPtrInst>(currentInst))
-    return std::make_shared<GEPInstFlowFunction>(currentInst, lineNumberStore, zeroValue());
+    return std::make_shared<GEPInstFlowFunction>(currentInst, traceStats, zeroValue());
 
   if (llvm::isa<llvm::PHINode>(currentInst))
-    return std::make_shared<PHINodeFlowFunction>(currentInst, lineNumberStore, zeroValue());
+    return std::make_shared<PHINodeFlowFunction>(currentInst, traceStats, zeroValue());
 
   if (DataFlowUtils::isCheckOperandsInst(currentInst))
-    return std::make_shared<CheckOperandsFlowFunction>(currentInst, lineNumberStore, zeroValue());
+    return std::make_shared<CheckOperandsFlowFunction>(currentInst, traceStats, zeroValue());
 
   if (llvm::isa<llvm::ReturnInst>(successorInst))
-    return std::make_shared<ReturnInstFlowFunction>(successorInst, lineNumberStore, zeroValue());
+    return std::make_shared<ReturnInstFlowFunction>(successorInst, traceStats, zeroValue());
 
-  return std::make_shared<IdentityFlowFunction>(currentInst, lineNumberStore, zeroValue());
+  return std::make_shared<IdentityFlowFunction>(currentInst, traceStats, zeroValue());
 }
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
@@ -103,7 +105,7 @@ IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* cal
 
   return std::make_shared<MapTaintedValuesToCallee>(llvm::cast<llvm::CallInst>(callStmt),
                                                     destMthd,
-                                                    lineNumberStore,
+                                                    traceStats,
                                                     zeroValue());
 }
 
@@ -115,7 +117,7 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
 
   return std::make_shared<MapTaintedValuesToCaller>(llvm::cast<llvm::CallInst>(callSite),
                                                     llvm::cast<llvm::ReturnInst>(exitStmt),
-                                                    lineNumberStore,
+                                                    traceStats,
                                                     zeroValue());
 }
 
@@ -146,7 +148,7 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
    * the function. If we intercept here the call instruction will be pushed when the flow
    * function is called with the branch instruction fact.
    */
-  return std::make_shared<CallToRetFlowFunction>(callSite, lineNumberStore, zeroValue());
+  return std::make_shared<CallToRetFlowFunction>(callSite, traceStats, zeroValue());
 }
 
 /*
@@ -166,43 +168,43 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   const auto callInst = llvm::cast<llvm::CallInst>(callStmt);
   bool isStaticCallSite = callInst->getCalledFunction();
   if (!isStaticCallSite)
-    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
    * Exclude blacklisted functions here.
    */
   bool isBlackListedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
   if (isBlackListedCall)
-    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
    * Intrinsics.
    */
   if (llvm::isa<llvm::MemTransferInst>(callStmt))
-    return std::make_shared<MemTransferInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<MemTransferInstFlowFunction>(callStmt, traceStats, zeroValue());
 
   if (llvm::isa<llvm::MemSetInst>(callStmt))
-    return std::make_shared<MemSetInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<MemSetInstFlowFunction>(callStmt, traceStats, zeroValue());
 
   if (llvm::isa<llvm::VAStartInst>(callStmt))
-    return std::make_shared<VAStartInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<VAStartInstFlowFunction>(callStmt, traceStats, zeroValue());
 
   if (llvm::isa<llvm::VAEndInst>(callStmt))
-    return std::make_shared<VAEndInstFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<VAEndInstFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
    * Provide summary for tainted calls.
    */
   bool isTaintedCall = TAINTED_CALLS.find(destMthdName) != TAINTED_CALLS.end();
   if (isTaintedCall)
-    return std::make_shared<GenerateFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<GenerateFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
    * Skip all (other) declarations.
    */
   bool isDeclaration = destMthd->isDeclaration();
   if (isDeclaration)
-    return std::make_shared<IdentityFlowFunction>(callStmt, lineNumberStore, zeroValue());
+    return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
    * Follow call -> getCallFlowFunction()
@@ -227,45 +229,16 @@ void
 IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
                                                 SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) {
 
-  /*
-   * 1) Simple report for tests (compatibility)
-   * 2) lcov trace file
-   */
-  const std::string simpleReportFile = "line-numbers.txt";
+  const std::string lineNumberTraceFile = "line-numbers.txt";
   const std::string lcovTraceFile = DataFlowUtils::getTraceFilename(EntryPoints.front());
 
-  // Write simple report
-  std::ofstream writer(simpleReportFile);
-
-  llvm::outs() << "Writing simple report to: " << simpleReportFile << "\n";
-
-  for (const auto& pair : lineNumberStore.getLineNumbers()) {
-    const auto lineNumbers = pair.second;
-
-    for (const auto& lineNumber : lineNumbers) {
-      writer << lineNumber << "\n";
-    }
-  }
-  writer.close();
-  writer.clear();
+  // Write line number trace
+  LineNumberWriter lineNumberWriter(traceStats, lineNumberTraceFile);
+  lineNumberWriter.write();
 
   // Write lcov trace
-  writer.open(lcovTraceFile);
-
-  llvm::outs() << "Writing lcov trace to: " << lcovTraceFile << "\n";
-
-  for (const auto& pair : lineNumberStore.getLineNumbers()) {
-    const auto path = pair.first;
-    const auto lineNumbers = pair.second;
-
-    writer << "SF:" << path << "\n";
-
-    for (const auto& lineNumber : lineNumbers) {
-      writer << "DA:" << lineNumber << ",1" << "\n";
-    }
-
-    writer << "end_of_record" << "\n";
-  }
+  LcovWriter lcovWriter(traceStats, lcovTraceFile);
+  lcovWriter.write();
 }
 
 } // namespace

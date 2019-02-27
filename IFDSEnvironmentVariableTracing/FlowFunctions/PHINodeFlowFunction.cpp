@@ -17,7 +17,7 @@ PHINodeFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     bool isIncomingValueTainted = DataFlowUtils::isValueTainted(incomingValue, fact) ||
                                   DataFlowUtils::isMemoryLocationTainted(incomingValue, fact);
     if (isIncomingValueTainted) {
-      lineNumberStore.addLineNumber(phiNodeInst);
+      traceStats.add(phiNodeInst);
 
       return { fact, ExtendedValue(phiNodeInst) };
     }
