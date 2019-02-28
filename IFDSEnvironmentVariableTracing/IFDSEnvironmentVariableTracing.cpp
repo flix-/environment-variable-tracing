@@ -49,7 +49,20 @@ static const std::set<std::string> TAINTED_CALLS = {
                                                      "curlx_getenv"
                                                    };
 
-static const std::set<std::string> BLACKLISTED_CALLS = { };
+static const std::set<std::string> BLACKLISTED_CALLS = {
+                                                        "curl_mvsnprintf",
+                                                        "curl_msnprintf",
+                                                        "curl_maprintf",
+                                                        "curl_mvaprintf",
+                                                        "curl_msprintf",
+                                                        "curl_mprintf",
+                                                        "curl_mfprintf",
+                                                        "curl_mvsprintf",
+                                                        "curl_mvprintf",
+                                                        "curl_mvfprintf",
+                                                        "Curl_infof",
+                                                        "Curl_failf"
+                                                       };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
