@@ -8,6 +8,7 @@
 #include "Stats/TraceStatsWriter.h"
 #include "Stats/LineNumberWriter.h"
 #include "Stats/LcovWriter.h"
+#include "Stats/LcovRetValWriter.h"
 
 #include "FlowFunctions/StoreInstFlowFunction.h"
 #include "FlowFunctions/BranchSwitchInstFlowFunction.h"
@@ -39,17 +40,30 @@
 namespace psr {
 
 static const std::set<std::string> TAINTED_CALLS = {
-                                                     "getenv",
-                                                     "secure_getenv"
-                                                     "secure_getenv",
-                                                     "curl_getenv",
-                                                     "decc_getenv",
-                                                     "vms_getenv",
-                                                     "GetEnv",
-                                                     "curlx_getenv"
+                                                    "getenv",
+                                                    "secure_getenv",
+
+                                                    // libcrypto
+                                                    "ossl_safe_getenv",
+
+                                                    // libcurl / curl
+                                                    "curl_getenv",
+                                                    "decc_getenv",
+                                                    "vms_getenv",
+                                                    "GetEnv",
+                                                    "curlx_getenv"
                                                    };
 
 static const std::set<std::string> BLACKLISTED_CALLS = {
+                                                        // libcrypto
+                                                        "BIO_printf",
+                                                        "BIO_vprintf",
+                                                        "BIO_snprintf",
+                                                        "BIO_vsnprintf",
+                                                        "ERR_add_error_data",
+                                                        "OPENSSL_showfatal",
+
+                                                        // libcurl / curl
                                                         "curl_mvsnprintf",
                                                         "curl_msnprintf",
                                                         "curl_maprintf",
@@ -90,6 +104,9 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
                                                       const llvm::Instruction* successorInst) {
 
+  if (DataFlowUtils::isReturnValue(currentInst, successorInst))
+    return std::make_shared<ReturnInstFlowFunction>(successorInst, traceStats, zeroValue());
+
   if (llvm::isa<llvm::StoreInst>(currentInst))
     return std::make_shared<StoreInstFlowFunction>(currentInst, traceStats, zeroValue());
 
@@ -104,9 +121,6 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
   if (DataFlowUtils::isCheckOperandsInst(currentInst))
     return std::make_shared<CheckOperandsFlowFunction>(currentInst, traceStats, zeroValue());
-
-  if (llvm::isa<llvm::ReturnInst>(successorInst))
-    return std::make_shared<ReturnInstFlowFunction>(successorInst, traceStats, zeroValue());
 
   return std::make_shared<IdentityFlowFunction>(currentInst, traceStats, zeroValue());
 }
@@ -242,7 +256,8 @@ IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
                                                 SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) {
 
   const std::string lineNumberTraceFile = "line-numbers.txt";
-  const std::string lcovTraceFile = DataFlowUtils::getTraceFilename(EntryPoints.front());
+  const std::string lcovTraceFile = DataFlowUtils::getTraceFilenamePrefix(EntryPoints.front()) + "-trace.txt";
+  const std::string lcovRetValTraceFile = DataFlowUtils::getTraceFilenamePrefix(EntryPoints.front()) + "-return-value-trace.txt";
 
   // Write line number trace
   LineNumberWriter lineNumberWriter(traceStats, lineNumberTraceFile);
@@ -251,6 +266,10 @@ IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
   // Write lcov trace
   LcovWriter lcovWriter(traceStats, lcovTraceFile);
   lcovWriter.write();
+
+  // Write lcov return value trace
+  LcovRetValWriter lcovRetValWriter(traceStats, lcovRetValTraceFile);
+  lcovRetValWriter.write();
 }
 
 } // namespace

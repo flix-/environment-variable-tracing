@@ -5,26 +5,34 @@
 #ifndef TRACESTATS_H
 #define TRACESTATS_H
 
-#include "TraceStatsModel.h"
+#include "LineNumberEntry.h"
 
 #include <map>
+#include <set>
 
 #include <llvm/IR/Instruction.h>
 
 namespace psr {
 
 class TraceStats {
+
 public:
+  using FileStats = std::map<std::string, std::map<std::string, std::set<LineNumberEntry>>>;
+  using FunctionStats = std::map<std::string, std::set<LineNumberEntry>>;
+  using LineNumberStats = std::set<LineNumberEntry>;
+
   TraceStats() { }
   ~TraceStats() = default;
 
   long add(const llvm::Instruction* instruction);
-  const std::map<std::string, TraceStatsModel> getStats() const { return stats; }
+  const FileStats getStats() const { return stats; }
 
 private:
-  std::map<std::string, TraceStatsModel> stats;
+  FunctionStats& getFunctionStats(std::string file);
+  LineNumberStats& getLineNumberStats(std::string file,
+                                      std::string function);
+  FileStats stats;
 
-  TraceStatsModel& getTraceStatsModelForPath(std::string absolutePath);
 };
 
 } // namespace

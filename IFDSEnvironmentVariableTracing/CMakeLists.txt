@@ -40,13 +40,15 @@ add_library(IFDSEnvironmentVariableTracing MODULE
   Stats/TraceStats.h
   Stats/TraceStats.cpp
 
-  Stats/TraceStatsModel.h
+  Stats/LineNumberEntry.h
 
   Stats/TraceStatsWriter.h
   Stats/LineNumberWriter.h
   Stats/LineNumberWriter.cpp
   Stats/LcovWriter.h
   Stats/LcovWriter.cpp
+  Stats/LcovRetValWriter.h
+  Stats/LcovRetValWriter.cpp
 
   Utils/DataFlowUtils.h
   Utils/DataFlowUtils.cpp

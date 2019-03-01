@@ -36,12 +36,5 @@ print "Executing: $cmd\n";
 
 system($cmd);
 
-print "Creating HTML page\n";
-
-$cmd = "genhtml -o html $merged_trace_file";
-
-print "Executing: $cmd\n";
-
-system("$cmd");
 #EOF
 

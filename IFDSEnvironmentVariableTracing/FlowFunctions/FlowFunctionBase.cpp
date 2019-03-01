@@ -21,10 +21,12 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
     bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
     if (removeTaintedBlockInst) return { };
 
-    traceStats.add(currentInst);
-
     bool isAutoGEN = DataFlowUtils::isAutoGENInTaintedBlock(currentInst);
-    if (isAutoGEN) return { fact, ExtendedValue(currentInst) };
+    if (isAutoGEN) {
+      traceStats.add(currentInst);
+
+      return { fact, ExtendedValue(currentInst) };
+    }
 
     std::set<ExtendedValue> targetFacts;
     targetFacts.insert(fact);
@@ -53,6 +55,7 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
       ev.setMemLocationSeq(memLocationSeq);
 
       targetFacts.insert(ev);
+      traceStats.add(currentInst);
     }
     else
     if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(currentInst)) {
@@ -62,6 +65,7 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
       ev.setMemLocationSeq(memLocationSeq);
 
       targetFacts.insert(ev);
+      traceStats.add(currentInst);
     }
 
     return targetFacts;

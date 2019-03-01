@@ -30,7 +30,9 @@ get_config()
         config_path="/tmp";
     }
 
-    return load_config(config_path);
+    struct config *c = load_config(config_path);
+
+    return c;
 }
 
 void

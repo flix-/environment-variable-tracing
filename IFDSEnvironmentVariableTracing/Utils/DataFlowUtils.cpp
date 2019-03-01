@@ -951,6 +951,26 @@ DataFlowUtils::isVaListType(const llvm::Type* type) {
   return typeName.find("%struct.__va_list_tag") != std::string::npos;
 }
 
+bool
+DataFlowUtils::isReturnValue(const llvm::Instruction* currentInst,
+                             const llvm::Instruction* successorInst) {
+
+  bool isSuccessorRetVal = llvm::isa<llvm::ReturnInst>(successorInst);
+  if (!isSuccessorRetVal) return false;
+
+  if (const auto binaryOpInst = llvm::dyn_cast<llvm::BinaryOperator>(currentInst)) {
+    bool isMagicOpCode = binaryOpInst->getOpcode() == 20;
+    if (!isMagicOpCode) return false;
+
+    bool isMagicType = getTypeName(binaryOpInst->getType()) == "i4711";
+    if (!isMagicType) return false;
+
+    return true;
+  }
+
+  return false;
+}
+
 static void
 dumpMemoryLocation(const std::vector<const llvm::Value*> memLocationSeq) {
 
@@ -992,7 +1012,7 @@ DataFlowUtils::getTypeName(const llvm::Type* type) {
 }
 
 std::string
-DataFlowUtils::getTraceFilename(std::string entryPoint) {
+DataFlowUtils::getTraceFilenamePrefix(std::string entryPoint) {
 
   time_t time = std::time(nullptr);
   long now = static_cast<long> (time);
@@ -1000,8 +1020,7 @@ DataFlowUtils::getTraceFilename(std::string entryPoint) {
   std::stringstream traceFileStream;
   traceFileStream << "static" << "-"
                   << entryPoint << "-"
-                  << now << "-"
-                  << "trace.txt";
+                  << now;
 
   return traceFileStream.str();
 }

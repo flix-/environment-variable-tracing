@@ -13,11 +13,15 @@ LineNumberWriter::write() const {
 
   llvm::outs() << "Writing line number trace to: " << getOutFile() << "\n";
 
-  for (const auto& statsEntry : getTraceStats().getStats()) {
-    const auto traceStatModel = statsEntry.second;
+  for (const auto& fileEntry : getTraceStats().getStats()) {
+    const auto functionStats = fileEntry.second;
 
-    for (const auto& lineNumber : traceStatModel.getLineNumbers()) {
-      writer << lineNumber << "\n";
+    for (const auto& functionEntry : functionStats) {
+      const auto lineNumberStats = functionEntry.second;
+
+      for (const auto& lineNumberEntry : lineNumberStats) {
+        writer << lineNumberEntry.getLineNumber() << "\n";
+      }
     }
   }
 }

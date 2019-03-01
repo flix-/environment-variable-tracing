@@ -5,8 +5,11 @@
 #include "TraceStats.h"
 
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 
 #include <llvm/IR/DebugInfoMetadata.h>
+
+#include <llvm/Support/raw_ostream.h>
 
 namespace psr {
 
@@ -26,27 +29,51 @@ TraceStats::add(const llvm::Instruction* instruction) {
 
   const auto fnScope = llvm::cast<llvm::DIScope>(debugLocFn.getScope());
 
-  const std::string absolutePath = fnScope->getDirectory().str() +
-                                   "/" +
-                                   fnScope->getFilename().str();
+  const std::string file = fnScope->getDirectory().str() +
+                           "/" +
+                           fnScope->getFilename().str();
 
   unsigned int lineNumber = debugLocInst->getLine();
 
-  getTraceStatsModelForPath(absolutePath).addFunctionAndLineNumber(functionName,
-                                                                   lineNumber);
+  TraceStats::LineNumberStats& lineNumberStats = getLineNumberStats(file, functionName);
+
+  LineNumberEntry lineNumberEntry(lineNumber);
+
+  bool isReturnValue = llvm::isa<llvm::ReturnInst>(instruction);
+  if (isReturnValue) {
+    // Make sure we do not have duplicate line numbers.
+    lineNumberStats.erase(lineNumberEntry);
+
+    lineNumberEntry.setReturnValue(true);
+  }
+
+  lineNumberStats.insert(lineNumberEntry);
 
   return 1;
 }
 
-TraceStatsModel&
-TraceStats::getTraceStatsModelForPath(std::string absolutePath) {
+TraceStats::FunctionStats&
+TraceStats::getFunctionStats(std::string file) {
 
-  auto statsEntry = stats.find(absolutePath);
-  if (statsEntry != stats.end()) return statsEntry->second;
+  auto functionStatsEntry = stats.find(file);
+  if (functionStatsEntry != stats.end()) return functionStatsEntry->second;
 
-  stats.insert({ absolutePath, TraceStatsModel()} );
+  stats.insert({ file, FunctionStats() });
 
-  return stats.find(absolutePath)->second;
+  return stats.find(file)->second;
+}
+
+TraceStats::LineNumberStats&
+TraceStats::getLineNumberStats(std::string file, std::string function) {
+
+  TraceStats::FunctionStats& functionStats = getFunctionStats(file);
+
+  auto lineNumberEntry = functionStats.find(function);
+  if (lineNumberEntry != functionStats.end()) return lineNumberEntry->second;
+
+  functionStats.insert({ function, LineNumberStats() });
+
+  return functionStats.find(function)->second;
 }
 
 } // namespace

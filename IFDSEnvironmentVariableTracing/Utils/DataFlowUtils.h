@@ -72,11 +72,13 @@ public:
   static bool isVarArgParam(const llvm::Value* param,
                             const llvm::Value* zeroValue);
   static bool isVaListType(const llvm::Type* type);
+  static bool isReturnValue(const llvm::Instruction* currentInst,
+                            const llvm::Instruction* successorInst);
 
   static void dumpFact(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
 
-  static std::string getTraceFilename(std::string entryPoint);
+  static std::string getTraceFilenamePrefix(std::string entryPoint);
 };
 
 } // namespace

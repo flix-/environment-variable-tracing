@@ -13,18 +13,25 @@ LcovWriter::write() const {
 
   llvm::outs() << "Writing lcov trace to: " << getOutFile() << "\n";
 
-  for (const auto& statsEntry : getTraceStats().getStats()) {
-    const auto path = statsEntry.first;
-    const auto traceStatModel = statsEntry.second;
+  for (const auto& fileEntry : getTraceStats().getStats()) {
+    const auto file = fileEntry.first;
+    const auto functionStats = fileEntry.second;
 
-    writer << "SF:" << path << "\n";
+    writer << "SF:" << file << "\n";
 
-    for (const auto& function : traceStatModel.getFunctions()) {
+    for (const auto& functionEntry : functionStats) {
+      const auto function = functionEntry.first;
+
       writer << "FNDA:" << "1," << function << "\n";
     }
 
-    for (const auto& lineNumber : traceStatModel.getLineNumbers()) {
-      writer << "DA:" << lineNumber << ",1" << "\n";
+    for (const auto& functionEntry : functionStats) {
+      const auto lineNumberStats = functionEntry.second;
+
+      for (const auto& lineNumberEntry : lineNumberStats) {
+
+        writer << "DA:" << lineNumberEntry.getLineNumber() << ",1" << "\n";
+      }
     }
 
     writer << "end_of_record" << "\n";
