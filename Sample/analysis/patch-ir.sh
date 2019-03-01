@@ -1,1 +1,0 @@
-../../Tools/patch-ir.sh
