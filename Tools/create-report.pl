@@ -274,5 +274,6 @@ sub write_diff {
 
     close($diff_trace_fh);
 }
+
 #EOF
 

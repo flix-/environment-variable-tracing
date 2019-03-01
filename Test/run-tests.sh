@@ -19,7 +19,7 @@ PHASAR_RESULTS_FILE='results.json'
 
 SUMMARY_FILE='test-result-index.html'
 
-PATCH_IR_BIN='/home/sebastian/.qt-creator-workspace/Phasar/Tools/patch-ir.sh'
+PATCH_IR_BIN='/home/sebastian/.qt-creator-workspace/Phasar/Tools/patch-ir.pl'
 
 function create_html {
     rm -f ${OUT_HTML}
