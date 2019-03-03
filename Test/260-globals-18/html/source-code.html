@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdarg.h>
+
+extern char *getenv(const char *name);
+
+char *gt;
+
+void
+foo() {
+    char *t1 = gt;
+
+    gt = "untaint";
+
+    char *ut1 = gt;
+}
+
+int
+main()
+{
+    gt = getenv("gude");
+
+    char *t1 = gt;
+
+    foo();
+
+    char *ut1 = gt;
+
+    return 0;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.patched <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @gt = common global i8* null, align 8, !dbg !0, !phasar.instruction.id !8<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !20<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @gt = common global i8* null, align 8, !dbg !0, !phasar.instruction.id !8<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !18<br>
+Writing line number trace to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1551633402-trace.txt<br>
+Writing lcov return value trace to: static-main-1551633402-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

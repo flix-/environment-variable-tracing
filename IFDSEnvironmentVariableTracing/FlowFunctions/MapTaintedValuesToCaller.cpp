@@ -1,10 +1,13 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "MapTaintedValuesToCaller.h"
 
 #include "../Utils/DataFlowUtils.h"
+
+#include <algorithm>
 
 #include <llvm/Support/raw_ostream.h>
 
@@ -15,10 +18,14 @@ namespace psr {
 std::set<ExtendedValue>
 MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
-  std::set<ExtendedValue> targetFacts;
+  std::set<ExtendedValue> targetGlobalFacts;
+  std::set<ExtendedValue> targetRetFacts;
+
+  bool isGlobalMemLocationFact = DataFlowUtils::isGlobalMemoryLocationSeq(DataFlowUtils::getMemoryLocationSeqFromFact(fact));
+  if (isGlobalMemLocationFact) targetGlobalFacts.insert(fact);
 
   const auto retVal = retInst->getReturnValue();
-  if (!retVal) return targetFacts;
+  if (!retVal) return targetGlobalFacts;
 
   const auto retValMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(retVal);
 
@@ -44,7 +51,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
       ExtendedValue ev(callInst);
       ev.setMemLocationSeq(patchableMemLocationSeq);
 
-      targetFacts.insert(ev);
+      targetRetFacts.insert(ev);
 
       llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
@@ -61,7 +68,7 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
       ExtendedValue ev(callInst);
       ev.setMemLocationSeq(patchablePart);
 
-      targetFacts.insert(ev);
+      targetRetFacts.insert(ev);
 
       llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";
@@ -71,11 +78,16 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
     }
   }
 
-  bool addLineNumbers = !targetFacts.empty();
+  bool addLineNumbers = !targetRetFacts.empty();
   if (addLineNumbers) {
     traceStats.add(callInst);
     traceStats.add(retInst);
   }
+
+  std::set<ExtendedValue> targetFacts;
+  std::set_union(targetGlobalFacts.begin(), targetGlobalFacts.end(),
+                 targetRetFacts.begin(), targetRetFacts.end(),
+                 std::inserter(targetFacts, targetFacts.begin()));
 
   return targetFacts;
 }

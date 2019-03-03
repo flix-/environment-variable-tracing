@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "MemTransferInstFlowFunction.h"
@@ -13,9 +14,12 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
   const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
 
+  const auto srcMemLocationMatr = memTransferInst->getRawSource();
+  const auto dstMemLocationMatr = memTransferInst->getRawDest();
+
   const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-  const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawSource());
-  const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
+  auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcMemLocationMatr);
+  auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
   bool isArgumentPatch = DataFlowUtils::isPatchableArgumentMemcpy(memTransferInst->getRawSource(),
                                                                   srcMemLocationSeq,
@@ -42,6 +46,12 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     DataFlowUtils::dumpFact(ev);
   }
   else {
+    bool isSrcArrayDecay = DataFlowUtils::isArrayDecay(srcMemLocationMatr);
+    if (isSrcArrayDecay) srcMemLocationSeq.pop_back();
+
+    bool isDstArrayDecay = DataFlowUtils::isArrayDecay(dstMemLocationMatr);
+    if (isDstArrayDecay) dstMemLocationSeq.pop_back();
+
     bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
     bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
 

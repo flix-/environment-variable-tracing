@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "MemSetInstFlowFunction.h"
@@ -15,7 +16,10 @@ MemSetInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   const auto dstMemLocationMatr = memSetInst->getRawDest();
 
   const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-  const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+  auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
+
+  bool isDstArrayDecay = DataFlowUtils::isArrayDecay(dstMemLocationMatr);
+  if (isDstArrayDecay) dstMemLocationSeq.pop_back();
 
   bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
   if (killFact) {

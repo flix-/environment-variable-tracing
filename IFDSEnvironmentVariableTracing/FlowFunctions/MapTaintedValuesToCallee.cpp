@@ -1,11 +1,13 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "MapTaintedValuesToCallee.h"
 
 #include "../Utils/DataFlowUtils.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include <llvm/Support/raw_ostream.h>
@@ -20,7 +22,11 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
   bool isFactVarArgTemplate = fact.isVarArgTemplate();
   if (isFactVarArgTemplate) return { };
 
-  std::set<ExtendedValue> targetFacts;
+  std::set<ExtendedValue> targetGlobalFacts;
+  std::set<ExtendedValue> targetParamFacts;
+
+  bool isGlobalMemLocationFact = DataFlowUtils::isGlobalMemoryLocationSeq(DataFlowUtils::getMemoryLocationSeqFromFact(fact));
+  if (isGlobalMemLocationFact) targetGlobalFacts.insert(fact);
 
   long varArgIndex = 0L;
 
@@ -60,7 +66,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
         if (isVarArgParam) ev.setVarArgIndex(varArgIndex);
 
-        targetFacts.insert(ev);
+        targetParamFacts.insert(ev);
 
         llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
@@ -78,7 +84,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
         ev.setMemLocationSeq(patchablePart);
         if (isVarArgParam) ev.setVarArgIndex(varArgIndex);
 
-        targetFacts.insert(ev);
+        targetParamFacts.insert(ev);
 
         llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
         llvm::outs() << "[TRACK] Source:" << "\n";
@@ -91,10 +97,15 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
     if (isVarArgParam) ++varArgIndex;
   }
 
-  bool addLineNumber = !targetFacts.empty();
+  bool addLineNumber = !targetParamFacts.empty();
   if (addLineNumber) {
     traceStats.add(callInst);
   }
+
+  std::set<ExtendedValue> targetFacts;
+  std::set_union(targetGlobalFacts.begin(), targetGlobalFacts.end(),
+                 targetParamFacts.begin(), targetParamFacts.end(),
+                 std::inserter(targetFacts, targetFacts.begin()));
 
   return targetFacts;
 }

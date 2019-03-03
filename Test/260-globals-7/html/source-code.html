@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+
+extern char *getenv(const char *);
+
+union u1 {
+    char *t;
+    char *ut;
+};
+
+union u1 u1;
+
+int
+main() {
+    u1.t = getenv("gude");
+    char *t1 = u1.t;
+    char *t2 = u1.ut;
+
+    u1.ut = "nope";
+    char *ut1 = u1.t;
+    char *ut2 = u1.ut;
+
+    return 0;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.patched <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @u1 = common global %union.u1 zeroinitializer, align 8, !dbg !1, !phasar.instruction.id !13<br>
+[TRACK]   <badref> = getelementptr inbounds %union.u1, %union.u1* @u1, i32 0, i32 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !24<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @u1 = common global %union.u1 zeroinitializer, align 8, !dbg !1, !phasar.instruction.id !13<br>
+[TRACK]   <badref> = getelementptr inbounds %union.u1, %union.u1* @u1, i32 0, i32 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !25<br>
+Writing line number trace to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1551633404-trace.txt<br>
+Writing lcov return value trace to: static-main-1551633404-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

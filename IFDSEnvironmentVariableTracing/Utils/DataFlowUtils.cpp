@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "DataFlowUtils.h"
@@ -33,7 +34,8 @@ static bool
 isMemoryLocationFrame(const llvm::Value* memLocationPart) {
 
   return llvm::isa<llvm::AllocaInst>(memLocationPart) ||
-         llvm::isa<llvm::Argument>(memLocationPart);
+         llvm::isa<llvm::Argument>(memLocationPart) ||
+         llvm::isa<llvm::GlobalVariable>(memLocationPart);
 }
 
 static bool
@@ -155,6 +157,11 @@ isUnionBitCast(const llvm::CastInst* castInst) {
 static std::vector<const llvm::Value*>
 getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
 
+  // Globals
+  if (const auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(memLocationPart)) {
+    memLocationPart = const_cast<llvm::ConstantExpr*>(constExpr)->getAsInstruction();
+  }
+
   std::vector<const llvm::Value*> memLocationSeq;
 
   bool isMemLocationFrame = isMemoryLocationFrame(memLocationPart);
@@ -174,7 +181,6 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   }
   else
   if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationPart)) {
-
     return getMemoryLocationSeqFromMatrRec(loadInst->getOperand(0));
   }
   else
@@ -196,6 +202,50 @@ getMemoryLocationSeqFromMatrRec(const llvm::Value* memLocationPart) {
   return memLocationSeq;
 }
 
+static const std::vector<const llvm::Value*>
+normalizeGlobalGEPs(const std::vector<const llvm::Value*> memLocationSeq) {
+
+  bool isGlobalMemLocationSeq = DataFlowUtils::isGlobalMemoryLocationSeq(memLocationSeq);
+  if (!isGlobalMemLocationSeq) return memLocationSeq;
+
+  std::vector<const llvm::Value*> normalizedMemLocationSeq;
+  normalizedMemLocationSeq.push_back(memLocationSeq.front());
+
+  for (std::size_t i = 1; i < memLocationSeq.size(); ++i) {
+    const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(memLocationSeq[i]);
+
+    unsigned int numIndices = gepInst->getNumIndices();
+
+    bool isNormalizedGEP = numIndices <= 2;
+    if (isNormalizedGEP) {
+      normalizedMemLocationSeq.push_back(gepInst);
+      continue;
+    }
+
+    const std::vector<llvm::Value*> indices(gepInst->idx_begin(), gepInst->idx_end());
+
+    auto splittedGEPInst = llvm::GetElementPtrInst::CreateInBounds(const_cast<llvm::Value*>(normalizedMemLocationSeq.back()),
+                                                                   { indices[0], indices[1] }, "gepsplit0");
+    normalizedMemLocationSeq.push_back(splittedGEPInst);
+
+    llvm::ConstantInt* constantZero = llvm::ConstantInt::get(gepInst->getType()->getContext(),
+                                                             llvm::APInt(32, 0, false));
+
+    for (std::size_t i = 2; i < indices.size(); ++i) {
+      const auto index = indices[i];
+
+      std::stringstream nameStream;
+      nameStream << "gepsplit" << (i-1);
+
+      splittedGEPInst = llvm::GetElementPtrInst::CreateInBounds(const_cast<llvm::Value*>(normalizedMemLocationSeq.back()),
+                                                                { constantZero, index }, nameStream.str());
+      normalizedMemLocationSeq.push_back(splittedGEPInst);
+    }
+  }
+
+  return normalizedMemLocationSeq;
+}
+
 static std::vector<const llvm::Value*>
 normalizeMemoryLocationSeq(std::vector<const llvm::Value*> memLocationSeq) {
 
@@ -207,9 +257,8 @@ normalizeMemoryLocationSeq(std::vector<const llvm::Value*> memLocationSeq) {
 
   if (memLocationSeq.empty()) return memLocationSeq;
 
-  // Remove array decay
-  bool isBackArrayDecay = memLocationSeq.back()->getName().contains_lower("arraydecay");
-  if (isBackArrayDecay) memLocationSeq.pop_back();
+  // Normalize global GEP parts
+  memLocationSeq = normalizeGlobalGEPs(memLocationSeq);
 
   return memLocationSeq;
 }
@@ -511,7 +560,13 @@ DataFlowUtils::patchMemoryLocationFrame(const std::vector<const llvm::Value*> pa
 
 static long
 getNumCoercedArgs(const llvm::Value* value) {
-  if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(value)) {
+
+  if (const auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(value)) {
+    value = const_cast<llvm::ConstantExpr*>(constExpr)->getAsInstruction();
+  }
+
+  if (llvm::isa<llvm::AllocaInst>(value) ||
+      llvm::isa<llvm::GlobalVariable>(value)) {
     return -4711;
   }
 
@@ -594,9 +649,15 @@ DataFlowUtils::getSanitizedArgList(const llvm::CallInst* callInst,
     long numCoersedArgs = getNumCoercedArgs(arg);
     bool isCoersedArg = numCoersedArgs > 0;
 
+    bool isArrayDecay = DataFlowUtils::isArrayDecay(arg);
+
     if (isCoersedArg) {
       argMemLocationSeq.pop_back();
       i += numCoersedArgs - 1;
+    }
+    else
+    if (isArrayDecay) {
+      argMemLocationSeq.pop_back();
     }
 
     const auto sanitizedParam = param != nullptr ? param : zeroValue;
@@ -969,6 +1030,56 @@ DataFlowUtils::isReturnValue(const llvm::Instruction* currentInst,
   }
 
   return false;
+}
+
+/*
+ * We use the following conditions to check whether a memory location is an array decay
+ * or not:
+ *
+ * (1) Last GEP is of type array
+ * (2) There is no load after our last GEP array
+ *
+ * Check 071-arrays-3, 071-arrays-11, 200-map-to-callee-variable-array-2,
+ * 200-map-to-callee-varargs-30, 260-globals-12
+ */
+bool
+DataFlowUtils::isArrayDecay(const llvm::Value* memLocationMatr) {
+
+  if (!memLocationMatr) return false;
+
+  if (const auto constExpr = llvm::dyn_cast<llvm::ConstantExpr>(memLocationMatr)) {
+    memLocationMatr = const_cast<llvm::ConstantExpr*>(constExpr)->getAsInstruction();
+  }
+
+  bool isMemLocationFrame = isMemoryLocationFrame(memLocationMatr);
+  if (isMemLocationFrame) {
+    return false;
+  }
+  else
+  if (const auto castInst = llvm::dyn_cast<llvm::CastInst>(memLocationMatr)) {
+    return isArrayDecay(castInst->getOperand(0));
+  }
+  else
+  if (const auto gepInst = llvm::dyn_cast<llvm::GetElementPtrInst>(memLocationMatr)) {
+    bool isSrcMemLocationArrayType = gepInst->getPointerOperandType()->getPointerElementType()->isArrayTy();
+    if (isSrcMemLocationArrayType) return true;
+
+    return false;
+  }
+  else
+  if (const auto loadInst = llvm::dyn_cast<llvm::LoadInst>(memLocationMatr)) {
+    return false;
+  }
+
+  return false;
+}
+
+bool
+DataFlowUtils::isGlobalMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeq) {
+
+  if (memLocationSeq.empty()) return false;
+
+  return llvm::isa<llvm::GlobalVariable>(memLocationSeq.front());
 }
 
 static void

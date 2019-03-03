@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "IFDSEnvironmentVariableTracing.h"
@@ -199,8 +200,8 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   /*
    * Exclude blacklisted functions here.
    */
-  bool isBlackListedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
-  if (isBlackListedCall)
+  bool isBlacklistedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
+  if (isBlacklistedCall)
     return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*

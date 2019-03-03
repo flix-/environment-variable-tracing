@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "CallToRetFlowFunction.h"
@@ -10,6 +11,12 @@ namespace psr {
 
 std::set<ExtendedValue>
 CallToRetFlowFunction::computeTargetsExt(ExtendedValue& fact) {
+
+  /*
+   * Kill every global and expect the callee to return all valid ones.
+   */
+  bool isGlobalMemLocationFact = DataFlowUtils::isGlobalMemoryLocationSeq(DataFlowUtils::getMemoryLocationSeqFromFact(fact));
+  if (isGlobalMemLocationFact) return { };
 
   /*
    * For functions that kill facts and are handled in getSummaryFlowFunction()

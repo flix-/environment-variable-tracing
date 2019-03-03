@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #include "StoreInstFlowFunction.h"
@@ -11,17 +12,17 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
   const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
 
-  const auto srcValue = storeInst->getValueOperand();
+  const auto srcMemLocationMatr = storeInst->getValueOperand();
   const auto dstMemLocationMatr = storeInst->getPointerOperand();
 
   const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-  const auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcValue);
+  auto srcMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(srcMemLocationMatr);
   auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
 
-  bool isArgumentPatch = DataFlowUtils::isPatchableArgumentStore(srcValue, fact);
-  bool isVaListArgumentPatch = DataFlowUtils::isPatchableVaListArgument(srcValue, fact);
+  bool isArgumentPatch = DataFlowUtils::isPatchableArgumentStore(srcMemLocationMatr, fact);
+  bool isVaListArgumentPatch = DataFlowUtils::isPatchableVaListArgument(srcMemLocationMatr, fact);
 
-  bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcValue, fact);
+  bool isReturnValuePatch = DataFlowUtils::isPatchableReturnValue(srcMemLocationMatr, fact);
 
   bool isSrcMemLocation = !srcMemLocationSeq.empty();
 
@@ -40,7 +41,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   if (isArgumentPatch) {
     bool patchMemLocation = !dstMemLocationSeq.empty();
     if (patchMemLocation) {
-      bool isArgCoerced = srcValue->getName().contains_lower("coerce");
+      bool isArgCoerced = srcMemLocationMatr->getName().contains_lower("coerce");
       if (isArgCoerced) {
         assert(dstMemLocationSeq.size() > 1);
         dstMemLocationSeq.pop_back();
@@ -79,7 +80,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   if (isReturnValuePatch) {
     bool patchMemLocation = !dstMemLocationSeq.empty();
     if (patchMemLocation) {
-      bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcValue);
+      bool isExtractValue = llvm::isa<llvm::ExtractValueInst>(srcMemLocationMatr);
       if (isExtractValue) {
         assert(dstMemLocationSeq.size() > 1);
         dstMemLocationSeq.pop_back();
@@ -110,6 +111,9 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
    */
   else
   if (isSrcMemLocation) {
+    bool isArrayDecay = DataFlowUtils::isArrayDecay(srcMemLocationMatr);
+    if (isArrayDecay) srcMemLocationSeq.pop_back();
+
     bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(srcMemLocationSeq, factMemLocationSeq);
     bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
                     DataFlowUtils::isKillAfterStoreFact(fact);
@@ -135,7 +139,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     if (!killFact) targetFacts.insert(fact);
   }
   else {
-    bool genFact = DataFlowUtils::isValueTainted(srcValue, fact);
+    bool genFact = DataFlowUtils::isValueTainted(srcMemLocationMatr, fact);
     bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq) ||
                     DataFlowUtils::isKillAfterStoreFact(fact);
 

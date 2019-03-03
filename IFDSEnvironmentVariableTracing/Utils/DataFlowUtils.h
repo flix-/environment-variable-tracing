@@ -1,5 +1,6 @@
 /**
   * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
+  *                          <seroland86@gmail.com>
   */
 
 #ifndef DATAFLOWUTILS_H
@@ -74,6 +75,8 @@ public:
   static bool isVaListType(const llvm::Type* type);
   static bool isReturnValue(const llvm::Instruction* currentInst,
                             const llvm::Instruction* successorInst);
+  static bool isArrayDecay(const llvm::Value* memLocationMatr);
+  static bool isGlobalMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeq);
 
   static void dumpFact(const ExtendedValue& ev);
   static std::string getTypeName(const llvm::Type* type);
