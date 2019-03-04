@@ -84,7 +84,6 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   bool addLineNumbers = !targetRetFacts.empty();
   if (addLineNumbers) {
     traceStats.add(callInst);
-    traceStats.add(retInst);
   }
 
   std::set<ExtendedValue> targetFacts;

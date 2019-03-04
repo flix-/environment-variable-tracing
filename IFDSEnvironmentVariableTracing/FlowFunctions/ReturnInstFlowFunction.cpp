@@ -16,6 +16,7 @@ ReturnInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   if (retValMemLocationMatr) {
     bool isRetValTainted = DataFlowUtils::isValueTainted(retValMemLocationMatr, fact) ||
                            DataFlowUtils::isMemoryLocationTainted(retValMemLocationMatr, fact);
+
     /*
      * We don't need to GEN/KILL any facts here as this is all handled
      * in the map to callee flow function. Whole purpose of this flow

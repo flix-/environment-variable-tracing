@@ -15,7 +15,8 @@
 namespace psr {
 
 long
-TraceStats::add(const llvm::Instruction* instruction) {
+TraceStats::add(const llvm::Instruction* instruction,
+                bool isReturnValue) {
 
   const llvm::DebugLoc debugLocInst = instruction->getDebugLoc();
   if (!debugLocInst) return 0;
@@ -40,17 +41,44 @@ TraceStats::add(const llvm::Instruction* instruction) {
 
   LineNumberEntry lineNumberEntry(lineNumber);
 
-  bool isReturnValue = llvm::isa<llvm::ReturnInst>(instruction);
   if (isReturnValue) {
-    // Make sure we do not have duplicate line numbers.
     lineNumberStats.erase(lineNumberEntry);
-
     lineNumberEntry.setReturnValue(true);
   }
 
   lineNumberStats.insert(lineNumberEntry);
 
   return 1;
+}
+
+long
+TraceStats::add(const llvm::Instruction* instruction,
+                const std::vector<const llvm::Value*> memLocationSeq) {
+
+  bool isRetInstruction = llvm::isa<llvm::ReturnInst>(instruction);
+  if (isRetInstruction) {
+    const auto basicBlock = instruction->getParent();
+    const auto basicBlockName = basicBlock->getName();
+
+    bool isReturnBasicBlock = basicBlockName.compare_lower("return") == 0;
+    if (isReturnBasicBlock) return 0;
+
+    return add(instruction, true);
+  }
+
+  bool isGENMemoryLocation = !memLocationSeq.empty();
+  if (isGENMemoryLocation) {
+    const auto memLocationFrame = memLocationSeq.front();
+
+    if (const auto allocaInst = llvm::dyn_cast<llvm::AllocaInst>(memLocationFrame)) {
+      const auto instructionName = allocaInst->getName();
+      bool isRetVal = instructionName.compare_lower("retval") == 0;
+
+      if (isRetVal) return add(instruction, true);
+    }
+  }
+
+  return add(instruction, false);
 }
 
 TraceStats::FunctionStats&

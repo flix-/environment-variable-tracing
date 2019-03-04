@@ -64,7 +64,7 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(relocatedMemLocationSeq);
 
       targetFacts.insert(ev);
-      traceStats.add(memTransferInst);
+      traceStats.add(memTransferInst, dstMemLocationSeq);
 
       llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";

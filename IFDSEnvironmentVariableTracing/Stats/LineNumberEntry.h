@@ -17,10 +17,8 @@ public:
   ~LineNumberEntry() = default;
 
   bool operator<(const LineNumberEntry& rhs) const {
-    if (std::less<unsigned int>{}(lineNumber, rhs.lineNumber)) return true;
-    if (std::less<unsigned int>{}(rhs.lineNumber, lineNumber)) return false;
 
-    return std::less<bool>{}(returnValue, rhs.returnValue);
+    return std::less<unsigned int>{}(lineNumber, rhs.lineNumber);
   }
 
   unsigned int getLineNumber() const { return lineNumber; }

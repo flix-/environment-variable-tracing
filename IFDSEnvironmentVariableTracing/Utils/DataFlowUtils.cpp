@@ -933,7 +933,8 @@ DataFlowUtils::isAutoGENInTaintedBlock(const llvm::Instruction* currentInst) {
   return !llvm::isa<llvm::StoreInst>(currentInst) &&
          !llvm::isa<llvm::MemTransferInst>(currentInst) &&
          !llvm::isa<llvm::BranchInst>(currentInst) &&
-         !llvm::isa<llvm::SwitchInst>(currentInst);
+         !llvm::isa<llvm::SwitchInst>(currentInst) &&
+         !llvm::isa<llvm::ReturnInst>(currentInst);
 }
 
 bool

@@ -128,7 +128,7 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       ev.setMemLocationSeq(relocatedMemLocationSeq);
 
       targetFacts.insert(ev);
-      traceStats.add(storeInst);
+      traceStats.add(storeInst, dstMemLocationSeq);
 
       llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
       llvm::outs() << "[TRACK] Source:" << "\n";

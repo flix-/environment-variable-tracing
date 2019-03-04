@@ -50,23 +50,27 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
      * are generated.
      */
     if (const auto storeInst = llvm::dyn_cast<llvm::StoreInst>(currentInst)) {
-      const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
+      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(storeInst->getPointerOperand());
 
       ExtendedValue ev(currentInst);
-      ev.setMemLocationSeq(memLocationSeq);
+      ev.setMemLocationSeq(dstMemLocationSeq);
 
       targetFacts.insert(ev);
-      traceStats.add(currentInst);
+      traceStats.add(storeInst, dstMemLocationSeq);
     }
     else
     if (const auto memTransferInst = llvm::dyn_cast<llvm::MemTransferInst>(currentInst)) {
-      const auto memLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
+      const auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(memTransferInst->getRawDest());
 
       ExtendedValue ev(currentInst);
-      ev.setMemLocationSeq(memLocationSeq);
+      ev.setMemLocationSeq(dstMemLocationSeq);
 
       targetFacts.insert(ev);
-      traceStats.add(currentInst);
+      traceStats.add(memTransferInst, dstMemLocationSeq);
+    }
+    else
+    if (const auto retInst = llvm::dyn_cast<llvm::ReturnInst>(currentInst)) {
+      traceStats.add(retInst);
     }
 
     return targetFacts;
