@@ -98,7 +98,8 @@ isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
 
     if (const auto nonDecayedArrayGEPPtrIndex = llvm::dyn_cast<llvm::ConstantInt>(nonDecayedArrayGEP->getOperand(1))) {
       if (!nonDecayedArrayGEPPtrIndex->isZero()) return false;
-    } else {
+    }
+    else {
       return false;
     }
 
@@ -323,11 +324,14 @@ bool
 DataFlowUtils::isMemoryLocationTainted(const llvm::Value* memLocationMatr,
                                        const ExtendedValue& fact) {
 
-  const auto memLocationInstSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
+  auto memLocationInstSeq = getMemoryLocationSeqFromMatr(memLocationMatr);
   if (memLocationInstSeq.empty()) return false;
 
   const auto memLocationFactSeq = getMemoryLocationSeqFromFact(fact);
   if (memLocationFactSeq.empty()) return false;
+
+  bool isArrayDecay = DataFlowUtils::isArrayDecay(memLocationMatr);
+  if (isArrayDecay) memLocationInstSeq.pop_back();
 
   return isSubsetMemoryLocationSeq(memLocationInstSeq,
                                    memLocationFactSeq);

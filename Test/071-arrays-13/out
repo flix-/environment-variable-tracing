@@ -1,0 +1,46 @@
+PhASAR v1218
+A LLVM-based static analysis framework
+
+--- Configuration ---
+Project ID: myphasarproject
+Graph ID: 123456
+Module(s): main.ll.patched 
+Data-flow analysis: plugin 
+WPA: 1
+Mem2reg: 0
+Print edge recorder: 0
+Analysis plugin(s): 
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so
+Output: results.json
+All modules loaded
+PTG construction ...
+PTG construction ended
+DONE
+[TRACK] Added patchable memory location (caller <- callee)
+[TRACK] Source:
+[TRACK] memLocationSeq: 
+[TRACK]   %str = alloca [2 x i8*], align 16, !phasar.instruction.id !13
+[TRACK]   %arrayidx = getelementptr inbounds [2 x i8*], [2 x i8*]* %str, i64 0, i64 1, !dbg !23, !phasar.instruction.id !24
+[TRACK] Destination:
+[TRACK] memLocationSeq: 
+[TRACK]   %call = call i8* @foo(), !dbg !22, !phasar.instruction.id !23
+[TRACK] Patched memory location (ret/store)
+[TRACK] Source:
+[TRACK] memLocationSeq: 
+[TRACK]   %call = call i8* @foo(), !dbg !22, !phasar.instruction.id !23
+[TRACK] Destination:
+[TRACK] memLocationSeq: 
+[TRACK]   %str = alloca i8*, align 8, !phasar.instruction.id !13
+[TRACK] Relocated memory location (store)
+[TRACK] Source:
+[TRACK] memLocationSeq: 
+[TRACK]   %str = alloca i8*, align 8, !phasar.instruction.id !13
+[TRACK] Destination:
+[TRACK] memLocationSeq: 
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14
+Writing line number trace to: line-numbers.txt
+Writing lcov trace to: static-main-1551693114-trace.txt
+Writing lcov return value trace to: static-main-1551693114-return-value-trace.txt
+### DUMP LLVMIFDSSolver results
+EMPTY
+

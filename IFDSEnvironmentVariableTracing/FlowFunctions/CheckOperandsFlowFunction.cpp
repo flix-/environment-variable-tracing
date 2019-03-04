@@ -15,6 +15,7 @@ CheckOperandsFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
     bool isOperandTainted = DataFlowUtils::isValueTainted(operand, fact) ||
                             DataFlowUtils::isMemoryLocationTainted(operand, fact);
+
     if (isOperandTainted) {
       traceStats.add(currentInst);
 

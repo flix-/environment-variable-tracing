@@ -11,16 +11,18 @@ std::set<ExtendedValue>
 ReturnInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
   const auto retInst = llvm::cast<llvm::ReturnInst>(currentInst);
-  const auto retVal = retInst->getReturnValue();
+  const auto retValMemLocationMatr = retInst->getReturnValue();
 
-  if (retVal) {
-    bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact) ||
-                           DataFlowUtils::isMemoryLocationTainted(retVal, fact);
-    if (isRetValTainted) {
-      traceStats.add(retInst);
-
-      return { fact, ExtendedValue(retInst) };
-    }
+  if (retValMemLocationMatr) {
+    bool isRetValTainted = DataFlowUtils::isValueTainted(retValMemLocationMatr, fact) ||
+                           DataFlowUtils::isMemoryLocationTainted(retValMemLocationMatr, fact);
+    /*
+     * We don't need to GEN/KILL any facts here as this is all handled
+     * in the map to callee flow function. Whole purpose of this flow
+     * function is to make sure that a tainted return statement of an
+     * entry point is added as for that case no mapping function is called.
+     */
+    if (isRetValTainted) traceStats.add(retInst);
   }
 
   return { fact };

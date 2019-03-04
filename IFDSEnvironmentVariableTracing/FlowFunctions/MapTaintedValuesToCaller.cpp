@@ -24,14 +24,17 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
   bool isGlobalMemLocationFact = DataFlowUtils::isGlobalMemoryLocationSeq(DataFlowUtils::getMemoryLocationSeqFromFact(fact));
   if (isGlobalMemLocationFact) targetGlobalFacts.insert(fact);
 
-  const auto retVal = retInst->getReturnValue();
-  if (!retVal) return targetGlobalFacts;
+  const auto retValMemLocationMatr = retInst->getReturnValue();
+  if (!retValMemLocationMatr) return targetGlobalFacts;
 
-  const auto retValMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(retVal);
+  auto retValMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(retValMemLocationMatr);
 
   bool isRetValMemLocation = !retValMemLocationSeq.empty();
   if (isRetValMemLocation) {
     const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
+
+    bool isArrayDecay = DataFlowUtils::isArrayDecay(retValMemLocationMatr);
+    if (isArrayDecay) retValMemLocationSeq.pop_back();
 
     bool genFact = DataFlowUtils::isSubsetMemoryLocationSeq(retValMemLocationSeq,
                                                             factMemLocationSeq);
@@ -61,8 +64,8 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
     }
   }
   else {
-    bool isRetValTainted = DataFlowUtils::isValueTainted(retVal, fact);
-    if (isRetValTainted) {
+    bool genFact = DataFlowUtils::isValueTainted(retValMemLocationMatr, fact);
+    if (genFact) {
       std::vector<const llvm::Value*> patchablePart{ callInst };
 
       ExtendedValue ev(callInst);

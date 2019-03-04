@@ -76,8 +76,8 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
       }
     }
     else {
-      bool isArgTainted = DataFlowUtils::isValueTainted(arg, fact);
-      if (isArgTainted) {
+      bool genFact = DataFlowUtils::isValueTainted(arg, fact);
+      if (genFact) {
         std::vector<const llvm::Value*> patchablePart{ param };
 
         ExtendedValue ev(fact);

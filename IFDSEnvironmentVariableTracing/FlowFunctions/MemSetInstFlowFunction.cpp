@@ -15,13 +15,7 @@ MemSetInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   const auto memSetInst = llvm::cast<const llvm::MemSetInst>(currentInst);
   const auto dstMemLocationMatr = memSetInst->getRawDest();
 
-  const auto factMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromFact(fact);
-  auto dstMemLocationSeq = DataFlowUtils::getMemoryLocationSeqFromMatr(dstMemLocationMatr);
-
-  bool isDstArrayDecay = DataFlowUtils::isArrayDecay(dstMemLocationMatr);
-  if (isDstArrayDecay) dstMemLocationSeq.pop_back();
-
-  bool killFact = DataFlowUtils::isSubsetMemoryLocationSeq(dstMemLocationSeq, factMemLocationSeq);
+  bool killFact = DataFlowUtils::isMemoryLocationTainted(dstMemLocationMatr, fact);
   if (killFact) {
     traceStats.add(memSetInst);
 

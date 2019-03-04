@@ -28,6 +28,7 @@ BranchSwitchInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
   if (condition) {
     bool isConditionTainted = DataFlowUtils::isValueTainted(condition, fact) ||
                               DataFlowUtils::isMemoryLocationTainted(condition, fact);
+
     if (isConditionTainted) {
       const auto startBasicBlock = currentInst->getParent();
       const auto startBasicBlockLabel = startBasicBlock->getName();
