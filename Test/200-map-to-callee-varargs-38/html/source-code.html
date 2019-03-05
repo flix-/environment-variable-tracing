@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+#include <stdarg.h>
+
+extern char *getenv(const char *name);
+
+struct s2 {
+    char *t1;
+    char *ut1;
+};
+
+struct s1 {
+    int a;
+    int b;
+    struct s2 s2;
+};
+
+char *
+foo(int n, ...)
+{
+    va_list ap;
+    va_start(ap, n);
+
+    struct s1 s1;
+
+    if (n) {
+        return va_arg(ap, char *);
+    }
+    s1.s2.ut1 = va_arg(ap, char *);
+    char *z = va_arg(ap, char *);
+
+    char *t1 = s1.s2.t1;
+    char *ut1 = s1.s2.ut1;
+    char *ut2 = z;
+
+    va_end(ap);
+
+    return NULL;
+}
+
+int
+main()
+{
+    char *t = getenv("gude");
+    char *ut = "hello world";
+
+    foo(1, t, ut);
+
+    return 0;
+}
+
+</pre>
+<div>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.patched <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[TRACK] Added patchable memory location (caller -> callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t = alloca i8*, align 8, !phasar.instruction.id !14<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Created new VarArg from template<br>
+[TRACK] Template:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] VarArg:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !17<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: -1<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !17<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %retval = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[TRACK] Patched memory location (arg/store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK] @zero_value = constant i2 0, align 4<br>
+[TRACK] vaListMemLocationSeq: <br>
+[TRACK]   %ap = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !17<br>
+[TRACK] varArgIndex: 0<br>
+[TRACK] currentVarArgIndex: 0<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !18<br>
+[TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !113, !phasar.instruction.id !114<br>
+[TRACK]   %ut1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !115, !phasar.instruction.id !116<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !18<br>
+[TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !113, !phasar.instruction.id !114<br>
+[TRACK]   %ut1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !115, !phasar.instruction.id !116<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %ut129 = alloca i8*, align 8, !phasar.instruction.id !21<br>
+[TRACK] Added patchable memory location (caller <- callee)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %retval = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %call1 = call i8* (i32, ...) @foo(i32 1, i8* %0, i8* %1), !dbg !34, !phasar.instruction.id !35<br>
+Writing line number trace to: line-numbers.txt<br>
+Writing lcov trace to: static-main-1551770937-trace.txt<br>
+Writing lcov return value trace to: static-main-1551770937-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

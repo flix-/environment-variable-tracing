@@ -528,7 +528,7 @@ DataFlowUtils::isPatchableReturnValue(const llvm::Value* srcValue,
    * part it is gone after first patch.
    */
   const auto factMemLocationFrame = getMemoryLocationFrameFromFact(fact);
-  if (factMemLocationFrame == nullptr) return false;
+  if (!factMemLocationFrame) return false;
 
   if (const auto patchableCallInst = llvm::dyn_cast<llvm::CallInst>(factMemLocationFrame)) {
 

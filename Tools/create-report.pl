@@ -11,7 +11,7 @@ my $report_file = "report-" . time() . ".txt";
 
 my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
 
-my $print_summary_only = 0;
+my $print_summary_only = 1;
 
 # END CONFIG #
 

@@ -21,6 +21,7 @@ LineNumberWriter::write() const {
       const auto lineNumberStats = functionEntry.second;
 
       for (const auto& lineNumberEntry : lineNumberStats) {
+
         writer << lineNumberEntry.getLineNumber() << "\n";
       }
     }

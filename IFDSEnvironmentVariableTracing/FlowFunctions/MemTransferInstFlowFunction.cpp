@@ -37,7 +37,7 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     ev.resetVarArgIndex();
 
     targetFacts.insert(ev);
-    traceStats.add(memTransferInst);
+    traceStats.add(memTransferInst, dstMemLocationSeq);
 
     llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
     llvm::outs() << "[TRACK] Source:" << "\n";

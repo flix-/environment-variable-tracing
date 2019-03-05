@@ -98,9 +98,7 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
   }
 
   bool addLineNumber = !targetParamFacts.empty();
-  if (addLineNumber) {
-    traceStats.add(callInst);
-  }
+  if (addLineNumber) traceStats.add(callInst);
 
   std::set<ExtendedValue> targetFacts;
   std::set_union(targetGlobalFacts.begin(), targetGlobalFacts.end(),
