@@ -11,10 +11,10 @@ use Clone 'clone';
 my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $report_file = "report-" . time() . ".txt";
 
-#my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
-my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
+my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
+#my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
 
-my $summary_only = 1;
+my $summary_only = 0;
 
 # END CONFIG #
 
