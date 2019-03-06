@@ -25,28 +25,27 @@ my $dynamic_trace_file = shift @ARGV;
 
 my $static_trace = get_trace_from_file($static_trace_file);
 my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
-my $dynamic_hit_trace = create_hit_only_trace($dynamic_trace);
-my $static_dynamic_hit_diff_trace = create_diff_trace($static_trace,
-                                                      $dynamic_hit_trace,
-                                                      $dynamic_trace);
+my $dynamic_hit_trace = create_hit_trace($dynamic_trace);
+my $diff_trace = create_diff_trace($static_trace, $dynamic_hit_trace);
+my $diff_hit_trace = create_hit_trace($diff_trace);
 
 #print Dumper $static_trace;
 #print Dumper $dynamic_trace;
 #print Dumper $dynamic_hit_trace;
-#print Dumper $static_dynamic_hit_diff_trace;
+#print Dumper $diff_trace;
+#print Dumper $diff_hit_trace;
 
-# create / write report
 print "Writing report to: $report_file\n";
+
 write_report($static_trace,
              $dynamic_trace,
              $dynamic_hit_trace,
-             $static_dynamic_hit_diff_trace,
+             $diff_hit_trace,
              $report_file);
 
-# write diff
 print "Writing diff to: $diff_trace_file\n";
-write_diff($static_dynamic_hit_diff_trace,
-           $diff_trace_file);
+
+write_diff($diff_trace, $diff_trace_file);
 
 
 sub get_trace_from_file {
@@ -69,13 +68,7 @@ sub get_trace_from_file {
         
         $trace->{$current_file} = undef unless (exists ${trace}->{$current_file});
 
-        if ($line =~ m/FN:([0-9]+),(.*)/) {
-            my $function_start_loc = $1;
-            my $function_name = $2;
-
-            $trace->{$current_file}->{"FN"}->{$function_start_loc} = $function_name;
-        }
-        elsif ($line =~ m/FNDA:([0-9]+),(.*)/) {
+        if ($line =~ m/FNDA:([0-9]+),(.*)/) {
             my $function_count = $1;
             my $function_name = $2;
 
@@ -110,12 +103,10 @@ sub get_trace_from_file {
     return $trace;
 }
 
-sub create_hit_only_trace {
+sub create_hit_trace {
     my $trace = clone(shift);
 
     foreach my $file (keys %{$trace}) {
-        delete $trace->{$file}->{"FN"};
-
         foreach my $function (keys %{$trace->{$file}->{"FNDA"}}) {
             my $has_hit = $trace->{$file}->{"FNDA"}->{$function} > 0;
 
@@ -136,84 +127,36 @@ sub create_hit_only_trace {
     return $trace;
 }
 
-sub get_function_from_file_and_loc {
-    my $file = shift;
-    my $loc = shift;
-    my $loc_function_lookup = shift;
-
-    return unless exists($loc_function_lookup->{$file}->{"FN"});
-
-    for (my $i = $loc; $i >= 0; $i--) {
-        my $hit = exists($loc_function_lookup->{$file}->{"FN"}->{$i});
-
-        return $loc_function_lookup->{$file}->{"FN"}->{$i} if $hit;
-    }
-}
-
 sub create_diff_trace {
     my $static_trace = clone(shift);
-    my $dynamic_trace = clone(shift);
-    my $loc_function_lookup = shift;
+    my $dynamic_hit_trace = shift;
 
     foreach my $static_file (keys %{$static_trace}) {
-        delete $static_trace->{$static_file}->{"FN"};
-        delete $static_trace->{$static_file}->{"FNDA"};
-    }
-
-    foreach my $dynamic_file (keys %{$dynamic_trace}) {
-        next unless exists($static_trace->{$dynamic_file});
-
-        foreach my $dynamic_loc (keys %{$dynamic_trace->{$dynamic_file}->{"DA"}}) {
-            my $is_loc_hit = exists($static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc});
-
-            delete $static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc} if $is_loc_hit;
+        foreach my $static_function (keys %{$static_trace->{$static_file}->{"FNDA"}}) {
+            $static_trace->{$static_file}->{"FNDA"}->{$static_function} = 0;
         }
-        delete $static_trace->{$dynamic_file} unless keys %{$static_trace->{$dynamic_file}->{"DA"}};
+        foreach my $static_loc (keys %{$static_trace->{$static_file}->{"DA"}}) {
+            $static_trace->{$static_file}->{"DA"}->{$static_loc} = 0;
+        }
     }
 
-    foreach my $static_file (keys %{$static_trace}) {
-        foreach my $static_loc (keys %{$static_trace->{$static_file}->{"DA"}}) {
-            my $function = get_function_from_file_and_loc($static_file,
-                                                          $static_loc,
-                                                          $loc_function_lookup);
-            if (!$function) {
-                print "Error: Could not find function for file: $static_file, LOC: $static_loc\n";
-                next;
-            }
+    foreach my $dynamic_hit_file (keys %{$dynamic_hit_trace}) {
+        next unless exists($static_trace->{$dynamic_hit_file});
 
-            $static_trace->{$static_file}->{"FNDA"}->{$function} = 1;
+        foreach my $dynamic_hit_function (keys %{$dynamic_hit_trace->{$dynamic_hit_file}->{"FNDA"}}) {
+            my $is_function_hit = exists($static_trace->{$dynamic_hit_file}->{"FNDA"}->{$dynamic_hit_function});
+
+            $static_trace->{$dynamic_hit_file}->{"FNDA"}->{$dynamic_hit_function} = 1 if $is_function_hit;
+        }
+        foreach my $dynamic_hit_loc (keys %{$dynamic_hit_trace->{$dynamic_hit_file}->{"DA"}}) {
+            my $is_loc_hit = exists($static_trace->{$dynamic_hit_file}->{"DA"}->{$dynamic_hit_loc});
+
+            $static_trace->{$dynamic_hit_file}->{"DA"}->{$dynamic_hit_loc} = 1 if $is_loc_hit;
         }
     }
 
     return $static_trace;
 }
-
-#sub create_diff_trace {
-#    my $static_trace = clone(shift);
-#    my $dynamic_trace = shift;
-#
-#    foreach my $dynamic_file (keys %{$dynamic_trace}) {
-#        next unless exists($static_trace->{$dynamic_file});
-#
-#        foreach my $dynamic_function (keys %{$dynamic_trace->{$dynamic_file}->{"FNDA"}}) {
-#            my $is_loc_hit = exists($static_trace->{$dynamic_file}->{"FNDA"}->{$dynamic_function});
-#
-#            delete $static_trace->{$dynamic_file}->{"FNDA"}->{$dynamic_function} if $is_loc_hit;
-#        }
-#        delete $static_trace->{$dynamic_file}->{"FNDA"} unless keys %{$static_trace->{$dynamic_file}->{"FNDA"}};
-#
-#        foreach my $dynamic_loc (keys %{$dynamic_trace->{$dynamic_file}->{"DA"}}) {
-#            my $is_loc_hit = exists($static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc});
-#
-#            delete $static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc} if $is_loc_hit;
-#        }
-#        delete $static_trace->{$dynamic_file}->{"DA"} unless keys %{$static_trace->{$dynamic_file}->{"DA"}};
-#
-#        delete $static_trace->{$dynamic_file} unless keys %{$static_trace->{$dynamic_file}};
-#    }
-#
-#    return $static_trace;
-#}
 
 sub get_total_files_from_trace {
     my $trace = shift;
@@ -250,8 +193,8 @@ sub get_total_loc_from_trace {
 sub write_report {
     my $static_trace = shift;
     my $dynamic_trace = shift;
-    my $dynamic_hit_only_trace = shift;
-    my $static_dynamic_hit_diff_trace = shift;
+    my $dynamic_hit_trace = shift;
+    my $diff_hit_trace = shift;
     my $report_file = shift;
 
     open(my $report_fh, '>', $report_file) or die "Cannot open $report_file for writing\n";
@@ -272,13 +215,13 @@ sub write_report {
     print $report_fh "Covered by Unit Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
-    append_block($dynamic_hit_only_trace, $report_fh);
+    append_block($dynamic_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Dependent on Environment Variables but not fully covered by Unit Tests\n";
+    print $report_fh "Dependent on Environment Variables and covered by Unit Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
-    append_block($static_dynamic_hit_diff_trace, $report_fh);
+    append_block($diff_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
     print $report_fh "Ratios\n";
@@ -286,7 +229,7 @@ sub write_report {
 
     append_ratios($static_trace,
                   $dynamic_trace,
-                  $static_dynamic_hit_diff_trace,
+                  $diff_hit_trace,
                   $report_fh);
 
     close($report_fh);
@@ -342,9 +285,9 @@ sub append_block {
     my $total_functions = get_total_functions_from_trace($trace);
     my $total_loc = get_total_loc_from_trace($trace);
 
-    print $report_fh "Total files: $total_files\n";
-    print $report_fh "Total functions: $total_functions\n";
-    print $report_fh "Total LOC: $total_loc\n";
+    printf $report_fh "Total files: %u\n", $total_files;
+    printf $report_fh "Total functions: %u\n", $total_functions;
+    printf $report_fh "Total LOC: %u\n", $total_loc;
 
     print $report_fh "\n";
 }
@@ -352,46 +295,46 @@ sub append_block {
 sub append_ratios {
     my $static_trace = shift;
     my $dynamic_trace = shift;
-    my $static_dynamic_hit_diff_trace = shift;
+    my $diff_hit_trace = shift;
     my $report_fh = shift;
 
     my $total_files = get_total_files_from_trace($dynamic_trace);
     my $total_functions = get_total_functions_from_trace($dynamic_trace);
     my $total_loc = get_total_loc_from_trace($dynamic_trace);
 
-    my $dependent_env_var_files = get_total_files_from_trace($static_trace);
-    my $dependent_env_var_functions = get_total_functions_from_trace($static_trace);
-    my $dependent_env_var_loc = get_total_loc_from_trace($static_trace);
+    my $static_files = get_total_files_from_trace($static_trace);
+    my $static_functions = get_total_functions_from_trace($static_trace);
+    my $static_loc = get_total_loc_from_trace($static_trace);
 
-    my $dependent_env_var_files_ratio = $dependent_env_var_files / $total_files;
-    my $dependent_env_var_functions_ratio = $dependent_env_var_functions / $total_functions;
-    my $dependent_env_var_loc_ratio = $dependent_env_var_loc / $total_loc;
+    my $dep_env_var_files_ratio = $static_files / $total_files;
+    my $dep_env_var_functions_ratio = $static_functions / $total_functions;
+    my $dep_env_var_loc_ratio = $static_loc / $total_loc;
 
     print $report_fh "==================================\n";
     print $report_fh "Dependent on Environment Variables\n";
     print $report_fh "==================================\n\n";
 
-    printf $report_fh "Files: %.2f%%\n", $dependent_env_var_files_ratio * 100;
-    printf $report_fh "Functions: %.2f%%\n", $dependent_env_var_functions_ratio * 100;
-    printf $report_fh "LOC: %.2f%%\n", $dependent_env_var_loc_ratio * 100;
+    printf $report_fh "Files: %.2f%%\n", $dep_env_var_files_ratio * 100;
+    printf $report_fh "Functions: %.2f%%\n", $dep_env_var_functions_ratio * 100;
+    printf $report_fh "LOC: %.2f%%\n", $dep_env_var_loc_ratio * 100;
 
     print $report_fh "\n";
 
-    my $static_dynamic_hit_diff_files = get_total_files_from_trace($static_dynamic_hit_diff_trace);
-    my $static_dynamic_hit_diff_functions = get_total_functions_from_trace($static_dynamic_hit_diff_trace);
-    my $static_dynamic_hit_diff_loc = get_total_loc_from_trace($static_dynamic_hit_diff_trace);
+    my $diff_hit_files = get_total_files_from_trace($diff_hit_trace);
+    my $diff_hit_functions = get_total_functions_from_trace($diff_hit_trace);
+    my $diff_hit_loc = get_total_loc_from_trace($diff_hit_trace);
 
-    my $static_dynamic_hit_diff_files_ratio = $static_dynamic_hit_diff_files / $dependent_env_var_files;
-    my $static_dynamic_hit_diff_functions_ratio = $static_dynamic_hit_diff_functions / $dependent_env_var_functions;
-    my $static_dynamic_hit_diff_loc_ratio = $static_dynamic_hit_diff_loc / $dependent_env_var_loc;
+    my $diff_files_ratio = $diff_hit_files / $static_files;
+    my $diff_functions_ratio = $diff_hit_functions / $static_functions;
+    my $diff_loc_ratio = $diff_hit_loc / $static_loc;
 
-    print $report_fh "======================================================================\n";
-    print $report_fh "Dependent on Environment Variables but not fully covered by Unit Tests\n";
-    print $report_fh "======================================================================\n\n";
+    print $report_fh "============================================================\n";
+    print $report_fh "Dependent on Environment Variables and covered by Unit Tests\n";
+    print $report_fh "============================================================\n\n";
 
-    printf $report_fh "Files: %.2f%%\n", $static_dynamic_hit_diff_files_ratio * 100;
-    printf $report_fh "Functions: %.2f%%\n", $static_dynamic_hit_diff_functions_ratio * 100;
-    printf $report_fh "LOC: %.2f%%\n", $static_dynamic_hit_diff_loc_ratio * 100;
+    printf $report_fh "Files: %.2f%%\n", $diff_files_ratio * 100;
+    printf $report_fh "Functions: %.2f%%\n", $diff_functions_ratio * 100;
+    printf $report_fh "LOC: %.2f%%\n", $diff_loc_ratio * 100;
 
     print $report_fh "\n";
 }
@@ -403,17 +346,21 @@ sub write_diff {
     open(my $diff_trace_fh, '>', $diff_trace_file) or die "Cannot open $diff_trace_file for writing\n";
 
     foreach my $file (keys %{$diff_trace}) {
-        print $diff_trace_fh "SF:${file}\n";
+        printf $diff_trace_fh "SF:%s\n", $file;
 
         foreach my $function (keys %{$diff_trace->{$file}->{"FNDA"}}) {
-            print $diff_trace_fh "FNDA:0,${function}\n";
+            my $function_hit = $diff_trace->{$file}->{"FNDA"}->{$function};
+
+            printf $diff_trace_fh "FNDA:%u,%s\n", $function_hit, $function;
         }
 
         foreach my $loc (keys %{$diff_trace->{$file}->{"DA"}}) {
-            print $diff_trace_fh "DA:${loc},0\n";
+            my $loc_hit = $diff_trace->{$file}->{"DA"}->{$loc};
+
+            printf $diff_trace_fh "DA:%s,%u\n", $loc, $loc_hit;
         }
 
-        print $diff_trace_fh "end_of_record\n";
+        printf $diff_trace_fh "end_of_record\n";
     }
 
     close($diff_trace_fh);

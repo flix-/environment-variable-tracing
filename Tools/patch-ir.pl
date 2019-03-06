@@ -24,7 +24,10 @@ while (my $line = <$ir_file_in_fh>) {
     chomp($line);
 
     if ($line =~ m/^(\s+)ret\s.*/) {
-        print $ir_file_out_fh "${1}${token_prefix}${index} = ${instruction}\n";
+        my $spaces = ${1};
+
+        printf $ir_file_out_fh "%s%s%u = %s\n", $spaces, $token_prefix, $index, $instruction;
+
         $index++;
     }
     print $ir_file_out_fh "$line\n";

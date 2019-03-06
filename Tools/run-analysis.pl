@@ -28,7 +28,8 @@ if ($create_function_list) {
 
     my $functions_out = "functions-" . time() . ".txt";
 
-    print "Writing functions to: $functions_out\n";
+    printf "Writing functions to: %s\n", $functions_out;
+
     write_functions_to_file(\%functions, $functions_out);
 
     close($ir_fh);
@@ -49,7 +50,7 @@ close($ir_fh);
 die "Function list is empty!\n" unless(@entry_points);
 
 print "Running analysis\n";
-print "Bulk mode: $BULK_MODE\n";
+printf "Bulk mode: %u\n", $BULK_MODE;
 
 if ($BULK_MODE) {
     my $analysis_out = "${functions_file}-" . time() . "-out.txt";
@@ -61,7 +62,7 @@ if ($BULK_MODE) {
 
     my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points_bulk > $analysis_out 2>&1";
 
-    print "Executing: $cmd\n";
+    printf "Executing: %s\n", $cmd;
 
     system($cmd);
 }
@@ -71,7 +72,7 @@ else {
 
         my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_point > $analysis_out 2>&1";
 
-        print "Executing: $cmd\n";
+        printf "Executing: %s\n", $cmd;
 
         system($cmd);
     }

@@ -30,8 +30,8 @@ my $merged_trace_file = "static-" . time() . "-merged-trace.txt";
 
 my $cmd = "lcov $lcov_param -o $merged_trace_file";
 
-print "Writing merge to: $merged_trace_file\n";
-print "Executing: $cmd\n";
+printf "Writing merge to: %s\n", $merged_trace_file;
+printf "Executing: %s\n", $cmd;
 
 system($cmd);
 
