@@ -11,10 +11,10 @@ use Clone 'clone';
 my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $report_file = "report-" . time() . ".txt";
 
-my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
-#my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
+#my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1a/test";
+my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
 
-my $summary_only = 0;
+my $summary_only = 1;
 
 # END CONFIG #
 
@@ -114,6 +114,8 @@ sub create_hit_only_trace {
     my $trace = clone(shift);
 
     foreach my $file (keys %{$trace}) {
+        delete $trace->{$file}->{"FN"};
+
         foreach my $function (keys %{$trace->{$file}->{"FNDA"}}) {
             my $has_hit = $trace->{$file}->{"FNDA"}->{$function} > 0;
 
@@ -154,6 +156,7 @@ sub create_diff_trace {
     my $loc_function_lookup = shift;
 
     foreach my $static_file (keys %{$static_trace}) {
+        delete $static_trace->{$static_file}->{"FN"};
         delete $static_trace->{$static_file}->{"FNDA"};
     }
 
@@ -184,6 +187,33 @@ sub create_diff_trace {
 
     return $static_trace;
 }
+
+#sub create_diff_trace {
+#    my $static_trace = clone(shift);
+#    my $dynamic_trace = shift;
+#
+#    foreach my $dynamic_file (keys %{$dynamic_trace}) {
+#        next unless exists($static_trace->{$dynamic_file});
+#
+#        foreach my $dynamic_function (keys %{$dynamic_trace->{$dynamic_file}->{"FNDA"}}) {
+#            my $is_loc_hit = exists($static_trace->{$dynamic_file}->{"FNDA"}->{$dynamic_function});
+#
+#            delete $static_trace->{$dynamic_file}->{"FNDA"}->{$dynamic_function} if $is_loc_hit;
+#        }
+#        delete $static_trace->{$dynamic_file}->{"FNDA"} unless keys %{$static_trace->{$dynamic_file}->{"FNDA"}};
+#
+#        foreach my $dynamic_loc (keys %{$dynamic_trace->{$dynamic_file}->{"DA"}}) {
+#            my $is_loc_hit = exists($static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc});
+#
+#            delete $static_trace->{$dynamic_file}->{"DA"}->{$dynamic_loc} if $is_loc_hit;
+#        }
+#        delete $static_trace->{$dynamic_file}->{"DA"} unless keys %{$static_trace->{$dynamic_file}->{"DA"}};
+#
+#        delete $static_trace->{$dynamic_file} unless keys %{$static_trace->{$dynamic_file}};
+#    }
+#
+#    return $static_trace;
+#}
 
 sub get_total_files_from_trace {
     my $trace = shift;
@@ -245,7 +275,7 @@ sub write_report {
     append_block($dynamic_hit_only_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Dependent on Environment Variables but not covered by Unit Tests\n";
+    print $report_fh "Dependent on Environment Variables but not fully covered by Unit Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($static_dynamic_hit_diff_trace, $report_fh);
@@ -341,9 +371,9 @@ sub append_ratios {
     print $report_fh "Dependent on Environment Variables\n";
     print $report_fh "==================================\n\n";
 
-    print $report_fh "Files: $dependent_env_var_files_ratio\n";
-    print $report_fh "Functions: $dependent_env_var_functions_ratio\n";
-    print $report_fh "LOC: $dependent_env_var_loc_ratio\n";
+    printf $report_fh "Files: %.2f%%\n", $dependent_env_var_files_ratio * 100;
+    printf $report_fh "Functions: %.2f%%\n", $dependent_env_var_functions_ratio * 100;
+    printf $report_fh "LOC: %.2f%%\n", $dependent_env_var_loc_ratio * 100;
 
     print $report_fh "\n";
 
@@ -355,13 +385,13 @@ sub append_ratios {
     my $static_dynamic_hit_diff_functions_ratio = $static_dynamic_hit_diff_functions / $dependent_env_var_functions;
     my $static_dynamic_hit_diff_loc_ratio = $static_dynamic_hit_diff_loc / $dependent_env_var_loc;
 
-    print $report_fh "================================================================\n";
-    print $report_fh "Dependent on Environment Variables but not covered by Unit Tests\n";
-    print $report_fh "================================================================\n\n";
+    print $report_fh "======================================================================\n";
+    print $report_fh "Dependent on Environment Variables but not fully covered by Unit Tests\n";
+    print $report_fh "======================================================================\n\n";
 
-    print $report_fh "Files: $static_dynamic_hit_diff_files_ratio\n";
-    print $report_fh "Functions: $static_dynamic_hit_diff_functions_ratio\n";
-    print $report_fh "LOC: $static_dynamic_hit_diff_loc_ratio\n";
+    printf $report_fh "Files: %.2f%%\n", $static_dynamic_hit_diff_files_ratio * 100;
+    printf $report_fh "Functions: %.2f%%\n", $static_dynamic_hit_diff_functions_ratio * 100;
+    printf $report_fh "LOC: %.2f%%\n", $static_dynamic_hit_diff_loc_ratio * 100;
 
     print $report_fh "\n";
 }
