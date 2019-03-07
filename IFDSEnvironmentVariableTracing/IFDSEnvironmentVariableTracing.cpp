@@ -47,6 +47,9 @@ static const std::set<std::string> TAINTED_CALLS = {
 
                                                     // libcrypto
                                                       "ossl_safe_getenv",
+
+                                                    // libcurl
+                                                      "curl_getenv",
                                                    };
 
 static const std::set<std::string> BLACKLISTED_CALLS = {
