@@ -32,3 +32,4 @@ file(GLOB_RECURSE PHASAR_SOURCES
 add_custom_target(PHASAR_SOURCES SOURCES ${PHASAR_SOURCES})
 
 add_subdirectory(IFDSEnvironmentVariableTracing)
+#add_subdirectory(IFDSFunctionStats)

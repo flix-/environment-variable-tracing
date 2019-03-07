@@ -75,7 +75,7 @@ A LLVM-based static analysis framework<br>
 --- Configuration ---<br>
 Project ID: myphasarproject<br>
 Graph ID: 123456<br>
-Module(s): main.ll.patched <br>
+Module(s): main.ll.preprocessed <br>
 Data-flow analysis: plugin <br>
 WPA: 1<br>
 Mem2reg: 0<br>
@@ -100,6 +100,16 @@ DONE<br>
 [TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
 [TRACK]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
 [TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[TRACK] Relocated memory location (store)<br>
+[TRACK] Source:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %s12 = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
+[TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[TRACK]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[TRACK] Destination:<br>
+[TRACK] memLocationSeq: <br>
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15<br>
 [TRACK] Relocated memory location (memcpy/memmove)<br>
 [TRACK] Source:<br>
 [TRACK] memLocationSeq: <br>
@@ -178,19 +188,9 @@ DONE<br>
 [TRACK] Destination:<br>
 [TRACK] memLocationSeq: <br>
 [TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !17<br>
-[TRACK] Relocated memory location (store)<br>
-[TRACK] Source:<br>
-[TRACK] memLocationSeq: <br>
-[TRACK]   %s12 = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
-[TRACK]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
-[TRACK]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
-[TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
-[TRACK] Destination:<br>
-[TRACK] memLocationSeq: <br>
-[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15<br>
 Writing line number trace to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1551876660-trace.txt<br>
-Writing lcov return value trace to: static-main-1551876660-return-value-trace.txt<br>
+Writing lcov trace to: static-main-1551956498-trace.txt<br>
+Writing lcov return value trace to: static-main-1551956498-return-value-trace.txt<br>
 ### DUMP LLVMIFDSSolver results<br>
 EMPTY<br>
 <br>

@@ -15,7 +15,7 @@
 extern char *getenv(const char *name);
 
 static int
-_dopr(va_list args)
+fake_dopr(va_list args)
 {
     char *nt1 = va_arg(args, char *);
     char *t2 = va_arg(args, char *);
@@ -28,7 +28,7 @@ _dopr(va_list args)
 int
 fake_BIO_vprintf(int n, va_list args)
 {
-    return _dopr(args);
+    return fake_dopr(args);
 }
 
 int
@@ -65,7 +65,7 @@ A LLVM-based static analysis framework<br>
 --- Configuration ---<br>
 Project ID: myphasarproject<br>
 Graph ID: 123456<br>
-Module(s): main.ll.patched <br>
+Module(s): main.ll.preprocessed <br>
 Data-flow analysis: plugin <br>
 WPA: 1<br>
 Mem2reg: 0<br>
@@ -211,8 +211,8 @@ DONE<br>
 [TRACK] varArgIndex: 2<br>
 [TRACK] currentVarArgIndex: 0<br>
 Writing line number trace to: line-numbers.txt<br>
-Writing lcov trace to: static-main-1551876667-trace.txt<br>
-Writing lcov return value trace to: static-main-1551876667-return-value-trace.txt<br>
+Writing lcov trace to: static-main-1551956504-trace.txt<br>
+Writing lcov return value trace to: static-main-1551956504-return-value-trace.txt<br>
 ### DUMP LLVMIFDSSolver results<br>
 EMPTY<br>
 <br>

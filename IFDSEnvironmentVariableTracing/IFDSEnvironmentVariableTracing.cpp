@@ -41,42 +41,17 @@
 namespace psr {
 
 static const std::set<std::string> TAINTED_CALLS = {
-                                                    "getenv",
-                                                    "secure_getenv",
+                                                    // POSIX / GNU
+                                                      "getenv",
+                                                      "secure_getenv",
 
                                                     // libcrypto
-                                                    "ossl_safe_getenv",
-
-                                                    // libcurl / curl
-                                                    "curl_getenv",
-                                                    "decc_getenv",
-                                                    "vms_getenv",
-                                                    "GetEnv",
-                                                    "curlx_getenv"
+                                                      "ossl_safe_getenv",
                                                    };
 
 static const std::set<std::string> BLACKLISTED_CALLS = {
                                                         // libcrypto
-                                                        "BIO_printf",
-                                                        "BIO_vprintf",
-                                                        "BIO_snprintf",
-                                                        "BIO_vsnprintf",
-                                                        "ERR_add_error_data",
-                                                        "OPENSSL_showfatal",
-
-                                                        // libcurl / curl
-                                                        "curl_mvsnprintf",
-                                                        "curl_msnprintf",
-                                                        "curl_maprintf",
-                                                        "curl_mvaprintf",
-                                                        "curl_msprintf",
-                                                        "curl_mprintf",
-                                                        "curl_mfprintf",
-                                                        "curl_mvsprintf",
-                                                        "curl_mvprintf",
-                                                        "curl_mvfprintf",
-                                                        "Curl_infof",
-                                                        "Curl_failf"
+                                                          "_dopr",
                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>

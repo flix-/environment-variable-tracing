@@ -18,7 +18,7 @@ entry:
   store %struct.__va_list_tag* %args, %struct.__va_list_tag** %args.addr, align 8
   call void @llvm.dbg.declare(metadata %struct.__va_list_tag** %args.addr, metadata !23, metadata !21), !dbg !24
   %0 = load %struct.__va_list_tag*, %struct.__va_list_tag** %args.addr, align 8, !dbg !25
-  %call = call i32 @_dopr(%struct.__va_list_tag* %0), !dbg !26
+  %call = call i32 @fake_dopr(%struct.__va_list_tag* %0), !dbg !26
   ret i32 %call, !dbg !27
 }
 
@@ -26,7 +26,7 @@ entry:
 declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define internal i32 @_dopr(%struct.__va_list_tag* %args) #0 !dbg !28 {
+define internal i32 @fake_dopr(%struct.__va_list_tag* %args) #0 !dbg !28 {
 entry:
   %args.addr = alloca %struct.__va_list_tag*, align 8
   %nt1 = alloca i8*, align 8
@@ -271,14 +271,14 @@ attributes #3 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disa
 !22 = !DILocation(line: 18, column: 22, scope: !7)
 !23 = !DILocalVariable(name: "args", arg: 2, scope: !7, file: !1, line: 18, type: !11)
 !24 = !DILocation(line: 18, column: 33, scope: !7)
-!25 = !DILocation(line: 20, column: 18, scope: !7)
+!25 = !DILocation(line: 20, column: 22, scope: !7)
 !26 = !DILocation(line: 20, column: 12, scope: !7)
 !27 = !DILocation(line: 20, column: 5, scope: !7)
-!28 = distinct !DISubprogram(name: "_dopr", scope: !1, file: !1, line: 7, type: !29, isLocal: true, isDefinition: true, scopeLine: 8, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
+!28 = distinct !DISubprogram(name: "fake_dopr", scope: !1, file: !1, line: 7, type: !29, isLocal: true, isDefinition: true, scopeLine: 8, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
 !29 = !DISubroutineType(types: !30)
 !30 = !{!10, !11}
 !31 = !DILocalVariable(name: "args", arg: 1, scope: !28, file: !1, line: 7, type: !11)
-!32 = !DILocation(line: 7, column: 15, scope: !28)
+!32 = !DILocation(line: 7, column: 19, scope: !28)
 !33 = !DILocalVariable(name: "nt1", scope: !28, file: !1, line: 9, type: !34)
 !34 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !35, size: 64)
 !35 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)

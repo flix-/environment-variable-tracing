@@ -4,7 +4,7 @@
 extern char *getenv(const char *name);
 
 static int
-_dopr(va_list args)
+fake_dopr(va_list args)
 {
     char *nt1 = va_arg(args, char *);
     char *t2 = va_arg(args, char *);
@@ -17,7 +17,7 @@ _dopr(va_list args)
 int
 fake_BIO_vprintf(int n, va_list args)
 {
-    return _dopr(args);
+    return fake_dopr(args);
 }
 
 int

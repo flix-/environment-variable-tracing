@@ -4,7 +4,7 @@ A LLVM-based static analysis framework
 --- Configuration ---
 Project ID: myphasarproject
 Graph ID: 123456
-Module(s): main.ll.patched 
+Module(s): main.ll.preprocessed 
 Data-flow analysis: plugin 
 WPA: 1
 Mem2reg: 0
@@ -39,6 +39,14 @@ DONE
 [TRACK] memLocationSeq: 
 [TRACK]   %s31 = alloca %struct.s3, align 8, !phasar.instruction.id !14
 [TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55
+[TRACK] Relocated memory location (store)
+[TRACK] Source:
+[TRACK] memLocationSeq: 
+[TRACK]   %s31 = alloca %struct.s3, align 8, !phasar.instruction.id !14
+[TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55
+[TRACK] Destination:
+[TRACK] memLocationSeq: 
+[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK] memLocationSeq: 
@@ -83,14 +91,6 @@ DONE
 [TRACK] Relocated memory location (store)
 [TRACK] Source:
 [TRACK] memLocationSeq: 
-[TRACK]   %s31 = alloca %struct.s3, align 8, !phasar.instruction.id !14
-[TRACK]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55
-[TRACK] Destination:
-[TRACK] memLocationSeq: 
-[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15
-[TRACK] Relocated memory location (store)
-[TRACK] Source:
-[TRACK] memLocationSeq: 
 [TRACK]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !13
 [TRACK]   %s24 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !65, !phasar.instruction.id !66
 [TRACK]   %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s24, i32 0, i32 1, !dbg !67, !phasar.instruction.id !68
@@ -124,8 +124,8 @@ DONE
 [TRACK] memLocationSeq: 
 [TRACK]   %t5 = alloca i8*, align 8, !phasar.instruction.id !24
 Writing line number trace to: line-numbers.txt
-Writing lcov trace to: static-main-1551876662-trace.txt
-Writing lcov return value trace to: static-main-1551876662-return-value-trace.txt
+Writing lcov trace to: static-main-1551956501-trace.txt
+Writing lcov return value trace to: static-main-1551956501-return-value-trace.txt
 ### DUMP LLVMIFDSSolver results
 EMPTY
 

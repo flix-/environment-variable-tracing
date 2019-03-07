@@ -19,7 +19,7 @@ PHASAR_RESULTS_FILE='results.json'
 
 SUMMARY_FILE='test-result-index.html'
 
-PATCH_IR_BIN='/home/sebastian/.qt-creator-workspace/Phasar/Tools/patch-ir.pl'
+PREPROCESS_IR_BIN='/home/sebastian/.qt-creator-workspace/Phasar/Tools/preprocess-ir.pl'
 
 function create_html {
     rm -f ${OUT_HTML}
@@ -126,13 +126,13 @@ do
     echo "Compiling to IR"
     ${CC} ${CFLAGS} ${SRC_IN} -o ${IR_OUT}
 
-    echo "Patching IR"
-    PATCHED_IR_OUT="${IR_OUT}.patched"
+    echo "Preprocessing IR"
+    PREPROCESSED_IR_OUT="${IR_OUT}.preprocessed"
 
-    ${PATCH_IR_BIN} ${IR_OUT} ${PATCHED_IR_OUT}
+    ${PREPROCESS_IR_BIN} ${IR_OUT} ${PREPROCESSED_IR_OUT}
 
     echo "Running analysis"
-    ${PHASAR_BIN} -m ${PATCHED_IR_OUT} -M 0 -D plugin --analysis-plugin ${PHASAR_PLUGIN} > ${PHASAR_OUTPUT_FILE} 2>&1
+    ${PHASAR_BIN} -m ${PREPROCESSED_IR_OUT} -M 0 -D plugin --analysis-plugin ${PHASAR_PLUGIN} > ${PHASAR_OUTPUT_FILE} 2>&1
 
     echo "Checking result"
 
