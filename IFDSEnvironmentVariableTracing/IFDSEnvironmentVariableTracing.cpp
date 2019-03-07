@@ -220,6 +220,9 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
 
   for (const auto& entryPoint : this->EntryPoints) {
+    bool isBlacklistedCall = BLACKLISTED_CALLS.find(entryPoint) != BLACKLISTED_CALLS.end();
+    if (isBlacklistedCall) continue;
+
     seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
                                   std::set<ExtendedValue>({ zeroValue() })));
   }
