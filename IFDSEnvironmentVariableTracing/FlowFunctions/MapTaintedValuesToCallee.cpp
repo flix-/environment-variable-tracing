@@ -68,11 +68,11 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
         targetParamFacts.insert(ev);
 
-        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
-        llvm::outs() << "[TRACK] Source:" << "\n";
-        DataFlowUtils::dumpFact(fact);
-        llvm::outs() << "[TRACK] Destination:" << "\n";
-        DataFlowUtils::dumpFact(ev);
+//        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
+//        llvm::outs() << "[TRACK] Source:" << "\n";
+//        DataFlowUtils::dumpFact(fact);
+//        llvm::outs() << "[TRACK] Destination:" << "\n";
+//        DataFlowUtils::dumpFact(ev);
       }
     }
     else {
@@ -86,11 +86,11 @@ MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
 
         targetParamFacts.insert(ev);
 
-        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
-        llvm::outs() << "[TRACK] Source:" << "\n";
-        DataFlowUtils::dumpFact(fact);
-        llvm::outs() << "[TRACK] Destination:" << "\n";
-        DataFlowUtils::dumpFact(ev);
+//        llvm::outs() << "[TRACK] Added patchable memory location (caller -> callee)" << "\n";
+//        llvm::outs() << "[TRACK] Source:" << "\n";
+//        DataFlowUtils::dumpFact(fact);
+//        llvm::outs() << "[TRACK] Destination:" << "\n";
+//        DataFlowUtils::dumpFact(ev);
       }
     }
 

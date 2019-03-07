@@ -33,12 +33,12 @@ BranchSwitchInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       const auto startBasicBlock = currentInst->getParent();
       const auto startBasicBlockLabel = startBasicBlock->getName();
 
-      llvm::outs() << "[TRACK] Searching end of block label for: " << startBasicBlockLabel << "\n";
+//      llvm::outs() << "[TRACK] Searching end of block label for: " << startBasicBlockLabel << "\n";
 
       const auto endBasicBlock = DataFlowUtils::getEndOfTaintedBlock(startBasicBlock);
       const auto endBasicBlockLabel = endBasicBlock ? endBasicBlock->getName() : "";
 
-      llvm::outs() << "[TRACK] End of block label: " << endBasicBlockLabel << "\n";
+//      llvm::outs() << "[TRACK] End of block label: " << endBasicBlockLabel << "\n";
 
       ExtendedValue ev(currentInst);
       ev.setEndOfTaintedBlockLabel(endBasicBlockLabel);

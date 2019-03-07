@@ -66,11 +66,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-      llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
-      llvm::outs() << "[TRACK] Source:" << "\n";
-      DataFlowUtils::dumpFact(fact);
-      llvm::outs() << "[TRACK] Destination:" << "\n";
-      DataFlowUtils::dumpFact(ev);
+//      llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
+//      llvm::outs() << "[TRACK] Source:" << "\n";
+//      DataFlowUtils::dumpFact(fact);
+//      llvm::outs() << "[TRACK] Destination:" << "\n";
+//      DataFlowUtils::dumpFact(ev);
     }
   }
   /*
@@ -95,11 +95,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-      llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
-      llvm::outs() << "[TRACK] Source:" << "\n";
-      DataFlowUtils::dumpFact(fact);
-      llvm::outs() << "[TRACK] Destination:" << "\n";
-      DataFlowUtils::dumpFact(ev);
+//      llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
+//      llvm::outs() << "[TRACK] Source:" << "\n";
+//      DataFlowUtils::dumpFact(fact);
+//      llvm::outs() << "[TRACK] Destination:" << "\n";
+//      DataFlowUtils::dumpFact(ev);
     }
   }
   /*
@@ -130,11 +130,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-      llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
-      llvm::outs() << "[TRACK] Source:" << "\n";
-      DataFlowUtils::dumpFact(fact);
-      llvm::outs() << "[TRACK] Destination:" << "\n";
-      DataFlowUtils::dumpFact(ev);
+//      llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
+//      llvm::outs() << "[TRACK] Source:" << "\n";
+//      DataFlowUtils::dumpFact(fact);
+//      llvm::outs() << "[TRACK] Destination:" << "\n";
+//      DataFlowUtils::dumpFact(ev);
     }
     if (!killFact) targetFacts.insert(fact);
   }
