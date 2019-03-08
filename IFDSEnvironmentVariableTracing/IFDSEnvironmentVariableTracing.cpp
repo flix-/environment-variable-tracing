@@ -58,7 +58,10 @@ static const std::set<std::string> BLACKLISTED_CALLS = {
 
                                                         // libcurl
                                                           "Curl_vsetopt",
+                                                          "curl_easy_strerror",
                                                           "Curl_ftp_parselist",
+                                                          "Curl_isunreserved",
+                                                          "dprintf_Pass1"
                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
