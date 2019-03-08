@@ -13,9 +13,9 @@
 } while (0)
 
 #ifdef DEBUG_BUILD
-#define LOG_DEBUG(x) LOG_INFO(x)
+  #define LOG_DEBUG(x) LOG_INFO(x)
 #else
-#define LOG_DEBUG(x) do {} while (0)
+  #define LOG_DEBUG(x) do {} while (0)
 #endif
 
 #endif // LOG_H
