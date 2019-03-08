@@ -49,7 +49,10 @@ public:
                   SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) override;
 
 private:
+  const std::set<std::string> functionBlacklist = getFunctionBlacklist();
   TraceStats traceStats;
+
+  const std::set<std::string> getFunctionBlacklist();
 };
 
 } // namespace

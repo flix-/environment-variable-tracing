@@ -31,7 +31,10 @@
 
 #include "Utils/DataFlowUtils.h"
 
+#include <cstdlib>
+#include <fstream>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <llvm/IR/IntrinsicInst.h>
@@ -40,28 +43,16 @@
 
 namespace psr {
 
-static const std::set<std::string> TAINTED_CALLS = {
-                                                    // POSIX / GNU
-                                                      "getenv",
-                                                      "secure_getenv",
+static const std::set<std::string> TAINTED_FUNCTIONS = {
+                                                        // POSIX / GNU
+                                                          "getenv",
+                                                          "secure_getenv",
 
-                                                    // libcrypto
-                                                      "ossl_safe_getenv",
-
-                                                    // libcurl
-                                                      "curl_getenv",
-                                                   };
-
-static const std::set<std::string> BLACKLISTED_CALLS = {
                                                         // libcrypto
-                                                          //"_dopr",
+                                                          "ossl_safe_getenv",
 
                                                         // libcurl
-                                                          "Curl_vsetopt",
-                                                          "curl_easy_strerror",
-                                                          "Curl_ftp_parselist",
-                                                          "Curl_isunreserved",
-                                                          "dprintf_Pass1"
+                                                          "curl_getenv",
                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
@@ -185,8 +176,8 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   /*
    * Exclude blacklisted functions here.
    */
-  bool isBlacklistedCall = BLACKLISTED_CALLS.find(destMthdName) != BLACKLISTED_CALLS.end();
-  if (isBlacklistedCall)
+  bool isBlacklistedFunction = functionBlacklist.find(destMthdName) != functionBlacklist.end();
+  if (isBlacklistedFunction)
     return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
@@ -207,7 +198,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   /*
    * Provide summary for tainted calls.
    */
-  bool isTaintedCall = TAINTED_CALLS.find(destMthdName) != TAINTED_CALLS.end();
+  bool isTaintedCall = TAINTED_FUNCTIONS.find(destMthdName) != TAINTED_FUNCTIONS.end();
   if (isTaintedCall)
     return std::make_shared<GenerateFlowFunction>(callStmt, traceStats, zeroValue());
 
@@ -230,8 +221,8 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
 
   for (const auto& entryPoint : this->EntryPoints) {
-    bool isBlacklistedCall = BLACKLISTED_CALLS.find(entryPoint) != BLACKLISTED_CALLS.end();
-    if (isBlacklistedCall) continue;
+    bool isBlacklistedFunction = functionBlacklist.find(entryPoint) != functionBlacklist.end();
+    if (isBlacklistedFunction) continue;
 
     seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
                                   std::set<ExtendedValue>({ zeroValue() })));
@@ -259,6 +250,35 @@ IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
   // Write lcov return value trace
   LcovRetValWriter lcovRetValWriter(traceStats, lcovRetValTraceFile);
   lcovRetValWriter.write();
+}
+
+const std::set<std::string>
+IFDSEnvironmentVariableTracing::getFunctionBlacklist() {
+
+  std::set<std::string> functionBlacklist;
+
+  const char* fnBlacklistLoc = std::getenv("FUNCTION_BLACKLIST_LOCATION");
+  if (!fnBlacklistLoc) return functionBlacklist;
+
+  LOG_INFO("Trying to read function blacklist from: " << fnBlacklistLoc);
+
+  std::ifstream fnBlacklistStream(fnBlacklistLoc);
+  if (fnBlacklistStream.fail()) {
+    LOG_INFO("Failed to read function blacklist from: " << fnBlacklistLoc);
+
+    return functionBlacklist;
+  }
+
+  std::string blacklistedFunction;
+  while (std::getline(fnBlacklistStream, blacklistedFunction)) {
+    if (blacklistedFunction.empty()) continue;
+
+    LOG_INFO("Blacklisted function: " << blacklistedFunction);
+
+    functionBlacklist.insert(blacklistedFunction);
+  }
+
+  return functionBlacklist;
 }
 
 } // namespace

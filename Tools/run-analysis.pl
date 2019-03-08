@@ -15,10 +15,11 @@ my $STACK_SIZE_KB = 'unlimited'; #512*1024;
 
 # END CONFIG
 
-die "Usage: $0 <path_to_llvm_ir> <path_to_functions>\n" if (@ARGV != 1 && @ARGV != 2);
+die "Usage: $0 <path_to_llvm_ir> <path_to_functions> [<path_to_function_blacklist>]\n" if (@ARGV != 1 && @ARGV != 2 && @ARGV != 3);
 
-my $ir_file = shift(@ARGV);
-my $functions_file = shift(@ARGV);
+my $ir_file = shift @ARGV;
+my $functions_file = shift @ARGV;
+my $function_blacklist_file = shift @ARGV;
 
 open(my $ir_fh, '<', $ir_file) or die "Cannot open file '$ir_file'\n";
 
@@ -50,7 +51,15 @@ close($ir_fh);
 die "Function list is empty!\n" unless(@entry_points);
 
 print "Running analysis\n";
+
+print "\n";
+
 printf "Bulk mode: %u\n", $BULK_MODE;
+printf "Function blacklist file: %s\n", $function_blacklist_file ? $function_blacklist_file : "none";
+
+print "\n";
+
+$ENV{'FUNCTION_BLACKLIST_LOCATION'} = $function_blacklist_file if $function_blacklist_file;
 
 if ($BULK_MODE) {
     my $analysis_out = "${functions_file}-" . time() . "-out.txt";
