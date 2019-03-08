@@ -12,7 +12,7 @@ LineNumberWriter::write() const {
 
   std::ofstream writer(getOutFile());
 
-  llvm::outs() << "Writing line number trace to: " << getOutFile() << "\n";
+  LOG_INFO("Writing line number trace to: " << getOutFile());
 
   for (const auto& fileEntry : getTraceStats().getStats()) {
     const auto functionStats = fileEntry.second;

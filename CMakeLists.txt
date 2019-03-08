@@ -3,6 +3,8 @@ project(Phasar)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_BUILD")
+
 set(LLVM_DIR /home/sebastian/documents/programming/llvm/jail/llvm501-release/lib/cmake/llvm)
 find_package(LLVM REQUIRED CONFIG)
 

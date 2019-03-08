@@ -39,11 +39,11 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     targetFacts.insert(ev);
     traceStats.add(memTransferInst, dstMemLocationSeq);
 
-//    llvm::outs() << "[TRACK] Patched memory location (arg/memcpy)" << "\n";
-//    llvm::outs() << "[TRACK] Source:" << "\n";
-//    DataFlowUtils::dumpFact(fact);
-//    llvm::outs() << "[TRACK] Destination:" << "\n";
-//    DataFlowUtils::dumpFact(ev);
+    LOG_DEBUG("Patched memory location (arg/memcpy)");
+    LOG_DEBUG("Source");
+    DataFlowUtils::dumpFact(fact);
+    LOG_DEBUG("Destination");
+    DataFlowUtils::dumpFact(ev);
   }
   else {
     bool isSrcArrayDecay = DataFlowUtils::isArrayDecay(srcMemLocationMatr);
@@ -66,11 +66,11 @@ MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(memTransferInst, dstMemLocationSeq);
 
-//      llvm::outs() << "[TRACK] Relocated memory location (memcpy/memmove)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Relocated memory location (memcpy/memmove)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
     if (!killFact) targetFacts.insert(fact);
   }

@@ -6,10 +6,9 @@
 #include "MapTaintedValuesToCaller.h"
 
 #include "../Utils/DataFlowUtils.h"
+#include "../Utils/Log.h"
 
 #include <algorithm>
-
-#include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
 
@@ -56,11 +55,11 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
       targetRetFacts.insert(ev);
 
-//      llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Added patchable memory location (caller <- callee)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
   }
   else {
@@ -73,11 +72,11 @@ MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
 
       targetRetFacts.insert(ev);
 
-//      llvm::outs() << "[TRACK] Added patchable memory location (caller <- callee)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Added patchable memory location (caller <- callee)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
   }
 

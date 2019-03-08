@@ -8,10 +8,10 @@
 
 #include "TraceStats.h"
 
+#include "../Utils/Log.h"
+
 #include <fstream>
 #include <string>
-
-#include <llvm/Support/raw_ostream.h>
 
 namespace psr {
 

@@ -5,6 +5,8 @@
 
 #include "DataFlowUtils.h"
 
+#include "Log.h"
+
 #include <algorithm>
 #include <cassert>
 #include <ctime>
@@ -18,7 +20,6 @@
 #include <llvm/Analysis/PostDominators.h>
 
 #include <llvm/IR/IntrinsicInst.h>
-#include <llvm/Support/raw_ostream.h>
 
 #include <phasar/Utils/LLVMShorthands.h>
 
@@ -894,7 +895,7 @@ DataFlowUtils::getEndOfTaintedBlock(const llvm::BasicBlock* startBasicBlock) {
 
   const auto endOfClosedBlockLabel = endOfClosedBlock ? endOfClosedBlock->getName() : "";
 
-  llvm::outs() << "[TRACK] End of closed block label: " << endOfClosedBlockLabel << "\n";
+  LOG_DEBUG("End of closed block label: " << endOfClosedBlockLabel);
 
   bool isClosedBlock = std::find(postDominators.begin(),
                                  postDominators.end(),
@@ -1090,30 +1091,32 @@ DataFlowUtils::isGlobalMemoryLocationSeq(const std::vector<const llvm::Value*> m
 static void
 dumpMemoryLocation(const std::vector<const llvm::Value*> memLocationSeq) {
 
+#ifdef DEBUG_BUILD
   for (const auto memLocationPart : memLocationSeq) {
     llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
   }
+#endif
 }
 
 void
 DataFlowUtils::dumpFact(const ExtendedValue& ev) {
 
   if (!ev.getMemLocationSeq().empty()) {
-    llvm::outs() << "[TRACK] memLocationSeq: " << "\n";
+    LOG_DEBUG("memLocationSeq:");
     dumpMemoryLocation(ev.getMemLocationSeq());
   }
 
   if (!ev.getEndOfTaintedBlockLabel().empty()) {
-    llvm::outs() << "[TRACK] endOfTaintedBlockLabel: " << ev.getEndOfTaintedBlockLabel() << "\n";
+    LOG_DEBUG("endOfTaintedBlockLabel: " << ev.getEndOfTaintedBlockLabel());
   }
 
   if (ev.isVarArg()) {
     if (!ev.isVarArgTemplate()) {
-      llvm::outs() << "[TRACK] vaListMemLocationSeq: " << "\n";
+      LOG_DEBUG("vaListMemLocationSeq:");
       dumpMemoryLocation(getVaListMemoryLocationSeqFromFact(ev));
     }
-    llvm::outs() << "[TRACK] varArgIndex: " << ev.getVarArgIndex() << "\n";
-    llvm::outs() << "[TRACK] currentVarArgIndex: " << ev.getCurrentVarArgIndex() << "\n";
+    LOG_DEBUG("varArgIndex: " << ev.getVarArgIndex());
+    LOG_DEBUG("currentVarArgIndex: " << ev.getCurrentVarArgIndex());
   }
 }
 

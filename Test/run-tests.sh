@@ -15,6 +15,7 @@ OUT_CSS="html/css/mark-lines.css"
 
 PHASAR_BIN='/home/sebastian/documents/programming/llvm/jail/llvm501-release/bin/phasar'
 PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so'
+#PHASAR_PLUGIN='/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so'
 PHASAR_RESULTS_FILE='results.json'
 
 SUMMARY_FILE='test-result-index.html'

@@ -52,4 +52,5 @@ add_library(IFDSEnvironmentVariableTracing MODULE
 
   Utils/DataFlowUtils.h
   Utils/DataFlowUtils.cpp
+  Utils/Log.h
 )

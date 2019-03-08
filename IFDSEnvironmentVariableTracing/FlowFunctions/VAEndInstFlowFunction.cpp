@@ -28,8 +28,8 @@ VAEndInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
     bool isVaListEqual = DataFlowUtils::isMemoryLocationSeqsEqual(DataFlowUtils::getVaListMemoryLocationSeqFromFact(fact),
                                                                   vaEndMemLocationSeq);
     if (isVaListEqual) {
-//      llvm::outs() << "[TRACK] Killed VarArg" << "\n";
-//      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Killed VarArg");
+      DataFlowUtils::dumpFact(fact);
 
       return { };
     }

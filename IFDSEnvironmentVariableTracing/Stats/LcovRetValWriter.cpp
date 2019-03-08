@@ -52,7 +52,7 @@ LcovRetValWriter::write() const {
 
   std::ofstream writer(getOutFile());
 
-  llvm::outs() << "Writing lcov return value trace to: " << getOutFile() << "\n";
+  LOG_INFO("Writing lcov return value trace to: " << getOutFile());
 
   TraceStats::FileStats stats = getTraceStats().getStats();
 

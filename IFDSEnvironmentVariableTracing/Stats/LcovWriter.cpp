@@ -12,7 +12,7 @@ LcovWriter::write() const {
 
   std::ofstream writer(getOutFile());
 
-  llvm::outs() << "Writing lcov trace to: " << getOutFile() << "\n";
+  LOG_INFO("Writing lcov trace to: " << getOutFile());
 
   for (const auto& fileEntry : getTraceStats().getStats()) {
     const auto file = fileEntry.first;

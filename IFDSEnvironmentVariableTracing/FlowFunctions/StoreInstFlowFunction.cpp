@@ -66,11 +66,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-//      llvm::outs() << "[TRACK] Patched memory location (arg/store)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Patched memory location (arg/store)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
   }
   /*
@@ -95,11 +95,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-//      llvm::outs() << "[TRACK] Patched memory location (ret/store)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Patched memory location (ret/store)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
   }
   /*
@@ -130,11 +130,11 @@ StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
       targetFacts.insert(ev);
       traceStats.add(storeInst, dstMemLocationSeq);
 
-//      llvm::outs() << "[TRACK] Relocated memory location (store)" << "\n";
-//      llvm::outs() << "[TRACK] Source:" << "\n";
-//      DataFlowUtils::dumpFact(fact);
-//      llvm::outs() << "[TRACK] Destination:" << "\n";
-//      DataFlowUtils::dumpFact(ev);
+      LOG_DEBUG("Relocated memory location (store)");
+      LOG_DEBUG("Source");
+      DataFlowUtils::dumpFact(fact);
+      LOG_DEBUG("Destination");
+      DataFlowUtils::dumpFact(ev);
     }
     if (!killFact) targetFacts.insert(fact);
   }

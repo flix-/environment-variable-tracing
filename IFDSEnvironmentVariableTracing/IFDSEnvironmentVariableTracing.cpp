@@ -54,7 +54,7 @@ static const std::set<std::string> TAINTED_CALLS = {
 
 static const std::set<std::string> BLACKLISTED_CALLS = {
                                                         // libcrypto
-                                                          "_dopr",
+                                                          //"_dopr",
                                                        };
 
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>

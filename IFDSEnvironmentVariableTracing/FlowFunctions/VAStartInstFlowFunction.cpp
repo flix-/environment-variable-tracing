@@ -33,11 +33,11 @@ VAStartInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
 
     targetFacts.insert(ev);
 
-//    llvm::outs() << "[TRACK] Created new VarArg from template" << "\n";
-//    llvm::outs() << "[TRACK] Template:" << "\n";
-//    DataFlowUtils::dumpFact(fact);
-//    llvm::outs() << "[TRACK] VarArg:" << "\n";
-//    DataFlowUtils::dumpFact(ev);
+    LOG_DEBUG("Created new VarArg from template");
+    LOG_DEBUG("Template");
+    DataFlowUtils::dumpFact(fact);
+    LOG_DEBUG("VarArg");
+    DataFlowUtils::dumpFact(ev);
   }
 
   return targetFacts;
