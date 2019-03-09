@@ -7,9 +7,12 @@
 
 #include "Log.h"
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <cassert>
 #include <ctime>
+#include <fstream>
 #include <iterator>
 #include <queue>
 #include <set>
@@ -1142,4 +1145,49 @@ DataFlowUtils::getTraceFilenamePrefix(std::string entryPoint) {
                   << now;
 
   return traceFileStream.str();
+}
+
+void
+DataFlowUtils::dumpExecutionTimeStats(std::string dumpPathPrefix,
+                                      const TraceStats::ExecutionTimeStats& executionTimeStats) {
+
+  time_t time = std::time(nullptr);
+  long now = static_cast<long> (time);
+
+  std::stringstream dumpPathStream;
+  dumpPathStream << dumpPathPrefix << "-"
+                 << now << ".csv";
+
+  const auto dumpPath = dumpPathStream.str();
+
+  LOG_INFO("Dumping execution time stats to: " << dumpPath);
+
+  std::ofstream writer(dumpPath);
+
+  for (const auto& executionTimeEntry : executionTimeStats) {
+    const auto functionName = executionTimeEntry.first;
+    const auto executionTimeMicros = executionTimeEntry.second;
+
+    const auto executionTimeMillis = executionTimeMicros / 1000;
+
+    writer << functionName << "," << executionTimeMillis << "\n";
+  }
+}
+
+void
+DataFlowUtils::dumpIfExecutionTimeStats(const TraceStats::ExecutionTimeStats& executionTimeStats) {
+
+  pid_t pid = getpid();
+
+  std::stringstream triggerPathStream;
+  triggerPathStream << "/tmp/" << pid;
+
+  const char *triggerPath = triggerPathStream.str().c_str();
+
+  bool dumpExecutionTime = access(triggerPath, F_OK ) != -1;
+  if (!dumpExecutionTime) return;
+
+  remove(triggerPath);
+
+  dumpExecutionTimeStats(std::string(triggerPath), executionTimeStats);
 }
