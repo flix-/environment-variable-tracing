@@ -31,8 +31,6 @@
 
 #include "Utils/DataFlowUtils.h"
 
-#include <cstdlib>
-#include <fstream>
 #include <set>
 #include <string>
 #include <vector>
@@ -71,7 +69,8 @@ __attribute__((destructor)) void fini() { }
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                                                std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints) {
+    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints),
+      functionBlacklist(DataFlowUtils::getFunctionBlacklist()) {
 
   this->solver_config.computeValues = false;
   this->solver_config.computePersistedSummaries = false;
@@ -250,35 +249,6 @@ IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
   // Write lcov return value trace
   LcovRetValWriter lcovRetValWriter(traceStats, lcovRetValTraceFile);
   lcovRetValWriter.write();
-}
-
-const std::set<std::string>
-IFDSEnvironmentVariableTracing::getFunctionBlacklist() {
-
-  std::set<std::string> functionBlacklist;
-
-  const char* fnBlacklistLoc = std::getenv("FUNCTION_BLACKLIST_LOCATION");
-  if (!fnBlacklistLoc) return functionBlacklist;
-
-  LOG_INFO("Trying to read function blacklist from: " << fnBlacklistLoc);
-
-  std::ifstream fnBlacklistStream(fnBlacklistLoc);
-  if (fnBlacklistStream.fail()) {
-    LOG_INFO("Failed to read function blacklist from: " << fnBlacklistLoc);
-
-    return functionBlacklist;
-  }
-
-  std::string blacklistedFunction;
-  while (std::getline(fnBlacklistStream, blacklistedFunction)) {
-    if (blacklistedFunction.empty()) continue;
-
-    LOG_INFO("Blacklisted function: " << blacklistedFunction);
-
-    functionBlacklist.insert(blacklistedFunction);
-  }
-
-  return functionBlacklist;
 }
 
 } // namespace

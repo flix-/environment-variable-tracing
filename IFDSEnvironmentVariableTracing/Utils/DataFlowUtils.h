@@ -82,6 +82,7 @@ public:
   static std::string getTypeName(const llvm::Type* type);
 
   static std::string getTraceFilenamePrefix(std::string entryPoint);
+  static const std::set<std::string> getFunctionBlacklist();
 };
 
 } // namespace

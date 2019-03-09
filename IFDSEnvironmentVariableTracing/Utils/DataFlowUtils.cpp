@@ -9,7 +9,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <ctime>
+#include <fstream>
 #include <iterator>
 #include <queue>
 #include <set>
@@ -1142,4 +1144,34 @@ DataFlowUtils::getTraceFilenamePrefix(std::string entryPoint) {
                   << now;
 
   return traceFileStream.str();
+}
+
+const std::set<std::string>
+DataFlowUtils::getFunctionBlacklist() {
+
+  std::set<std::string> functionBlacklist;
+
+  const char* fnBlacklistLoc = std::getenv("FUNCTION_BLACKLIST_LOCATION");
+  if (!fnBlacklistLoc) return functionBlacklist;
+
+  LOG_INFO("Trying to read function blacklist from: " << fnBlacklistLoc);
+
+  std::ifstream fnBlacklistStream(fnBlacklistLoc);
+  if (fnBlacklistStream.fail()) {
+    LOG_INFO("Failed to read function blacklist from: " << fnBlacklistLoc);
+
+    return functionBlacklist;
+  }
+
+  std::string blacklistedFunction;
+  while (std::getline(fnBlacklistStream, blacklistedFunction)) {
+    if (blacklistedFunction.empty()) continue;
+    if (blacklistedFunction.at(0) == '#') continue;
+
+    LOG_INFO("Blacklisted function: " << blacklistedFunction);
+
+    functionBlacklist.insert(blacklistedFunction);
+  }
+
+  return functionBlacklist;
 }
