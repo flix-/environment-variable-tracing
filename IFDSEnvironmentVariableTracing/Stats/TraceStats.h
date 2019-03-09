@@ -10,7 +10,6 @@
 
 #include <map>
 #include <set>
-#include <string>
 
 #include <llvm/IR/Instruction.h>
 
@@ -22,18 +21,13 @@ public:
   using FunctionStats = std::map<std::string, std::set<LineNumberEntry>>;
   using LineNumberStats = std::set<LineNumberEntry>;
 
-  using ExecutionTimeStats = std::map<std::string, unsigned long long>;
-
   TraceStats() { }
   ~TraceStats() = default;
 
   long add(const llvm::Instruction* instruction,
            const std::vector<const llvm::Value*> memLocationSeq = std::vector<const llvm::Value*>());
 
-  long addDuration(const llvm::Instruction* currentInst, unsigned long long durationMicros);
-
   const FileStats getStats() const { return stats; }
-  const ExecutionTimeStats& getExecutionTimeStats() const { return executionTimeStats; }
 
 private:
   long add(const llvm::Instruction* instruction,
@@ -42,10 +36,7 @@ private:
   FunctionStats& getFunctionStats(std::string file);
   LineNumberStats& getLineNumberStats(std::string file,
                                       std::string function);
-
   FileStats stats;
-
-  ExecutionTimeStats executionTimeStats;
 };
 
 } // namespace

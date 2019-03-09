@@ -250,10 +250,6 @@ IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
   // Write lcov return value trace
   LcovRetValWriter lcovRetValWriter(traceStats, lcovRetValTraceFile);
   lcovRetValWriter.write();
-
-  // Dump execution time stats
-  std::string dumpPathPrefix = "/tmp/execution-time-stats";
-  DataFlowUtils::dumpExecutionTimeStats(dumpPathPrefix, traceStats.getExecutionTimeStats());
 }
 
 const std::set<std::string>

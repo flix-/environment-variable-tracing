@@ -79,26 +79,6 @@ TraceStats::add(const llvm::Instruction* instruction,
   return add(instruction, false);
 }
 
-long
-TraceStats::addDuration(const llvm::Instruction* currentInst, unsigned long long durationMicros) {
-
-  const auto function = currentInst->getParent()->getParent();
-  if (!function) return 0;
-
-  const auto functionName = function->getName();
-  if (functionName.empty()) return 0;
-
-  const auto& executionTimeStatsEntry = executionTimeStats.find(functionName);
-  if (executionTimeStatsEntry != executionTimeStats.end()) {
-    executionTimeStatsEntry->second += durationMicros;
-  }
-  else {
-    executionTimeStats.insert(std::make_pair(functionName, durationMicros));
-  }
-
-  return 1;
-}
-
 TraceStats::FunctionStats&
 TraceStats::getFunctionStats(std::string file) {
 

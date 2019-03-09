@@ -6,8 +6,6 @@
 #ifndef DATAFLOWUTILS_H
 #define DATAFLOWUTILS_H
 
-#include "../Stats/TraceStats.h"
-
 #include <string>
 #include <set>
 #include <tuple>
@@ -84,10 +82,6 @@ public:
   static std::string getTypeName(const llvm::Type* type);
 
   static std::string getTraceFilenamePrefix(std::string entryPoint);
-
-  static void dumpExecutionTimeStats(std::string dumpPath,
-                                     const TraceStats::ExecutionTimeStats& executionTimeStats);
-  static void dumpIfExecutionTimeStats(const TraceStats::ExecutionTimeStats& executionTimeStats);
 };
 
 } // namespace

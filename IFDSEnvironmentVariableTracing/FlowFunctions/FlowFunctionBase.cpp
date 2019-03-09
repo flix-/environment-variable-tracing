@@ -5,8 +5,6 @@
 
 #include "FlowFunctionBase.h"
 
-#include <chrono>
-
 #include <llvm/IR/IntrinsicInst.h>
 
 namespace psr {
@@ -14,39 +12,19 @@ namespace psr {
 std::set<ExtendedValue>
 FlowFunctionBase::computeTargets(ExtendedValue fact) {
 
-  DataFlowUtils::dumpIfExecutionTimeStats(traceStats.getExecutionTimeStats());
-
-  std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-
   bool isAutoIdentity = DataFlowUtils::isAutoIdentity(currentInst, fact);
-  if (isAutoIdentity) {
-    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    auto durationMicros = std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(t2 - t1).count();
-    traceStats.addDuration(currentInst, durationMicros);
-
-    return { fact };
-  }
+  if (isAutoIdentity) return { fact };
 
   bool isBranchOrSwitchFact = llvm::isa<llvm::BranchInst>(fact.getValue()) ||
                               llvm::isa<llvm::SwitchInst>(fact.getValue());
 
   if (isBranchOrSwitchFact) {
     bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
-    if (removeTaintedBlockInst) {
-      std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-      auto durationMicros = std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(t2 - t1).count();
-      traceStats.addDuration(currentInst, durationMicros);
-
-      return { };
-    }
+    if (removeTaintedBlockInst) return { };
 
     bool isAutoGEN = DataFlowUtils::isAutoGENInTaintedBlock(currentInst);
     if (isAutoGEN) {
       traceStats.add(currentInst);
-
-      std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-      auto durationMicros = std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(t2 - t1).count();
-      traceStats.addDuration(currentInst, durationMicros);
 
       return { fact, ExtendedValue(currentInst) };
     }
@@ -95,20 +73,10 @@ FlowFunctionBase::computeTargets(ExtendedValue fact) {
       traceStats.add(retInst);
     }
 
-    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-    auto durationMicros = std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(t2 - t1).count();
-    traceStats.addDuration(currentInst, durationMicros);
-
     return targetFacts;
   }
 
-  const auto extFlowFunction = computeTargetsExt(fact);
-
-  std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-  auto durationMicros = std::chrono::duration_cast<std::chrono::duration<unsigned long long, std::micro>>(t2 - t1).count();
-  traceStats.addDuration(currentInst, durationMicros);
-
-  return extFlowFunction;
+  return computeTargetsExt(fact);
 }
 
 } // namespace
