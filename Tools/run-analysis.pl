@@ -10,6 +10,7 @@ my $PHASAR_BIN = '/home/sebastian/documents/programming/llvm/jail/llvm501-releas
 my $PLUGIN = '/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Release/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so';
 
 my $BULK_MODE = 1;
+my $BUFFER_OUTPUT = 0;
 
 my $STACK_SIZE_KB = 'unlimited'; #512*1024;
 
@@ -55,11 +56,14 @@ print "Running analysis\n";
 print "\n";
 
 printf "Bulk mode: %u\n", $BULK_MODE;
+printf "Buffer output: %u\n", $BUFFER_OUTPUT;
 printf "Function blacklist file: %s\n", $function_blacklist_file ? $function_blacklist_file : "none";
 
 print "\n";
 
 $ENV{'FUNCTION_BLACKLIST_LOCATION'} = $function_blacklist_file if $function_blacklist_file;
+
+my $buffer_cmd = $BUFFER_OUTPUT ? "" : "stdbuf -oL -eL";
 
 if ($BULK_MODE) {
     my $analysis_out = "${functions_file}-" . time() . "-out.txt";
@@ -69,7 +73,7 @@ if ($BULK_MODE) {
         $entry_points_bulk .= "$entry_point ";
     }
 
-    my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points_bulk > $analysis_out 2>&1";
+    my $cmd = "ulimit -s $STACK_SIZE_KB && $buffer_cmd $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_points_bulk > $analysis_out 2>&1";
 
     printf "Executing: %s\n", $cmd;
 
@@ -79,7 +83,7 @@ else {
     foreach my $entry_point (@entry_points) {
         my $analysis_out = "${entry_point}-" . time() . "-out.txt";
 
-        my $cmd = "ulimit -s $STACK_SIZE_KB && $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_point > $analysis_out 2>&1";
+        my $cmd = "ulimit -s $STACK_SIZE_KB && $buffer_cmd $PHASAR_BIN -m $ir_file -M 0 -D plugin --analysis-plugin $PLUGIN -E $entry_point > $analysis_out 2>&1";
 
         printf "Executing: %s\n", $cmd;
 
