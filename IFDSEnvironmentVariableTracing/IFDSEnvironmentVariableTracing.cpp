@@ -232,7 +232,7 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
 
 void
 IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
-                                                SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) {
+                                                SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain>& solverResults) {
 
   const std::string lineNumberTraceFile = "line-numbers.txt";
   const std::string lcovTraceFile = DataFlowUtils::getTraceFilenamePrefix(EntryPoints.front()) + "-trace.txt";

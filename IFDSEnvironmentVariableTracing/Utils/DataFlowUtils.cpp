@@ -70,8 +70,8 @@ isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
 
     // Compare indices
     for (unsigned int i = 1; i < memLocationFactGEP->getNumOperands(); i++) {
-      const auto *gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(i));
-      const auto *gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(i));
+      const auto* gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(i));
+      const auto* gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(i));
 
       if (!isConstantIntEqual(gepFactIndex, gepInstIndex)) return false;
     }
@@ -106,8 +106,8 @@ isGEPPartEqual(const llvm::GetElementPtrInst* memLocationFactGEP,
       return false;
     }
 
-    const auto *gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - 1));
-    const auto *gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - 1));
+    const auto* gepFactIndex = llvm::cast<llvm::ConstantInt>(memLocationFactGEP->getOperand(memLocationFactGEP->getNumOperands() - 1));
+    const auto* gepInstIndex = llvm::cast<llvm::ConstantInt>(memLocationInstGEP->getOperand(memLocationInstGEP->getNumOperands() - 1));
 
     return isConstantIntEqual(gepFactIndex, gepInstIndex);
   }

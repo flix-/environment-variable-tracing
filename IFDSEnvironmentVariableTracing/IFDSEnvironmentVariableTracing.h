@@ -46,7 +46,7 @@ public:
 
   void
   printIFDSReport(std::ostream& os,
-                  SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain> &SR) override;
+                  SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain>& solverResults) override;
 
 private:
   const std::set<std::string> functionBlacklist;
