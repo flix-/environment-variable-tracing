@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CC='/home/sebastian/documents/programming/llvm/jail/llvm501-debug/bin/clang'
+CC='/home/sebastian/documents/programming/llvm/jail/llvm501-release/bin/clang'
 CFLAGS='-g -S -emit-llvm'
 SRC_IN='main.c'
 IR_OUT='main.ll'
