@@ -10,8 +10,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+MemTransferInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const auto memTransferInst = llvm::cast<const llvm::MemTransferInst>(currentInst);
 
   const auto srcMemLocationMatr = memTransferInst->getRawSource();

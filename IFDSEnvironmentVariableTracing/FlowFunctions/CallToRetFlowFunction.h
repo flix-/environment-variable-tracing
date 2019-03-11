@@ -10,13 +10,14 @@
 
 namespace psr {
 
-class CallToRetFlowFunction : public FlowFunctionBase {
-
+class CallToRetFlowFunction :
+    public FlowFunctionBase
+{
 public:
   CallToRetFlowFunction(const llvm::Instruction* _currentInst,
                         TraceStats& _traceStats,
-                        ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
+                        ExtendedValue _zeroValue) :
+    FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~CallToRetFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

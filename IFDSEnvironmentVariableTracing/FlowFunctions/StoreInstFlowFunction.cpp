@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+StoreInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const auto storeInst = llvm::cast<llvm::StoreInst>(currentInst);
 
   const auto srcMemLocationMatr = storeInst->getValueOperand();

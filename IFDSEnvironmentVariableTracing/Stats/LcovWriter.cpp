@@ -8,8 +8,8 @@
 namespace psr {
 
 void
-LcovWriter::write() const {
-
+LcovWriter::write() const
+{
   std::ofstream writer(getOutFile());
 
   LOG_INFO("Writing lcov trace to: " << getOutFile());

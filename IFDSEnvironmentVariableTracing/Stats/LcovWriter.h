@@ -10,12 +10,13 @@
 
 namespace psr {
 
-class LcovWriter : public TraceStatsWriter {
+class LcovWriter :
+    public TraceStatsWriter
+{
 public:
   LcovWriter(const TraceStats& _traceStats,
-             const std::string _outFile)
-    : TraceStatsWriter(_traceStats,
-                       _outFile) { }
+             const std::string _outFile) :
+    TraceStatsWriter(_traceStats, _outFile) { }
   ~LcovWriter() override = default;
 
   void write() const override;

@@ -10,13 +10,14 @@
 
 namespace psr {
 
-class IdentityFlowFunction : public FlowFunctionBase {
-
+class IdentityFlowFunction :
+    public FlowFunctionBase
+{
 public:
   IdentityFlowFunction(const llvm::Instruction* _currentInst,
                       TraceStats& _traceStats,
-                      ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
+                      ExtendedValue _zeroValue) :
+    FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~IdentityFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

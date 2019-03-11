@@ -12,7 +12,9 @@
 
 namespace psr {
 
-class IFDSEnvironmentVariableTracing : public IFDSTabulationProblemPluginExtendedValue {
+class IFDSEnvironmentVariableTracing :
+    public IFDSTabulationProblemPluginExtendedValue
+{
 public:
   IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
                                  std::vector<std::string> entryPoints);
@@ -49,10 +51,10 @@ public:
                   SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain>& solverResults) override;
 
 private:
-  const std::set<std::string> functionBlacklist;
-  TraceStats traceStats;
+  const std::set<std::string> taintedFunctions;
+  const std::set<std::string> blacklistedFunctions;
 
-  const std::set<std::string> getFunctionBlacklist();
+  TraceStats traceStats;
 };
 
 } // namespace

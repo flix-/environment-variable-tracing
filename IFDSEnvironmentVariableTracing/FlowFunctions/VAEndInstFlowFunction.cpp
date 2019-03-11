@@ -10,8 +10,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-VAEndInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+VAEndInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   bool isVarArgFact = fact.isVarArg();
   if (!isVarArgFact) return { fact };
 

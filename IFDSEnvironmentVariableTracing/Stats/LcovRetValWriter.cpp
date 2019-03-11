@@ -8,8 +8,8 @@
 namespace psr {
 
 static void
-filterReturnValues(TraceStats::FileStats& fileStats) {
-
+filterReturnValues(TraceStats::FileStats& fileStats)
+{
   for (auto fileStatsIt = fileStats.begin(); fileStatsIt != fileStats.end(); ) {
     const auto file = fileStatsIt->first;
     auto& functionStats = fileStatsIt->second;
@@ -48,8 +48,8 @@ filterReturnValues(TraceStats::FileStats& fileStats) {
 }
 
 void
-LcovRetValWriter::write() const {
-
+LcovRetValWriter::write() const
+{
   std::ofstream writer(getOutFile());
 
   LOG_INFO("Writing lcov return value trace to: " << getOutFile());

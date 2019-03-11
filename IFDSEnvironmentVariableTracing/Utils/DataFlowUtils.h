@@ -17,7 +17,8 @@
 
 namespace psr {
 
-class DataFlowUtils {
+class DataFlowUtils
+{
 public:
   DataFlowUtils() = delete;
 
@@ -79,10 +80,11 @@ public:
   static bool isGlobalMemoryLocationSeq(const std::vector<const llvm::Value*> memLocationSeq);
 
   static void dumpFact(const ExtendedValue& ev);
-  static std::string getTypeName(const llvm::Type* type);
 
-  static std::string getTraceFilenamePrefix(std::string entryPoint);
-  static const std::set<std::string> getFunctionBlacklist();
+  static const std::set<std::string> getTaintedFunctions();
+  static const std::set<std::string> getBlacklistedFunctions();
+
+  static const std::string getTraceFilenamePrefix(std::string entryPoint);
 };
 
 } // namespace

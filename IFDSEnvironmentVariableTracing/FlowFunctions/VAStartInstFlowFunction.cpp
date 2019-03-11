@@ -10,8 +10,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-VAStartInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+VAStartInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   std::set<ExtendedValue> targetFacts;
   targetFacts.insert(fact);
 

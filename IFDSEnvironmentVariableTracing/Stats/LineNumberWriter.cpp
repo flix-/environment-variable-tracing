@@ -8,8 +8,8 @@
 namespace psr {
 
 void
-LineNumberWriter::write() const {
-
+LineNumberWriter::write() const
+{
   std::ofstream writer(getOutFile());
 
   LOG_INFO("Writing line number trace to: " << getOutFile());

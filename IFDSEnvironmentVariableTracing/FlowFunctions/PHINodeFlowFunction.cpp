@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-PHINodeFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+PHINodeFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const auto phiNodeInst = llvm::cast<llvm::PHINode>(currentInst);
 
   for (const auto block : phiNodeInst->blocks()) {

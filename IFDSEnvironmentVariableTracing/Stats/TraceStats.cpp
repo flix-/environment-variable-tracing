@@ -14,8 +14,8 @@ namespace psr {
 
 long
 TraceStats::add(const llvm::Instruction* instruction,
-                bool isReturnValue) {
-
+                bool isReturnValue)
+{
   const llvm::DebugLoc debugLocInst = instruction->getDebugLoc();
   if (!debugLocInst) return 0;
 
@@ -51,8 +51,8 @@ TraceStats::add(const llvm::Instruction* instruction,
 
 long
 TraceStats::add(const llvm::Instruction* instruction,
-                const std::vector<const llvm::Value*> memLocationSeq) {
-
+                const std::vector<const llvm::Value*> memLocationSeq)
+{
   bool isRetInstruction = llvm::isa<llvm::ReturnInst>(instruction);
   if (isRetInstruction) {
     const auto basicBlock = instruction->getParent();
@@ -80,8 +80,8 @@ TraceStats::add(const llvm::Instruction* instruction,
 }
 
 TraceStats::FunctionStats&
-TraceStats::getFunctionStats(std::string file) {
-
+TraceStats::getFunctionStats(std::string file)
+{
   auto functionStatsEntry = stats.find(file);
   if (functionStatsEntry != stats.end()) return functionStatsEntry->second;
 
@@ -91,8 +91,8 @@ TraceStats::getFunctionStats(std::string file) {
 }
 
 TraceStats::LineNumberStats&
-TraceStats::getLineNumberStats(std::string file, std::string function) {
-
+TraceStats::getLineNumberStats(std::string file, std::string function)
+{
   TraceStats::FunctionStats& functionStats = getFunctionStats(file);
 
   auto lineNumberEntry = functionStats.find(function);

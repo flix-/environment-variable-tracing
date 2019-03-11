@@ -10,8 +10,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-CallToRetFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+CallToRetFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   /*
    * Kill every global and expect the callee to return all valid ones.
    */

@@ -10,13 +10,14 @@
 
 namespace psr {
 
-class MemTransferInstFlowFunction : public FlowFunctionBase {
-
+class MemTransferInstFlowFunction :
+    public FlowFunctionBase
+{
 public:
   MemTransferInstFlowFunction(const llvm::Instruction* _currentInst,
                               TraceStats& _traceStats,
-                              ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
+                              ExtendedValue _zeroValue) :
+    FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~MemTransferInstFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

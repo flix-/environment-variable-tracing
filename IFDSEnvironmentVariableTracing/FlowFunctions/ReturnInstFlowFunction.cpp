@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-ReturnInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+ReturnInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const auto retInst = llvm::cast<llvm::ReturnInst>(currentInst);
   const auto retValMemLocationMatr = retInst->getReturnValue();
 

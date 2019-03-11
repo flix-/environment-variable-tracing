@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-CheckOperandsFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+CheckOperandsFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   for (const auto& use : currentInst->operands()) {
     const auto& operand = use.get();
 

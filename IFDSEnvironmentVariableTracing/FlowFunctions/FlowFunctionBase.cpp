@@ -10,8 +10,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-FlowFunctionBase::computeTargets(ExtendedValue fact) {
-
+FlowFunctionBase::computeTargets(ExtendedValue fact)
+{
   bool isAutoIdentity = DataFlowUtils::isAutoIdentity(currentInst, fact);
   if (isAutoIdentity) return { fact };
 

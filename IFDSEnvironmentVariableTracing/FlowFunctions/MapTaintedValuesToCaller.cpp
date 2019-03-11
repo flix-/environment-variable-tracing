@@ -15,8 +15,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-MapTaintedValuesToCaller::computeTargets(ExtendedValue fact) {
-
+MapTaintedValuesToCaller::computeTargets(ExtendedValue fact)
+{
   std::set<ExtendedValue> targetGlobalFacts;
   std::set<ExtendedValue> targetRetFacts;
 

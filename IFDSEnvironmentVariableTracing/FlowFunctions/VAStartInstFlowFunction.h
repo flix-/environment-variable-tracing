@@ -10,13 +10,14 @@
 
 namespace psr {
 
-class VAStartInstFlowFunction : public FlowFunctionBase {
-
+class VAStartInstFlowFunction :
+    public FlowFunctionBase
+{
 public:
   VAStartInstFlowFunction(const llvm::Instruction* _currentInst,
                           TraceStats& _traceStats,
-                          ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
+                          ExtendedValue _zeroValue) :
+    FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~VAStartInstFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

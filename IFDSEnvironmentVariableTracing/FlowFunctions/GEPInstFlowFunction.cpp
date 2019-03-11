@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-GEPInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+GEPInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const auto gepInst = llvm::cast<llvm::GetElementPtrInst>(currentInst);
   const auto gepInstPtr = gepInst->getPointerOperand();
 

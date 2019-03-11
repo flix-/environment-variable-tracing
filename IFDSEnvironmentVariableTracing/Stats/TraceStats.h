@@ -15,7 +15,8 @@
 
 namespace psr {
 
-class TraceStats {
+class TraceStats
+{
 public:
   using FileStats = std::map<std::string, std::map<std::string, std::set<LineNumberEntry>>>;
   using FunctionStats = std::map<std::string, std::set<LineNumberEntry>>;
@@ -27,7 +28,10 @@ public:
   long add(const llvm::Instruction* instruction,
            const std::vector<const llvm::Value*> memLocationSeq = std::vector<const llvm::Value*>());
 
-  const FileStats getStats() const { return stats; }
+  const FileStats getStats() const
+  {
+    return stats;
+  }
 
 private:
   long add(const llvm::Instruction* instruction,

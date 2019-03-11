@@ -16,8 +16,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-MapTaintedValuesToCallee::computeTargets(ExtendedValue fact) {
-
+MapTaintedValuesToCallee::computeTargets(ExtendedValue fact)
+{
   bool isFactVarArgTemplate = fact.isVarArgTemplate();
   if (isFactVarArgTemplate) return { };
 

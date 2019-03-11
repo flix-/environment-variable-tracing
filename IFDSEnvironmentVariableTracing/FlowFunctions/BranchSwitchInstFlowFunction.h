@@ -10,13 +10,14 @@
 
 namespace psr {
 
-class BranchSwitchInstFlowFunction : public FlowFunctionBase {
-
+class BranchSwitchInstFlowFunction :
+    public FlowFunctionBase
+{
 public:
   BranchSwitchInstFlowFunction(const llvm::Instruction* _currentInst,
                                TraceStats& _traceStats,
-                               ExtendedValue _zeroValue)
-    : FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
+                               ExtendedValue _zeroValue) :
+    FlowFunctionBase(_currentInst, _traceStats, _zeroValue) { }
   ~BranchSwitchInstFlowFunction() override = default;
 
   std::set<ExtendedValue> computeTargetsExt(ExtendedValue& fact) override;

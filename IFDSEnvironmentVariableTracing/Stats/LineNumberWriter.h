@@ -10,12 +10,13 @@
 
 namespace psr {
 
-class LineNumberWriter : public TraceStatsWriter {
+class LineNumberWriter :
+    public TraceStatsWriter
+{
 public:
   LineNumberWriter(const TraceStats& _traceStats,
-                   const std::string _outFile)
-    : TraceStatsWriter(_traceStats,
-                       _outFile) { }
+                   const std::string _outFile) :
+    TraceStatsWriter(_traceStats, _outFile) { }
   ~LineNumberWriter() override = default;
 
   void write() const override;

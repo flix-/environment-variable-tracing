@@ -15,19 +15,25 @@
 
 namespace psr {
 
-class TraceStatsWriter {
+class TraceStatsWriter
+{
 public:
   TraceStatsWriter(const TraceStats& _traceStats,
-                   const std::string _outFile)
-    : traceStats(_traceStats),
-      outFile(_outFile) { }
+                   const std::string _outFile) :
+    traceStats(_traceStats), outFile(_outFile) { }
   virtual ~TraceStatsWriter() = default;
 
   virtual void write() const = 0;
 
 protected:
-  const TraceStats& getTraceStats() const { return traceStats; }
-  const std::string getOutFile() const { return outFile; }
+  const TraceStats& getTraceStats() const
+  {
+    return traceStats;
+  }
+  const std::string getOutFile() const
+  {
+    return outFile;
+  }
 
 private:
   const TraceStats& traceStats;

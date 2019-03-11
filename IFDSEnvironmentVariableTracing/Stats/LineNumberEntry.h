@@ -10,21 +10,31 @@
 
 namespace psr {
 
-class LineNumberEntry {
+class LineNumberEntry
+{
 public:
-  LineNumberEntry(unsigned int _lineNumber)
-    : lineNumber(_lineNumber) { }
+  LineNumberEntry(unsigned int _lineNumber) :
+    lineNumber(_lineNumber) { }
   ~LineNumberEntry() = default;
 
-  bool operator<(const LineNumberEntry& rhs) const {
-
+  bool operator<(const LineNumberEntry& rhs) const
+  {
     return std::less<unsigned int>{}(lineNumber, rhs.lineNumber);
   }
 
-  unsigned int getLineNumber() const { return lineNumber; }
+  unsigned int getLineNumber() const
+  {
+    return lineNumber;
+  }
 
-  bool isReturnValue() const { return returnValue; }
-  void setReturnValue(bool _returnValue) { returnValue = _returnValue; }
+  bool isReturnValue() const
+  {
+    return returnValue;
+  }
+  void setReturnValue(bool _returnValue)
+  {
+    returnValue = _returnValue;
+  }
 
 private:
   unsigned int lineNumber;

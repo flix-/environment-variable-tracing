@@ -19,15 +19,16 @@
 
 namespace psr {
 
-class FlowFunctionBase : public FlowFunction<ExtendedValue> {
-
+class FlowFunctionBase :
+    public FlowFunction<ExtendedValue>
+{
 public:
   FlowFunctionBase(const llvm::Instruction* _currentInst,
                    TraceStats& _traceStats,
-                   ExtendedValue _zeroValue)
-    : currentInst(_currentInst),
-      traceStats(_traceStats),
-      zeroValue(_zeroValue) { }
+                   ExtendedValue _zeroValue) :
+    currentInst(_currentInst),
+    traceStats(_traceStats),
+    zeroValue(_zeroValue) { }
   ~FlowFunctionBase() override = default;
 
   std::set<ExtendedValue> computeTargets(ExtendedValue fact) override;

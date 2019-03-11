@@ -41,45 +41,34 @@
 
 namespace psr {
 
-static const std::set<std::string> TAINTED_FUNCTIONS = {
-                                                        // POSIX / GNU
-                                                          "getenv",
-                                                          "secure_getenv",
-
-                                                        // libcrypto
-                                                          "ossl_safe_getenv",
-
-                                                        // libcurl
-                                                          "curl_getenv",
-                                                       };
-
 std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>
 makeIFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
-                                   std::vector<std::string> entryPoints) {
-
+                                   std::vector<std::string> entryPoints)
+{
   return std::unique_ptr<IFDSTabulationProblemPluginExtendedValue>(new IFDSEnvironmentVariableTracing(icfg, entryPoints));
 }
 
-__attribute__((constructor)) void init() {
-
+__attribute__((constructor)) void init()
+{
   IFDSTabulationProblemPluginExtendedValueFactory["IFDSEnvironmentVariableTracing"] = &makeIFDSEnvironmentVariableTracing;
 }
 
 __attribute__((destructor)) void fini() { }
 
 IFDSEnvironmentVariableTracing::IFDSEnvironmentVariableTracing(LLVMBasedICFG& icfg,
-                                                               std::vector<std::string> entryPoints)
-    : IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints),
-      functionBlacklist(DataFlowUtils::getFunctionBlacklist()) {
-
+                                                               std::vector<std::string> entryPoints) :
+  IFDSTabulationProblemPluginExtendedValue(icfg, entryPoints),
+  taintedFunctions(DataFlowUtils::getTaintedFunctions()),
+  blacklistedFunctions(DataFlowUtils::getBlacklistedFunctions())
+{
   this->solver_config.computeValues = false;
   this->solver_config.computePersistedSummaries = false;
 }
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* currentInst,
-                                                      const llvm::Instruction* successorInst) {
-
+                                                      const llvm::Instruction* successorInst)
+{
   if (DataFlowUtils::isReturnValue(currentInst, successorInst))
     return std::make_shared<ReturnInstFlowFunction>(successorInst, traceStats, zeroValue());
 
@@ -103,8 +92,8 @@ IFDSEnvironmentVariableTracing::getNormalFlowFunction(const llvm::Instruction* c
 
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallFlowFunction(const llvm::Instruction* callStmt,
-                                                    const llvm::Function* destMthd) {
-
+                                                    const llvm::Function* destMthd)
+{
   return std::make_shared<MapTaintedValuesToCallee>(llvm::cast<llvm::CallInst>(callStmt),
                                                     destMthd,
                                                     traceStats,
@@ -115,8 +104,8 @@ std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* callSite,
                                                    const llvm::Function* calleeMthd,
                                                    const llvm::Instruction* exitStmt,
-                                                   const llvm::Instruction* retSite) {
-
+                                                   const llvm::Instruction* retSite)
+{
   return std::make_shared<MapTaintedValuesToCaller>(llvm::cast<llvm::CallInst>(callSite),
                                                     llvm::cast<llvm::ReturnInst>(exitStmt),
                                                     traceStats,
@@ -132,8 +121,8 @@ IFDSEnvironmentVariableTracing::getRetFlowFunction(const llvm::Instruction* call
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction* callSite,
                                                          const llvm::Instruction* retSite,
-                                                         std::set<const llvm::Function*> callees) {
-
+                                                         std::set<const llvm::Function*> callees)
+{
   /*
    * It is important to wrap the identity call here. Consider the following example:
    *
@@ -159,8 +148,8 @@ IFDSEnvironmentVariableTracing::getCallToRetFlowFunction(const llvm::Instruction
  */
 std::shared_ptr<FlowFunction<ExtendedValue>>
 IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* callStmt,
-                                                       const llvm::Function* destMthd) {
-
+                                                       const llvm::Function* destMthd)
+{
   const auto destMthdName = destMthd->getName();
 
   /*
@@ -175,7 +164,7 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
   /*
    * Exclude blacklisted functions here.
    */
-  bool isBlacklistedFunction = functionBlacklist.find(destMthdName) != functionBlacklist.end();
+  bool isBlacklistedFunction = blacklistedFunctions.find(destMthdName) != blacklistedFunctions.end();
   if (isBlacklistedFunction)
     return std::make_shared<IdentityFlowFunction>(callStmt, traceStats, zeroValue());
 
@@ -195,10 +184,10 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
     return std::make_shared<VAEndInstFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
-   * Provide summary for tainted calls.
+   * Provide summary for tainted functions.
    */
-  bool isTaintedCall = TAINTED_FUNCTIONS.find(destMthdName) != TAINTED_FUNCTIONS.end();
-  if (isTaintedCall)
+  bool isTaintedFunction = taintedFunctions.find(destMthdName) != taintedFunctions.end();
+  if (isTaintedFunction)
     return std::make_shared<GenerateFlowFunction>(callStmt, traceStats, zeroValue());
 
   /*
@@ -215,12 +204,12 @@ IFDSEnvironmentVariableTracing::getSummaryFlowFunction(const llvm::Instruction* 
 }
 
 std::map<const llvm::Instruction*, std::set<ExtendedValue>>
-IFDSEnvironmentVariableTracing::initialSeeds() {
-
+IFDSEnvironmentVariableTracing::initialSeeds()
+{
   std::map<const llvm::Instruction*, std::set<ExtendedValue>> seedMap;
 
   for (const auto& entryPoint : this->EntryPoints) {
-    bool isBlacklistedFunction = functionBlacklist.find(entryPoint) != functionBlacklist.end();
+    bool isBlacklistedFunction = blacklistedFunctions.find(entryPoint) != blacklistedFunctions.end();
     if (isBlacklistedFunction) continue;
 
     seedMap.insert(std::make_pair(&icfg.getMethod(entryPoint)->front().front(),
@@ -232,15 +221,16 @@ IFDSEnvironmentVariableTracing::initialSeeds() {
 
 void
 IFDSEnvironmentVariableTracing::printIFDSReport(std::ostream& os,
-                                                SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain>& solverResults) {
-
-  const std::string lineNumberTraceFile = "line-numbers.txt";
+                                                SolverResults<const llvm::Instruction*, ExtendedValue, BinaryDomain>& solverResults)
+{
   const std::string lcovTraceFile = DataFlowUtils::getTraceFilenamePrefix(EntryPoints.front()) + "-trace.txt";
   const std::string lcovRetValTraceFile = DataFlowUtils::getTraceFilenamePrefix(EntryPoints.front()) + "-return-value-trace.txt";
 
-  // Write line number trace
-  LineNumberWriter lineNumberWriter(traceStats, lineNumberTraceFile);
+#ifdef DEBUG_BUILD
+  // Write line number trace (for tests only)
+  LineNumberWriter lineNumberWriter(traceStats, "line-numbers.txt");
   lineNumberWriter.write();
+#endif
 
   // Write lcov trace
   LcovWriter lcovWriter(traceStats, lcovTraceFile);

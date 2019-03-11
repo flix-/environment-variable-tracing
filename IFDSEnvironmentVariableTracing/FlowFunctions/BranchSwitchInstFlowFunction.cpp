@@ -8,8 +8,8 @@
 namespace psr {
 
 std::set<ExtendedValue>
-BranchSwitchInstFlowFunction::computeTargetsExt(ExtendedValue& fact) {
-
+BranchSwitchInstFlowFunction::computeTargetsExt(ExtendedValue& fact)
+{
   const llvm::Value* condition = nullptr;
 
   if (const auto branchInst = llvm::dyn_cast<llvm::BranchInst>(currentInst)) {
