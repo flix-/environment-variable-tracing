@@ -1105,7 +1105,8 @@ dumpMemoryLocation(const std::vector<const llvm::Value*> memLocationSeq)
 {
 #ifdef DEBUG_BUILD
   for (const auto memLocationPart : memLocationSeq) {
-    llvm::outs() << "[TRACK] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+    llvm::outs() << "[ENV_TRACE] "; memLocationPart->print(llvm::outs()); llvm::outs() << "\n";
+    llvm::outs().flush();
   }
 #endif
 }

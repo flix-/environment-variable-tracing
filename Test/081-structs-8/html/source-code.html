@@ -58,6 +58,12 @@ main()
 
 </pre>
 <div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
 PhASAR v1218<br>
 A LLVM-based static analysis framework<br>
 <br>
@@ -76,63 +82,57 @@ All modules loaded<br>
 PTG construction ...<br>
 PTG construction ended<br>
 DONE<br>
-[TRACK] TAINTED_FUNCTIONS_LOCATION unset<br>
-[TRACK] Tainted functions:<br>
-[TRACK] getenv<br>
-[TRACK] secure_getenv<br>
-[TRACK] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
-[TRACK] Blacklisted functions:<br>
-[TRACK] Relocated memory location (memcpy/memmove)<br>
-[TRACK] Source<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %a1 = alloca %struct.a, align 8, !phasar.instruction.id !14<br>
-[TRACK]   %b = getelementptr inbounds %struct.a, %struct.a* %a1, i32 0, i32 1, !dbg !50, !phasar.instruction.id !51<br>
-[TRACK]   %c = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 2, !dbg !52, !phasar.instruction.id !53<br>
-[TRACK]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Destination<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
-[TRACK]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Relocated memory location (store)<br>
-[TRACK] Source<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
-[TRACK]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Destination<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %t1 = alloca i8*, align 8, !phasar.instruction.id !16<br>
-[TRACK] Relocated memory location (memcpy/memmove)<br>
-[TRACK] Source<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
-[TRACK]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Destination<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Relocated memory location (store)<br>
-[TRACK] Source<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Destination<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %t2 = alloca i8*, align 8, !phasar.instruction.id !18<br>
-[TRACK] Relocated memory location (store)<br>
-[TRACK] Source<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
-[TRACK]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
-[TRACK] Destination<br>
-[TRACK] memLocationSeq:<br>
-[TRACK]   %t3 = alloca i8*, align 8, !phasar.instruction.id !20<br>
-[TRACK] Writing line number trace to: line-numbers.txt<br>
-[TRACK] Writing lcov trace to: static-main-1552308517-trace.txt<br>
-[TRACK] Writing lcov return value trace to: static-main-1552308517-return-value-trace.txt<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %a1 = alloca %struct.a, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %b = getelementptr inbounds %struct.a, %struct.a* %a1, i32 0, i32 1, !dbg !50, !phasar.instruction.id !51<br>
+[ENV_TRACE]   %c = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 2, !dbg !52, !phasar.instruction.id !53<br>
+[ENV_TRACE]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t1 = alloca i8*, align 8, !phasar.instruction.id !16<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %c1 = alloca %struct.c, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %d = getelementptr inbounds %struct.c, %struct.c* %c, i32 0, i32 2, !dbg !54, !phasar.instruction.id !55<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t2 = alloca i8*, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %d1 = alloca %struct.d, align 8, !phasar.instruction.id !17<br>
+[ENV_TRACE]   %taint = getelementptr inbounds %struct.d, %struct.d* %d, i32 0, i32 2, !dbg !56, !phasar.instruction.id !57<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t3 = alloca i8*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552310942-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552310942-return-value-trace.txt<br>
 ### DUMP LLVMIFDSSolver results<br>
 EMPTY<br>
 <br>

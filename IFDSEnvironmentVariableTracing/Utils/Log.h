@@ -9,7 +9,7 @@
 #include <llvm/Support/raw_ostream.h>
 
 #define LOG_INFO(x) do { \
-  llvm::outs() << "[TRACK] " << x << "\n"; \
+  llvm::outs() << "[ENV_TRACE] " << x << "\n"; \
   llvm::outs().flush(); \
 } while (0)
 
