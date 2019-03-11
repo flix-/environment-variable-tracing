@@ -5,6 +5,8 @@
 
 #include "TraceStats.h"
 
+#include "../Utils/Log.h"
+
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
 
@@ -34,6 +36,8 @@ TraceStats::add(const llvm::Instruction* instruction,
                            fnScope->getFilename().str();
 
   unsigned int lineNumber = debugLocInst->getLine();
+
+  LOG_DEBUG("Tainting " << file << ":" << functionName << ":" << lineNumber << ":" << isReturnValue);
 
   TraceStats::LineNumberStats& lineNumberStats = getLineNumberStats(file, functionName);
 
