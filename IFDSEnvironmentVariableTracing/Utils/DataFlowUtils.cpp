@@ -850,7 +850,8 @@ getPostDominators(const llvm::DomTreeNodeBase<llvm::BasicBlock>* postDomTreeNode
  * if (getenv("gude") != NULL) {
  *   if (a) goto out;
  *   int a = 1;
- * } else {
+ * }
+ * else {
  *   int b = 1;
  * }
  * int end_of_block = 1;
@@ -1195,7 +1196,7 @@ const std::string
 DataFlowUtils::getTraceFilenamePrefix(std::string entryPoint)
 {
   time_t time = std::time(nullptr);
-  long now = static_cast<long> (time);
+  long now = static_cast<long>(time);
 
   std::stringstream traceFileStream;
   traceFileStream << "static" << "-"
