@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+int
+main()
+{
+    char *taint = getenv("gude");
+    char *a = taint;
+
+    char *b = a;
+    a = "no_taint";
+
+    b = a;
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/002-copy-delete/main.c:main:10:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/002-copy-delete/main.c:main:10:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/002-copy-delete/main.c:main:11:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %taint = alloca i8*, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %a = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/002-copy-delete/main.c:main:13:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %a = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %b = alloca i8*, align 8, !phasar.instruction.id !16<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323175-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323175-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

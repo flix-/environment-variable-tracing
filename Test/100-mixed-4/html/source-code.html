@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include "stdlib.h"
+
+extern char *getenv(const char *);
+
+struct s1 {
+    char *tainted;
+    char *not_tainted;
+};
+
+int
+main() {
+    struct s1 *s1 = malloc(sizeof *s1);
+    s1->tainted = getenv("gude");
+
+    int t1 = (int)s1 + 1;
+    int t2 = (int)s1->tainted + 1;
+    int ut1 = (int)s1->not_tainted + 1;
+
+    return -1;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:13:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:13:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:15:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:15:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:16:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:16:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:16:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:16:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:15:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/100-mixed-4/main.c:main:15:0<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323192-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323192-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

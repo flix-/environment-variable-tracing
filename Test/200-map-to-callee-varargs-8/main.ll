@@ -1,0 +1,204 @@
+; ModuleID = 'main.c'
+source_filename = "main.c"
+target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%struct.__va_list_tag = type { i32, i32, i8*, i8* }
+%struct.s2 = type { i8*, i8*, i8* }
+
+@.str = private unnamed_addr constant [5 x i8] c"gude\00", align 1
+
+; Function Attrs: noinline nounwind optnone uwtable
+define void @foo(i32 %n, ...) #0 !dbg !9 {
+entry:
+  %n.addr = alloca i32, align 4
+  %tainted = alloca i8*, align 8
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %s2 = alloca %struct.s2*, align 8
+  %t1 = alloca i8*, align 8
+  %t2 = alloca i8*, align 8
+  %ut1 = alloca i8*, align 8
+  store i32 %n, i32* %n.addr, align 4
+  call void @llvm.dbg.declare(metadata i32* %n.addr, metadata !13, metadata !14), !dbg !15
+  call void @llvm.dbg.declare(metadata i8** %tainted, metadata !16, metadata !14), !dbg !19
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !20
+  store i8* %call, i8** %tainted, align 8, !dbg !19
+  %0 = load i8*, i8** %tainted, align 8, !dbg !21
+  %cmp = icmp ne i8* %0, null, !dbg !23
+  br i1 %cmp, label %if.then, label %if.end, !dbg !24
+
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.declare(metadata [1 x %struct.__va_list_tag]* %ap, metadata !25, metadata !14), !dbg !40
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !41
+  %arraydecay1 = bitcast %struct.__va_list_tag* %arraydecay to i8*, !dbg !41
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !41
+  call void @llvm.dbg.declare(metadata %struct.s2** %s2, metadata !42, metadata !14), !dbg !49
+  %arraydecay2 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !50
+  %gp_offset_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 0, !dbg !50
+  %gp_offset = load i32, i32* %gp_offset_p, align 16, !dbg !50
+  %fits_in_gp = icmp ule i32 %gp_offset, 40, !dbg !50
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !50
+
+vaarg.in_reg:                                     ; preds = %if.then
+  %1 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 3, !dbg !50
+  %reg_save_area = load i8*, i8** %1, align 16, !dbg !50
+  %2 = getelementptr i8, i8* %reg_save_area, i32 %gp_offset, !dbg !50
+  %3 = bitcast i8* %2 to %struct.s2**, !dbg !50
+  %4 = add i32 %gp_offset, 8, !dbg !50
+  store i32 %4, i32* %gp_offset_p, align 16, !dbg !50
+  br label %vaarg.end, !dbg !50
+
+vaarg.in_mem:                                     ; preds = %if.then
+  %overflow_arg_area_p = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %arraydecay2, i32 0, i32 2, !dbg !50
+  %overflow_arg_area = load i8*, i8** %overflow_arg_area_p, align 8, !dbg !50
+  %5 = bitcast i8* %overflow_arg_area to %struct.s2**, !dbg !50
+  %overflow_arg_area.next = getelementptr i8, i8* %overflow_arg_area, i32 8, !dbg !50
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !50
+  br label %vaarg.end, !dbg !50
+
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr = phi %struct.s2** [ %3, %vaarg.in_reg ], [ %5, %vaarg.in_mem ], !dbg !50
+  %6 = load %struct.s2*, %struct.s2** %vaarg.addr, align 8, !dbg !50
+  store %struct.s2* %6, %struct.s2** %s2, align 8, !dbg !49
+  call void @llvm.dbg.declare(metadata i8** %t1, metadata !51, metadata !14), !dbg !52
+  %7 = load %struct.s2*, %struct.s2** %s2, align 8, !dbg !53
+  %t13 = getelementptr inbounds %struct.s2, %struct.s2* %7, i32 0, i32 0, !dbg !54
+  %8 = load i8*, i8** %t13, align 8, !dbg !54
+  store i8* %8, i8** %t1, align 8, !dbg !52
+  call void @llvm.dbg.declare(metadata i8** %t2, metadata !55, metadata !14), !dbg !56
+  %9 = load %struct.s2*, %struct.s2** %s2, align 8, !dbg !57
+  %t24 = getelementptr inbounds %struct.s2, %struct.s2* %9, i32 0, i32 1, !dbg !58
+  %10 = load i8*, i8** %t24, align 8, !dbg !58
+  store i8* %10, i8** %t2, align 8, !dbg !56
+  call void @llvm.dbg.declare(metadata i8** %ut1, metadata !59, metadata !14), !dbg !60
+  %11 = load %struct.s2*, %struct.s2** %s2, align 8, !dbg !61
+  %ut15 = getelementptr inbounds %struct.s2, %struct.s2* %11, i32 0, i32 2, !dbg !62
+  %12 = load i8*, i8** %ut15, align 8, !dbg !62
+  store i8* %12, i8** %ut1, align 8, !dbg !60
+  %arraydecay6 = getelementptr inbounds [1 x %struct.__va_list_tag], [1 x %struct.__va_list_tag]* %ap, i32 0, i32 0, !dbg !63
+  %arraydecay67 = bitcast %struct.__va_list_tag* %arraydecay6 to i8*, !dbg !63
+  call void @llvm.va_end(i8* %arraydecay67), !dbg !63
+  br label %if.end, !dbg !64
+
+if.end:                                           ; preds = %vaarg.end, %entry
+  ret void, !dbg !65
+}
+
+; Function Attrs: nounwind readnone speculatable
+declare void @llvm.dbg.declare(metadata, metadata, metadata) #1
+
+; Function Attrs: nounwind
+declare i8* @getenv(i8*) #2
+
+; Function Attrs: nounwind
+declare void @llvm.va_start(i8*) #3
+
+; Function Attrs: nounwind
+declare void @llvm.va_end(i8*) #3
+
+; Function Attrs: noinline nounwind optnone uwtable
+define i32 @main() #0 !dbg !66 {
+entry:
+  %retval = alloca i32, align 4
+  %s2 = alloca %struct.s2, align 8
+  store i32 0, i32* %retval, align 4
+  call void @llvm.dbg.declare(metadata %struct.s2* %s2, metadata !69, metadata !14), !dbg !70
+  %call = call i8* @getenv(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0)) #3, !dbg !71
+  %t1 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !72
+  store i8* %call, i8** %t1, align 8, !dbg !73
+  %t11 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 0, !dbg !74
+  %0 = load i8*, i8** %t11, align 8, !dbg !74
+  %t2 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 1, !dbg !75
+  store i8* %0, i8** %t2, align 8, !dbg !76
+  call void (i32, ...) @foo(i32 1, %struct.s2* %s2), !dbg !77
+  ret i32 0, !dbg !78
+}
+
+attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone speculatable }
+attributes #2 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind }
+
+!llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!5, !6, !7}
+!llvm.ident = !{!8}
+
+!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "clang version 5.0.1 (tags/RELEASE_501/final 348479)", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug, enums: !2, retainedTypes: !3)
+!1 = !DIFile(filename: "main.c", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-8")
+!2 = !{}
+!3 = !{!4}
+!4 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64)
+!5 = !{i32 2, !"Dwarf Version", i32 4}
+!6 = !{i32 2, !"Debug Info Version", i32 3}
+!7 = !{i32 1, !"wchar_size", i32 4}
+!8 = !{!"clang version 5.0.1 (tags/RELEASE_501/final 348479)"}
+!9 = distinct !DISubprogram(name: "foo", scope: !1, file: !1, line: 19, type: !10, isLocal: false, isDefinition: true, scopeLine: 20, flags: DIFlagPrototyped, isOptimized: false, unit: !0, variables: !2)
+!10 = !DISubroutineType(types: !11)
+!11 = !{null, !12, null}
+!12 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!13 = !DILocalVariable(name: "n", arg: 1, scope: !9, file: !1, line: 19, type: !12)
+!14 = !DIExpression()
+!15 = !DILocation(line: 19, column: 9, scope: !9)
+!16 = !DILocalVariable(name: "tainted", scope: !9, file: !1, line: 21, type: !17)
+!17 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !18, size: 64)
+!18 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+!19 = !DILocation(line: 21, column: 11, scope: !9)
+!20 = !DILocation(line: 21, column: 21, scope: !9)
+!21 = !DILocation(line: 23, column: 9, scope: !22)
+!22 = distinct !DILexicalBlock(scope: !9, file: !1, line: 23, column: 9)
+!23 = !DILocation(line: 23, column: 17, scope: !22)
+!24 = !DILocation(line: 23, column: 9, scope: !9)
+!25 = !DILocalVariable(name: "ap", scope: !26, file: !1, line: 24, type: !27)
+!26 = distinct !DILexicalBlock(scope: !22, file: !1, line: 23, column: 26)
+!27 = !DIDerivedType(tag: DW_TAG_typedef, name: "va_list", file: !28, line: 30, baseType: !29)
+!28 = !DIFile(filename: "/home/sebastian/documents/programming/llvm/jail/llvm501-debug/lib/clang/5.0.1/include/stdarg.h", directory: "/home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-8")
+!29 = !DIDerivedType(tag: DW_TAG_typedef, name: "__builtin_va_list", file: !1, line: 24, baseType: !30)
+!30 = !DICompositeType(tag: DW_TAG_array_type, baseType: !31, size: 192, elements: !38)
+!31 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "__va_list_tag", file: !1, line: 24, size: 192, elements: !32)
+!32 = !{!33, !35, !36, !37}
+!33 = !DIDerivedType(tag: DW_TAG_member, name: "gp_offset", scope: !31, file: !1, line: 24, baseType: !34, size: 32)
+!34 = !DIBasicType(name: "unsigned int", size: 32, encoding: DW_ATE_unsigned)
+!35 = !DIDerivedType(tag: DW_TAG_member, name: "fp_offset", scope: !31, file: !1, line: 24, baseType: !34, size: 32, offset: 32)
+!36 = !DIDerivedType(tag: DW_TAG_member, name: "overflow_arg_area", scope: !31, file: !1, line: 24, baseType: !4, size: 64, offset: 64)
+!37 = !DIDerivedType(tag: DW_TAG_member, name: "reg_save_area", scope: !31, file: !1, line: 24, baseType: !4, size: 64, offset: 128)
+!38 = !{!39}
+!39 = !DISubrange(count: 1)
+!40 = !DILocation(line: 24, column: 17, scope: !26)
+!41 = !DILocation(line: 25, column: 9, scope: !26)
+!42 = !DILocalVariable(name: "s2", scope: !26, file: !1, line: 27, type: !43)
+!43 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !44, size: 64)
+!44 = distinct !DICompositeType(tag: DW_TAG_structure_type, name: "s2", file: !1, line: 6, size: 192, elements: !45)
+!45 = !{!46, !47, !48}
+!46 = !DIDerivedType(tag: DW_TAG_member, name: "t1", scope: !44, file: !1, line: 7, baseType: !17, size: 64)
+!47 = !DIDerivedType(tag: DW_TAG_member, name: "t2", scope: !44, file: !1, line: 8, baseType: !17, size: 64, offset: 64)
+!48 = !DIDerivedType(tag: DW_TAG_member, name: "ut1", scope: !44, file: !1, line: 9, baseType: !17, size: 64, offset: 128)
+!49 = !DILocation(line: 27, column: 20, scope: !26)
+!50 = !DILocation(line: 27, column: 25, scope: !26)
+!51 = !DILocalVariable(name: "t1", scope: !26, file: !1, line: 29, type: !17)
+!52 = !DILocation(line: 29, column: 15, scope: !26)
+!53 = !DILocation(line: 29, column: 20, scope: !26)
+!54 = !DILocation(line: 29, column: 24, scope: !26)
+!55 = !DILocalVariable(name: "t2", scope: !26, file: !1, line: 30, type: !17)
+!56 = !DILocation(line: 30, column: 15, scope: !26)
+!57 = !DILocation(line: 30, column: 20, scope: !26)
+!58 = !DILocation(line: 30, column: 24, scope: !26)
+!59 = !DILocalVariable(name: "ut1", scope: !26, file: !1, line: 31, type: !17)
+!60 = !DILocation(line: 31, column: 15, scope: !26)
+!61 = !DILocation(line: 31, column: 21, scope: !26)
+!62 = !DILocation(line: 31, column: 25, scope: !26)
+!63 = !DILocation(line: 33, column: 9, scope: !26)
+!64 = !DILocation(line: 34, column: 5, scope: !26)
+!65 = !DILocation(line: 35, column: 1, scope: !9)
+!66 = distinct !DISubprogram(name: "main", scope: !1, file: !1, line: 38, type: !67, isLocal: false, isDefinition: true, scopeLine: 39, isOptimized: false, unit: !0, variables: !2)
+!67 = !DISubroutineType(types: !68)
+!68 = !{!12}
+!69 = !DILocalVariable(name: "s2", scope: !66, file: !1, line: 40, type: !44)
+!70 = !DILocation(line: 40, column: 15, scope: !66)
+!71 = !DILocation(line: 41, column: 13, scope: !66)
+!72 = !DILocation(line: 41, column: 8, scope: !66)
+!73 = !DILocation(line: 41, column: 11, scope: !66)
+!74 = !DILocation(line: 42, column: 16, scope: !66)
+!75 = !DILocation(line: 42, column: 8, scope: !66)
+!76 = !DILocation(line: 42, column: 11, scope: !66)
+!77 = !DILocation(line: 44, column: 5, scope: !66)
+!78 = !DILocation(line: 46, column: 5, scope: !66)

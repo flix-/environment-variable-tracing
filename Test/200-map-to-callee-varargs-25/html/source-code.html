@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdarg.h>
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+
+struct s1 {
+    int a;
+    char *t;
+};
+
+int
+foo(int n, ...)
+{
+    va_list args1;
+
+    va_list args2;
+    va_start(args2, n);
+
+    struct s1 nt1 = va_arg(args1, struct s1);
+    char *nt2 = va_arg(args1, char *);
+    va_end(args1);
+
+    struct s1 nt12 = va_arg(args1, struct s1);
+    char *nt22 = va_arg(args1, char *);
+
+    struct s1 s11 = va_arg(args2, struct s1);
+    char *t1 = va_arg(args2, char *);
+
+    va_end(args2);
+
+    return 0;
+}
+
+int
+main()
+{
+    struct s1 s;
+    s.t = getenv("gude");
+
+    foo(1, s, getenv("gude"));
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Added patchable memory location (caller -> callee)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] varArgIndex: 0<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Created new VarArg from template<br>
+[ENV_TRACE] Template<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] varArgIndex: 0<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] VarArg<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] vaListMemLocationSeq:<br>
+[ENV_TRACE]   %args2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !14<br>
+[ENV_TRACE] varArgIndex: 0<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:foo:26:0<br>
+[ENV_TRACE] Patched memory location (arg/memcpy)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] vaListMemLocationSeq:<br>
+[ENV_TRACE]   %args2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !14<br>
+[ENV_TRACE] varArgIndex: 0<br>
+[ENV_TRACE] currentVarArgIndex: 0<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !19<br>
+[ENV_TRACE]   %t = getelementptr inbounds %struct.s1, %struct.s1* %s, i32 0, i32 1, !dbg !27, !phasar.instruction.id !28<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Added patchable memory location (caller -> callee)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE] varArgIndex: 1<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:main:40:0<br>
+[ENV_TRACE] Created new VarArg from template<br>
+[ENV_TRACE] Template<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE] varArgIndex: 1<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] VarArg<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE] vaListMemLocationSeq:<br>
+[ENV_TRACE]   %args2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !14<br>
+[ENV_TRACE] varArgIndex: 1<br>
+[ENV_TRACE] currentVarArgIndex: -1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-varargs-25/main.c:foo:27:0<br>
+[ENV_TRACE] Patched memory location (arg/store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] @zero_value = constant i2 0, align 4<br>
+[ENV_TRACE] vaListMemLocationSeq:<br>
+[ENV_TRACE]   %args2 = alloca [1 x %struct.__va_list_tag], align 16, !phasar.instruction.id !14<br>
+[ENV_TRACE] varArgIndex: 1<br>
+[ENV_TRACE] currentVarArgIndex: 1<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t1 = alloca i8*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323202-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323202-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+struct c {
+    char *a;
+};
+
+struct b {
+    struct c a[2];
+};
+
+struct a {
+    char *a;
+    struct b b;
+};
+
+int
+main()
+{
+    struct a foo;
+    foo.a = getenv("gude");
+    foo.b.a[0].a = foo.a;
+
+    char *a = foo.b.a[0].a;
+
+    foo.b.a[0].a = "untaint";
+
+    a = foo.b.a[0].a;
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/081-structs-3/main.c:main:22:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/081-structs-3/main.c:main:22:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/081-structs-3/main.c:main:23:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %a = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 0, !dbg !38, !phasar.instruction.id !39<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !45, !phasar.instruction.id !46<br>
+[ENV_TRACE]   %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[ENV_TRACE]   %arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/081-structs-3/main.c:main:25:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %foo = alloca %struct.a, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %b = getelementptr inbounds %struct.a, %struct.a* %foo, i32 0, i32 1, !dbg !45, !phasar.instruction.id !46<br>
+[ENV_TRACE]   %a2 = getelementptr inbounds %struct.b, %struct.b* %b, i32 0, i32 0, !dbg !47, !phasar.instruction.id !48<br>
+[ENV_TRACE]   %arrayidx = getelementptr inbounds [2 x %struct.c], [2 x %struct.c]* %a2, i64 0, i64 0, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %a3 = getelementptr inbounds %struct.c, %struct.c* %arrayidx, i32 0, i32 0, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %a4 = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323189-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323189-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

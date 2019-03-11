@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <string.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+struct s3 {
+    int i1;
+    int i2;
+    int i3;
+    char *t3;
+};
+
+struct s2 {
+    int i1;
+    char *t2;
+    struct s3 s3;
+};
+
+struct s1 {
+    char *t1;
+    struct s2 s2;
+};
+
+int
+main()
+{
+    struct s1 s11;
+    s11.s2.s3.t3 = getenv("gude");
+
+    struct s1 s12;
+    memcpy(&s12, &s11, 1024);
+
+    char *t1 = s12.s2.s3.t3;
+
+    struct s2 s2;
+    memcpy(&s2, &s11.s2, 1024);
+
+    char *t2 = s2.s3.t3;
+
+    struct s3 s3;
+    memcpy(&s3, &s11.s2.s3, 1024);
+
+    char *t3 = s3.t3;
+
+    char *t4;
+    memcpy(&t4, &s11.s2.s3.t3, 1024);
+
+    char *t5 = t4;
+
+    struct s1 s13;
+    memcpy(&s13.s2.t2, &s11.s2.s3.t3, 1024);
+    char *t6 = s13.s2.t2;
+    char *nt1 = s13.t1;
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:29:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:29:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:32:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:32:0<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s12 = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:34:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s12 = alloca %struct.s1, align 8, !phasar.instruction.id !14<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t1 = alloca i8*, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:37:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:37:0<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s24 = alloca %struct.s2, align 8, !phasar.instruction.id !16<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:42:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:42:0<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s38 = alloca %struct.s3, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:47:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:47:0<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t4 = alloca i8*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:52:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:52:0<br>
+[ENV_TRACE] Relocated memory location (memcpy/memmove)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1, align 8, !phasar.instruction.id !13<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s11, i32 0, i32 1, !dbg !49, !phasar.instruction.id !50<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s13 = alloca %struct.s1, align 8, !phasar.instruction.id !22<br>
+[ENV_TRACE]   %s216 = getelementptr inbounds %struct.s1, %struct.s1* %s13, i32 0, i32 1, !dbg !133, !phasar.instruction.id !134<br>
+[ENV_TRACE]   %t217 = getelementptr inbounds %struct.s2, %struct.s2* %s216, i32 0, i32 1, !dbg !135, !phasar.instruction.id !136<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:53:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s13 = alloca %struct.s1, align 8, !phasar.instruction.id !22<br>
+[ENV_TRACE]   %s216 = getelementptr inbounds %struct.s1, %struct.s1* %s13, i32 0, i32 1, !dbg !133, !phasar.instruction.id !134<br>
+[ENV_TRACE]   %t217 = getelementptr inbounds %struct.s2, %struct.s2* %s216, i32 0, i32 1, !dbg !135, !phasar.instruction.id !136<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t6 = alloca i8*, align 8, !phasar.instruction.id !23<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:49:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t4 = alloca i8*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t5 = alloca i8*, align 8, !phasar.instruction.id !21<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:44:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s38 = alloca %struct.s3, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t311 = alloca i8*, align 8, !phasar.instruction.id !19<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/121-memcpy-6/main.c:main:39:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s24 = alloca %struct.s2, align 8, !phasar.instruction.id !16<br>
+[ENV_TRACE]   %s3 = getelementptr inbounds %struct.s2, %struct.s2* %s2, i32 0, i32 2, !dbg !51, !phasar.instruction.id !52<br>
+[ENV_TRACE]   %t3 = getelementptr inbounds %struct.s3, %struct.s3* %s3, i32 0, i32 3, !dbg !53, !phasar.instruction.id !54<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t2 = alloca i8*, align 8, !phasar.instruction.id !17<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323194-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323194-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

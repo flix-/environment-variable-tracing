@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+
+struct s3 {
+    int *a;
+    int *b;
+    char *t1;
+};
+
+struct s2 {
+    char *t1;
+    struct s3 s3;
+};
+
+struct s1 {
+    int a;
+    int b;
+    struct s2* s2;
+};
+
+void
+foo(struct s3 s3)
+{
+    int *t1 = s3.a;
+    int *t2 = s3.b;
+    char *t3 = s3.t1;
+}
+
+int
+main()
+{
+    struct s1 s1;
+    struct s2 s2;
+
+    int is_env_set = getenv("gude") != NULL;
+    if (is_env_set) {
+        s1.s2 = &s2;
+    }
+
+    foo(s1.s2->s3);
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:36:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:36:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:36:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:36:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:37:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: if.end<br>
+[ENV_TRACE] End of block label: if.end<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:37:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:38:0<br>
+[ENV_TRACE] Added patchable memory location (caller -> callee)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %s21 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !59, !phasar.instruction.id !61<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] %struct.s3* %s3<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:41:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:foo:25:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] %struct.s3* %s3<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t1 = alloca i32*, align 8, !phasar.instruction.id !22<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:foo:26:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] %struct.s3* %s3<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t2 = alloca i32*, align 8, !phasar.instruction.id !23<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:foo:27:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE] %struct.s3* %s3<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t3 = alloca i8*, align 8, !phasar.instruction.id !24<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: if.end<br>
+[ENV_TRACE] End of block label: if.end<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/200-map-to-callee-variable-random-4/main.c:main:37:0<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323208-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323208-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

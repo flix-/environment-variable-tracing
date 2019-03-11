@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+int
+main()
+{
+    int rc; 
+    char *taint = getenv("gude");
+    int is_env_set = taint != NULL;
+
+    switch (is_env_set) {
+    case 0:
+        ;
+        int a = 0;
+        abort();
+    case 1:
+        ;
+        rc = 1;
+        break;
+    default:
+        switch (rc) {
+        case 0:
+            abort();
+        default:
+            abort();
+        }
+        abort();
+    }
+
+    char *ut1 = "huhu";
+
+    return rc;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:11:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:11:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:12:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:12:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:12:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: sw.epilog<br>
+[ENV_TRACE] End of block label: <br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:14:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:24:0<br>
+[ENV_TRACE] Searching end of block label for: sw.default<br>
+[ENV_TRACE] End of closed block label: <br>
+[ENV_TRACE] End of block label: <br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:24:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:28:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:28:0<br>
+[ENV_TRACE] Searching end of block label for: sw.default<br>
+[ENV_TRACE] End of closed block label: <br>
+[ENV_TRACE] End of block label: <br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:24:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:26:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:26:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:28:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:28:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:26:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:26:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: sw.epilog<br>
+[ENV_TRACE] End of block label: <br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:14:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:17:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:17:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:18:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:18:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:17:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: sw.epilog<br>
+[ENV_TRACE] End of block label: <br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:14:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:21:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:33:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:33:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:35:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:35:1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:35:1<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:33:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/091-switch-10/main.c:main:35:1<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323190-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323190-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>

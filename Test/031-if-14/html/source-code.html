@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+<head>
+<title>Gude!</title>
+<link rel="stylesheet" href="google-code-prettify/skins/desert.css">
+<link rel="stylesheet" href="css/custom.css">
+<link rel="stylesheet" href="css/mark-lines.css">
+<script src="google-code-prettify/prettify.js"></script>
+</head>
+<body onload="PR.prettyPrint()">
+<pre class="prettyprint linenums lang-c">
+#include <stdlib.h>
+
+extern char *getenv(const char *name);
+extern int foo();
+extern int bar();
+
+struct s4 {
+    char *t1;
+    char *t2;
+};
+
+struct s3 {
+    struct s4 s4;
+};
+
+struct s2 {
+    char *t2;
+    int b;
+    struct s3 s3;
+};
+
+struct s1 {
+    int a;
+    struct s2 s2;
+    char *t1;
+};
+
+int
+main()
+{
+    struct s1 s1;
+    s1.t1 = getenv("gude");
+
+    int is_env_set = s1.t1 != NULL;
+
+    if (is_env_set) {
+        struct s2 s2_ut;
+        s1.s2 = s2_ut;
+    }
+
+    struct s1 *s11 = &s1;
+    struct s2 *s2 = &s1.s2;
+    struct s3 *s3 = &s1.s2.s3;
+    struct s4 *s4 = &s1.s2.s3.s4;
+
+    int ut1 = s11->a;
+    int t1 = s11->s2.b;
+
+    char *t2 = s11->s2.t2;
+    char *t3 = s2->t2;
+    char *t4 = s2->s3.s4.t2;
+    char *t5 = s3->s4.t1;
+    char *t6 = s3->s4.t2;
+
+    s3 = NULL;
+
+    char *ut2 = s3->s4.t1;
+    char *ut3 = s3->s4.t2;
+
+    return 0;
+}
+
+</pre>
+<div>
+[ENV_TRACE] TAINTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Tainted functions:<br>
+[ENV_TRACE] getenv<br>
+[ENV_TRACE] secure_getenv<br>
+[ENV_TRACE] BLACKLISTED_FUNCTIONS_LOCATION unset<br>
+[ENV_TRACE] Blacklisted functions:<br>
+PhASAR v1218<br>
+A LLVM-based static analysis framework<br>
+<br>
+--- Configuration ---<br>
+Project ID: myphasarproject<br>
+Graph ID: 123456<br>
+Module(s): main.ll.preprocessed <br>
+Data-flow analysis: plugin <br>
+WPA: 1<br>
+Mem2reg: 0<br>
+Print edge recorder: 0<br>
+Analysis plugin(s): <br>
+/home/sebastian/.qt-creator-workspace/build-Phasar-Desktop-Debug/IFDSEnvironmentVariableTracing/libIFDSEnvironmentVariableTracing.so<br>
+Output: results.json<br>
+All modules loaded<br>
+PTG construction ...<br>
+PTG construction ended<br>
+DONE<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:32:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:32:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:34:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:41:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !57, !phasar.instruction.id !58<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %t1 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 2, !dbg !57, !phasar.instruction.id !58<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:34:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:34:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:36:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: if.end<br>
+[ENV_TRACE] End of block label: if.end<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:36:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:37:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:41:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:42:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s22 = alloca %struct.s2*, align 8, !phasar.instruction.id !19<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:43:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s3 = alloca %struct.s3*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:44:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s1 = alloca %struct.s1, align 8, !phasar.instruction.id !15<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s4 = alloca %struct.s4*, align 8, !phasar.instruction.id !21<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:52:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s3 = alloca %struct.s3*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t5 = alloca i8*, align 8, !phasar.instruction.id !27<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:53:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s3 = alloca %struct.s3*, align 8, !phasar.instruction.id !20<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t6 = alloca i8*, align 8, !phasar.instruction.id !28<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:50:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s22 = alloca %struct.s2*, align 8, !phasar.instruction.id !19<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t3 = alloca i8*, align 8, !phasar.instruction.id !25<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:51:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s22 = alloca %struct.s2*, align 8, !phasar.instruction.id !19<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t4 = alloca i8*, align 8, !phasar.instruction.id !26<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:47:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t19 = alloca i32, align 4, !phasar.instruction.id !23<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:49:0<br>
+[ENV_TRACE] Relocated memory location (store)<br>
+[ENV_TRACE] Source<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %s11 = alloca %struct.s1*, align 8, !phasar.instruction.id !18<br>
+[ENV_TRACE]   %s2 = getelementptr inbounds %struct.s1, %struct.s1* %s1, i32 0, i32 1, !dbg !81, !phasar.instruction.id !82<br>
+[ENV_TRACE] Destination<br>
+[ENV_TRACE] memLocationSeq:<br>
+[ENV_TRACE]   %t2 = alloca i8*, align 8, !phasar.instruction.id !24<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:38:0<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:37:0<br>
+[ENV_TRACE] Searching end of block label for: entry<br>
+[ENV_TRACE] End of closed block label: if.end<br>
+[ENV_TRACE] End of block label: if.end<br>
+[ENV_TRACE] Tainting /home/sebastian/.qt-creator-workspace/Phasar/Test/031-if-14/main.c:main:36:0<br>
+[ENV_TRACE] Writing line number trace to: line-numbers.txt<br>
+[ENV_TRACE] Writing lcov trace to: static-main-1552323179-trace.txt<br>
+[ENV_TRACE] Writing lcov return value trace to: static-main-1552323179-return-value-trace.txt<br>
+### DUMP LLVMIFDSSolver results<br>
+EMPTY<br>
+<br>
+</div>
+</body>
+</html>
