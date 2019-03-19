@@ -12,8 +12,8 @@ my $instruction = 'urem i4711 4711, 4711';
 
 die "Usage: $0 <path_to_ir_in> <path_to_ir_out>\n" if @ARGV != 2;
 
-my $ir_file_in = shift(@ARGV);
-my $ir_file_out = shift(@ARGV);
+my $ir_file_in = shift @ARGV;
+my $ir_file_out = shift @ARGV;
 
 open(my $ir_file_in_fh, '<', $ir_file_in) or die "Cannot open $ir_file_in for reading\n";
 open(my $ir_file_out_fh, '>', $ir_file_out) or die "Cannot open $ir_file_out for writing\n";
