@@ -11,10 +11,10 @@ use Clone 'clone';
 my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $report_file = "report-" . time() . ".txt";
 
-#my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
+my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
 #my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1b/test";
 #my $skip_file_pattern = "/home/sebastian/documents/programming/src/curl-7.64.0/tests";
-my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssh-7.9p1/regress";
+#my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssh-7.9p1/regress";
 
 my $summary_only = 1;
 
