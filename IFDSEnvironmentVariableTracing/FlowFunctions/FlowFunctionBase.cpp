@@ -1,6 +1,5 @@
 /**
-  * @author Sebastian Roland <sebastianwolfgang.roland@stud.tu-darmstadt.de>
-  *                          <seroland86@gmail.com>
+  * @author Sebastian Roland <seroland86@gmail.com>
   */
 
 #include "FlowFunctionBase.h"
@@ -21,6 +20,8 @@ FlowFunctionBase::computeTargets(ExtendedValue fact)
   if (isBranchOrSwitchFact) {
     bool removeTaintedBlockInst = DataFlowUtils::removeTaintedBlockInst(fact, currentInst);
     if (removeTaintedBlockInst) return { };
+
+    //traceStats.add(currentInst);
 
     bool isAutoGEN = DataFlowUtils::isAutoGENInTaintedBlock(currentInst);
     if (isAutoGEN) {
