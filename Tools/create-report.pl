@@ -20,11 +20,11 @@ my $summary_only = 1;
 
 # END CONFIG #
 
-die "Usage: $0 <path_to_static_trace> <path_to_dynamic_trace> <path_to_ret_trace> \n" if @ARGV != 3;
+die "Usage: $0 <path_to_static_trace> <path_to_static_ret_trace> <path_to_dynamic_trace>\n" if @ARGV != 3;
 
 my $static_trace_file = shift @ARGV;
-my $dynamic_trace_file = shift @ARGV;
 my $ret_trace_file = shift @ARGV;
+my $dynamic_trace_file = shift @ARGV;
 
 my $static_trace = get_trace_from_file($static_trace_file);
 my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
@@ -208,6 +208,7 @@ sub get_ret_totals_from_dynamic_file {
             next if $line =~ m/#\s*define/;
             next if $line =~ m/".*return.*"/;
             next if $line =~ m/\(.*return.*\)/;
+            next if $line =~ m/\S+\s*return\s+/;
 
             if ($line =~ m/\s+return\s+/) {
                 my $candidate = 0;
