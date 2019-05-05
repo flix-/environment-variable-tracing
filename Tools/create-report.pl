@@ -8,8 +8,9 @@ use Clone 'clone';
 
 # BEGIN CONFIG #
 
-my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $report_file = "report-" . time() . ".txt";
+my $diff_trace_file = "diff-" . time() . "-trace.txt";
+my $diff_retval_trace_file = "diff-retval-" . time() . "-trace.txt";
 
 my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
 #my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1b/test";
@@ -33,6 +34,8 @@ my $diff_trace = create_diff_trace($static_trace, $dynamic_hit_trace);
 my $diff_hit_trace = create_hit_trace($diff_trace);
 my $ret_trace = get_trace_from_file($ret_trace_file);
 my $ret_total_trace = get_ret_totals_from_dynamic_file($dynamic_trace_file);
+my $ret_test_diff_trace = create_diff_trace($ret_trace, $dynamic_hit_trace);
+my $ret_test_diff_hit_trace = create_hit_trace($ret_test_diff_trace);
 
 #print Dumper $static_trace;
 #print Dumper $dynamic_trace;
@@ -41,6 +44,8 @@ my $ret_total_trace = get_ret_totals_from_dynamic_file($dynamic_trace_file);
 #print Dumper $diff_hit_trace;
 #print Dumper $ret_trace;
 #print Dumper $ret_total_trace;
+#print Dumper $ret_test_diff_trace;
+#print Dumper $ret_test_diff_hit_trace;
 
 print "Writing report to: $report_file\n";
 
@@ -50,11 +55,14 @@ write_report($static_trace,
              $diff_hit_trace,
              $ret_trace,
              $ret_total_trace,
+             $ret_test_diff_hit_trace,
              $report_file);
 
 print "Writing diff to: $diff_trace_file\n";
-
 write_trace($diff_trace, $diff_trace_file);
+
+print "Writing retval diff to: $diff_retval_trace_file\n";
+write_trace($ret_test_diff_trace, $diff_retval_trace_file);
 
 sub get_trace_from_file {
     my $trace_file = shift;
@@ -273,12 +281,13 @@ sub write_report {
     my $diff_hit_trace = shift;
     my $ret_trace = shift;
     my $ret_total_trace = shift;
+    my $ret_test_diff_hit_trace = shift;
     my $report_file = shift;
 
     open(my $report_fh, '>', $report_file) or die "Cannot open $report_file for writing\n";
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Totals\n";
+    print $report_fh "Total\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($dynamic_trace, $report_fh);
@@ -302,16 +311,22 @@ sub write_report {
     append_block($diff_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
+    print $report_fh "Total return values\n";
+    print $report_fh "#"x80 . "\n\n";
+
+    append_block($ret_total_trace, $report_fh);
+
+    print $report_fh "#"x80 . "\n";
     print $report_fh "Return values dependent on Environment Variables\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($ret_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Total return values\n";
+    print $report_fh "Return values dependent on Environment Variables and covered by Unit Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
-    append_block($ret_total_trace, $report_fh);
+    append_block($ret_test_diff_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
     print $report_fh "Ratios\n";
@@ -322,6 +337,7 @@ sub write_report {
                   $diff_hit_trace,
                   $ret_trace,
                   $ret_total_trace,
+                  $ret_test_diff_hit_trace,
                   $report_fh);
 
     close($report_fh);
@@ -390,6 +406,7 @@ sub append_ratios {
     my $diff_hit_trace = shift;
     my $ret_trace = shift;
     my $ret_total_trace = shift;
+    my $ret_test_diff_hit_trace = shift;
     my $report_fh = shift;
 
     my $total_files = get_total_files_from_trace($dynamic_trace);
@@ -451,6 +468,24 @@ sub append_ratios {
     printf $report_fh "Files: %.2f%%\n", $retval_files_ratio * 100;
     printf $report_fh "Functions: %.2f%%\n", $retval_functions_ratio * 100;
     printf $report_fh "LOC: %.2f%%\n", $retval_loc_ratio * 100;
+
+    print $report_fh "\n";
+
+    my $diff_hit_retval_files = get_total_files_from_trace($ret_test_diff_hit_trace);
+    my $diff_hit_retval_functions = get_total_functions_from_trace($ret_test_diff_hit_trace);
+    my $diff_hit_retval_loc = get_total_loc_from_trace($ret_test_diff_hit_trace);
+
+    my $diff_retval_files_ratio = $diff_hit_retval_files / $dep_env_var_retval_files;
+    my $diff_retval_functions_ratio = $diff_hit_retval_functions / $dep_env_var_retval_functions;
+    my $diff_retval_loc_ratio = $diff_hit_retval_loc / $dep_env_var_retval_loc;
+
+    print $report_fh "==========================================================================\n";
+    print $report_fh "Return values dependent on Environment Variables and covered by Unit Tests\n";
+    print $report_fh "==========================================================================\n\n";
+
+    printf $report_fh "Files: %.2f%%\n", $diff_retval_files_ratio * 100;
+    printf $report_fh "Functions: %.2f%%\n", $diff_retval_functions_ratio * 100;
+    printf $report_fh "LOC: %.2f%%\n", $diff_retval_loc_ratio * 100;
 
     print $report_fh "\n";
 }
