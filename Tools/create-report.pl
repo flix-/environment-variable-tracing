@@ -299,31 +299,31 @@ sub write_report {
     append_block($static_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Covered by Unit Tests\n";
+    print $report_fh "Covered by Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($dynamic_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Dependent on Environment Variables and covered by Unit Tests\n";
+    print $report_fh "Dependent on Environment Variables and covered by Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($diff_hit_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Total return values\n";
+    print $report_fh "Total Return Values\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($ret_total_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Return values dependent on Environment Variables\n";
+    print $report_fh "Return Values dependent on Environment Variables\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($ret_trace, $report_fh);
 
     print $report_fh "#"x80 . "\n";
-    print $report_fh "Return values dependent on Environment Variables and covered by Unit Tests\n";
+    print $report_fh "Return Values dependent on Environment Variables and covered by Tests\n";
     print $report_fh "#"x80 . "\n\n";
 
     append_block($ret_test_diff_hit_trace, $report_fh);
@@ -439,9 +439,9 @@ sub append_ratios {
     my $diff_functions_ratio = $diff_hit_functions / $static_functions;
     my $diff_loc_ratio = $diff_hit_loc / $static_loc;
 
-    print $report_fh "============================================================\n";
-    print $report_fh "Dependent on Environment Variables and covered by Unit Tests\n";
-    print $report_fh "============================================================\n\n";
+    print $report_fh "=======================================================\n";
+    print $report_fh "Dependent on Environment Variables and covered by Tests\n";
+    print $report_fh "=======================================================\n\n";
 
     printf $report_fh "Files: %.2f%%\n", $diff_files_ratio * 100;
     printf $report_fh "Functions: %.2f%%\n", $diff_functions_ratio * 100;
@@ -462,7 +462,7 @@ sub append_ratios {
     my $retval_loc_ratio = $dep_env_var_retval_loc / $total_retval_loc;
 
     print $report_fh "================================================\n";
-    print $report_fh "Return values dependent on Environment Variables\n";
+    print $report_fh "Return Values dependent on Environment Variables\n";
     print $report_fh "================================================\n\n";
 
     printf $report_fh "Files: %.2f%%\n", $retval_files_ratio * 100;
@@ -479,9 +479,9 @@ sub append_ratios {
     my $diff_retval_functions_ratio = $diff_hit_retval_functions / $dep_env_var_retval_functions;
     my $diff_retval_loc_ratio = $diff_hit_retval_loc / $dep_env_var_retval_loc;
 
-    print $report_fh "==========================================================================\n";
-    print $report_fh "Return values dependent on Environment Variables and covered by Unit Tests\n";
-    print $report_fh "==========================================================================\n\n";
+    print $report_fh "=====================================================================\n";
+    print $report_fh "Return Values dependent on Environment Variables and covered by Tests\n";
+    print $report_fh "=====================================================================\n\n";
 
     printf $report_fh "Files: %.2f%%\n", $diff_retval_files_ratio * 100;
     printf $report_fh "Functions: %.2f%%\n", $diff_retval_functions_ratio * 100;
