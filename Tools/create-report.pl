@@ -12,20 +12,18 @@ my $report_file = "report-" . time() . ".txt";
 my $diff_trace_file = "diff-" . time() . "-trace.txt";
 my $diff_retval_trace_file = "diff-retval-" . time() . "-trace.txt";
 
-my $skip_file_pattern = "/home/sebastian/.qt-creator-workspace/Phasar/Sample/src/test";
-#my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssl-1.1.1b/test";
-#my $skip_file_pattern = "/home/sebastian/documents/programming/src/curl-7.64.0/tests";
-#my $skip_file_pattern = "/home/sebastian/documents/programming/src/openssh-7.9p1/regress";
-
 my $summary_only = 1;
 
 # END CONFIG #
 
-die "Usage: $0 <path_to_static_trace> <path_to_static_ret_trace> <path_to_dynamic_trace>\n" if @ARGV != 3;
+die "Usage: $0 <path_to_static_trace> <path_to_static_ret_trace> <path_to_dynamic_trace> [<path_to_filter_file>]\n" if (@ARGV != 3 && @ARGV != 4);
 
 my $static_trace_file = shift @ARGV;
 my $ret_trace_file = shift @ARGV;
 my $dynamic_trace_file = shift @ARGV;
+my $filter_file = shift @ARGV;
+
+my $filters = get_filters_from_file($filter_file);
 
 my $static_trace = get_trace_from_file($static_trace_file);
 my $dynamic_trace = get_trace_from_file($dynamic_trace_file);
@@ -36,6 +34,8 @@ my $ret_trace = get_trace_from_file($ret_trace_file);
 my $ret_total_trace = get_ret_totals_from_dynamic_file($dynamic_trace_file);
 my $ret_test_diff_trace = create_diff_trace($ret_trace, $dynamic_hit_trace);
 my $ret_test_diff_hit_trace = create_hit_trace($ret_test_diff_trace);
+
+#print Dumper $filters;
 
 #print Dumper $static_trace;
 #print Dumper $dynamic_trace;
@@ -64,6 +64,27 @@ write_trace($diff_trace, $diff_trace_file);
 print "Writing retval diff to: $diff_retval_trace_file\n";
 write_trace($ret_test_diff_trace, $diff_retval_trace_file);
 
+sub get_filters_from_file {
+    my $filter_file = shift;
+
+    return undef if (!$filter_file);
+
+    open(my $filter_fh, '<', $filter_file) or die "Cannot open $filter_file for reading\n";
+
+    my $filters = {};
+
+    while (my $line = <$filter_fh>) {
+        chomp($line);
+        next if ($line =~ m/^\s*$/);
+
+        $filters->{$line} = 1;
+    }
+
+    close($filter_fh);
+
+    return $filters;
+}
+
 sub get_trace_from_file {
     my $trace_file = shift;
 
@@ -80,7 +101,12 @@ sub get_trace_from_file {
             next;
         }
 
-        next if (!$current_file || ($current_file =~ m/$skip_file_pattern/));
+        next if (!$current_file);
+
+        if ($filters && !$filters->{$current_file}) {
+            #print "Skipping: $current_file\n";
+            next;
+        }
         
         $trace->{$current_file} = undef unless (exists ${trace}->{$current_file});
 
@@ -190,7 +216,12 @@ sub get_ret_totals_from_dynamic_file {
             next;
         }
 
-        next if (!$current_file || ($current_file =~ m/$skip_file_pattern/));
+        next if (!$current_file);
+
+        if ($filters && !$filters->{$current_file}) {
+            #print "Skipping: $current_file\n";
+            next;
+        }
 
         $fn_loc_map->{$current_file} = undef unless (exists ${fn_loc_map}->{$current_file});
 

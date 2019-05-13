@@ -16,5 +16,7 @@ main()
     get_config();
 
     dlclose(handle);
+
+    return 0;
 }
 
