@@ -22,11 +22,10 @@ my $entry_points_file = shift @ARGV;
 my $tainted_functions_file = shift @ARGV;
 my $blacklisted_functions_file = shift @ARGV;
 
-open(my $ir_fh, '<', $ir_file) or die "Cannot open file '$ir_file'\n";
-
 if (!$entry_points_file) {
-    my $entry_points = get_entry_points_from_ir($ir_fh);
+    open(my $ir_fh, '<', $ir_file) or die "Cannot open file '$ir_file'\n";
 
+    my $entry_points = get_entry_points_from_ir($ir_fh);
     my $entry_points_out = "entry-points-" . time() . ".txt";
 
     printf "Writing entry points to: %s\n", $entry_points_out;
@@ -34,7 +33,6 @@ if (!$entry_points_file) {
     write_entry_points_to_file($entry_points, $entry_points_out);
 
     close($ir_fh);
-
     exit;
 }
 
@@ -47,7 +45,6 @@ while (my $entry_point = <$entry_points_fh>) {
     push @entry_points, $entry_point;
 }
 close($entry_points_fh);
-close($ir_fh);
 
 die "Entry points list is empty!\n" unless(@entry_points);
 
