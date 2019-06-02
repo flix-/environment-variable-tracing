@@ -448,9 +448,9 @@ sub append_ratios {
     my $static_functions = get_total_functions_from_trace($static_trace);
     my $static_loc = get_total_loc_from_trace($static_trace);
 
-    my $dep_env_var_files_ratio = $static_files / $total_files;
-    my $dep_env_var_functions_ratio = $static_functions / $total_functions;
-    my $dep_env_var_loc_ratio = $static_loc / $total_loc;
+    my $dep_env_var_files_ratio = $total_files != 0 ? $static_files / $total_files : 0;
+    my $dep_env_var_functions_ratio = $total_functions != 0 ? $static_functions / $total_functions : 0;
+    my $dep_env_var_loc_ratio = $total_loc != 0 ? $static_loc / $total_loc : 0;
 
     print $report_fh "==================================\n";
     print $report_fh "Dependent on Environment Variables\n";
@@ -466,9 +466,9 @@ sub append_ratios {
     my $diff_hit_functions = get_total_functions_from_trace($diff_hit_trace);
     my $diff_hit_loc = get_total_loc_from_trace($diff_hit_trace);
 
-    my $diff_files_ratio = $diff_hit_files / $static_files;
-    my $diff_functions_ratio = $diff_hit_functions / $static_functions;
-    my $diff_loc_ratio = $diff_hit_loc / $static_loc;
+    my $diff_files_ratio = $static_files != 0 ? $diff_hit_files / $static_files : 0;
+    my $diff_functions_ratio = $static_functions != 0 ? $diff_hit_functions / $static_functions : 0;
+    my $diff_loc_ratio = $static_loc != 0 ? $diff_hit_loc / $static_loc : 0;
 
     print $report_fh "=======================================================\n";
     print $report_fh "Dependent on Environment Variables and covered by Tests\n";
@@ -488,9 +488,9 @@ sub append_ratios {
     my $dep_env_var_retval_functions = get_total_functions_from_trace($ret_trace);
     my $dep_env_var_retval_loc = get_total_loc_from_trace($ret_trace);
 
-    my $retval_files_ratio = $dep_env_var_retval_files / $total_retval_files;
-    my $retval_functions_ratio = $dep_env_var_retval_functions / $total_retval_functions;
-    my $retval_loc_ratio = $dep_env_var_retval_loc / $total_retval_loc;
+    my $retval_files_ratio = $total_retval_files != 0 ? $dep_env_var_retval_files / $total_retval_files : 0;
+    my $retval_functions_ratio = $total_retval_functions != 0 ? $dep_env_var_retval_functions / $total_retval_functions : 0;
+    my $retval_loc_ratio = $total_retval_loc != 0 ? $dep_env_var_retval_loc / $total_retval_loc : 0;
 
     print $report_fh "================================================\n";
     print $report_fh "Return Values dependent on Environment Variables\n";
@@ -506,9 +506,9 @@ sub append_ratios {
     my $diff_hit_retval_functions = get_total_functions_from_trace($ret_test_diff_hit_trace);
     my $diff_hit_retval_loc = get_total_loc_from_trace($ret_test_diff_hit_trace);
 
-    my $diff_retval_files_ratio = $diff_hit_retval_files / $dep_env_var_retval_files;
-    my $diff_retval_functions_ratio = $diff_hit_retval_functions / $dep_env_var_retval_functions;
-    my $diff_retval_loc_ratio = $diff_hit_retval_loc / $dep_env_var_retval_loc;
+    my $diff_retval_files_ratio = $dep_env_var_retval_files != 0 ? $diff_hit_retval_files / $dep_env_var_retval_files : 0;
+    my $diff_retval_functions_ratio = $dep_env_var_retval_functions != 0 ? $diff_hit_retval_functions / $dep_env_var_retval_functions : 0;
+    my $diff_retval_loc_ratio = $dep_env_var_retval_loc != 0 ? $diff_hit_retval_loc / $dep_env_var_retval_loc : 0;
 
     print $report_fh "=====================================================================\n";
     print $report_fh "Return Values dependent on Environment Variables and covered by Tests\n";
